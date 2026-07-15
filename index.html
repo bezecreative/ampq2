@@ -1,0 +1,2855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AMP Wash Intel · Q2 2026</title>
+<meta name="description" content="National wash-count benchmarks from 75% of U.S. tunnel wash sites, plus the 12.9 million invoices that reveal where membership revenue silently leaks. And how much of it is recoverable.">
+<meta name="theme-color" content="#F2F3F5">
+<!-- TODO: replace og:url and og:image hosts with the final production URL at deploy -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AMP Wash Intel">
+<meta property="og:title" content="AMP Wash Intel · Q2 2026">
+<meta property="og:description" content="The quarterly pulse of the wash industry: national wash-count benchmarks, plus where membership revenue silently leaks. And how much of it is recoverable.">
+<meta property="og:url" content="https://insights.ampmemberships.com/">
+<meta property="og:image" content="https://insights.ampmemberships.com/images/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="images/AMP_Icon_CobaltNavy.svg">
+<link rel="preload" as="font" type="font/woff2" href="fonts/Manrope-latin-var.woff2" crossorigin>
+<style>
+/* Manrope, self-hosted: one variable woff2 (latin) covers weights 400-800.
+   Non-latin glyphs (e.g. ✕) fall back to system, same as the old Google subset. */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('fonts/Manrope-latin-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* ————— AMP Wash Intel design tokens (v2) ————— */
+:root {
+  --canvas: #F2F3F5;
+  --surface: #FDFDFD;
+  --surface-raised: #FFFFFF;
+  --ink: #181D27;
+  --ink-secondary: #717680;
+  --ink-faint: #A4A7AE;
+  --brand: #0B75E1;
+  --brand-body: #0A5FBA;
+  --brand-deep: #003264;
+  --ice-1: #DCEDFF;
+  --ice-2: #F5FAFF;
+  --positive: #00B368;
+  --negative: #D92D20;
+  --hairline: rgba(24, 29, 39, 0.07);
+
+  --r-hero: 24px;
+  --r-card: 20px;
+  --r-inner: 16px;
+  --r-chip: 12px;
+
+  --shadow-card: 0 1px 2px rgba(24,29,39,.04), 0 10px 28px rgba(24,29,39,.07);
+  --shadow-float: 0 2px 6px rgba(24,29,39,.06), 0 18px 44px rgba(24,29,39,.12);
+  --ease-out: cubic-bezier(.19, 1, .22, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+/* closed q-pops sit at natural position past the viewport at sub-desktop widths —
+   clip the phantom scroll range; the open-state JS clamp keeps visible pops on screen.
+   hidden first as the fallback for engines without clip (pre-2022 Safari) */
+html, body { overflow-x: hidden; overflow-x: clip; }
+a, button, input, select { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+.skip-link {
+  position: fixed; top: 14px; left: 14px; z-index: 200;
+  background: var(--brand-deep); color: #fff; font-weight: 700; font-size: .82rem;
+  padding: 10px 18px; border-radius: 999px; text-decoration: none;
+  transform: translateY(calc(-100% - 20px));
+}
+.skip-link:focus-visible { transform: none; outline: 2px solid #5EB4FF; outline-offset: 2px; }
+#benchmarks, #states, #payment, #calculator { scroll-margin-top: 14px; }
+body {
+  font-family: 'Manrope', -apple-system, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  padding: clamp(10px, 2vw, 22px);
+}
+
+/* ————— app shell: rail + content ————— */
+.shell { max-width: 1340px; margin: 0 auto; }
+body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+.rail {
+  position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  display: flex; flex-direction: row; align-items: center; gap: 6px;
+  background: rgba(0, 30, 60, .52);
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+  backdrop-filter: blur(18px) saturate(1.6);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  padding: 8px 10px;
+  box-shadow: 0 12px 36px rgba(0,27,56,.28), inset 0 1px 0 rgba(255,255,255,.12);
+  z-index: 50;
+}
+.rail .mark {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-left: 8px;
+  background: rgba(255,255,255,.14);
+}
+.rail .mark svg { width: 18px; height: 14.5px; }
+.rail a {
+  position: relative;
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.62); text-decoration: none;
+  transition: background .25s, color .25s;
+}
+/* dock icons: drawn in the AMP mark's grammar — flat sheared terminals (butt caps),
+   sharp miter joins, forward lean — silhouettes stay conventional for instant recognition */
+.rail a svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 2.7; stroke-linecap: butt; stroke-linejoin: miter; }
+.rail a:hover { color: #fff; background: rgba(255,255,255,.14); }
+/* the mark is a link now (out to ampmemberships.com) — keep its filled logo despite the
+   stroke-icon rule above, and give it a hover state of its own */
+.rail a.mark svg { width: 18px; height: 14.5px; fill: #fff; stroke: none; }
+.rail a.mark:hover { background: rgba(255,255,255,.26); }
+.rail a.active { color: var(--brand-body); background: #fff; box-shadow: 0 4px 14px rgba(0,27,56,.35); }
+.rail .rail-btn {
+  position: relative; border: 0; cursor: pointer; background: transparent; padding: 0;
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.62);
+  transition: background .25s, color .25s;
+}
+.rail .rail-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; }
+.rail .rail-btn:hover { color: #fff; background: rgba(255,255,255,.14); }
+.rail .rail-btn[aria-expanded="true"] { color: var(--brand-body); background: #fff; box-shadow: 0 4px 14px rgba(0,27,56,.35); }
+.rail .rail-btn[aria-expanded="true"] .tt { display: none; }
+.rail .rail-btn .tt {
+  position: absolute; bottom: calc(100% + 14px); left: 50%; transform: translateX(-50%) translateY(4px);
+  background: var(--brand-deep); color: #fff; font-size: .68rem; font-weight: 700;
+  padding: 5px 11px; border-radius: 8px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+}
+.rail .rail-btn:hover .tt { opacity: 1; transform: translateX(-50%) translateY(0); }
+@media (prefers-reduced-motion: no-preference) {
+  .rail .rail-btn.attn { color: #fff; animation: shareRing 1.5s ease-out 3; }
+}
+@keyframes shareRing {
+  0% { box-shadow: 0 0 0 0 rgba(94,180,255,.55); }
+  100% { box-shadow: 0 0 0 13px rgba(94,180,255,0); }
+}
+
+/* share card — anchored to the share button with a pointer tail */
+.share-card {
+  position: fixed; left: 0; bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+  width: min(360px, calc(100vw - 32px)); z-index: 55;
+  background: var(--surface-raised); border-radius: var(--r-inner);
+  box-shadow: var(--shadow-float);
+  padding: 18px 20px 16px;
+  opacity: 0; pointer-events: none;
+  transform: translateY(12px) scale(.94);
+  transform-origin: var(--tail-x, 85%) 100%;
+  transition: opacity .3s, transform .45s var(--ease-out);
+}
+.share-card.open { opacity: 1; pointer-events: auto; transform: none; }
+.share-card::after {
+  content: ""; position: absolute; bottom: -6px; left: var(--tail-x, 85%);
+  width: 13px; height: 13px; margin-left: -7px;
+  background: var(--surface-raised); transform: rotate(45deg); border-radius: 2px;
+}
+.share-card .s-close {
+  position: absolute; top: 10px; right: 10px;
+  width: 26px; height: 26px; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--canvas); color: var(--ink-secondary); font-size: .8rem; font-weight: 700; line-height: 1;
+  transition: background .2s, color .2s;
+}
+.share-card .s-close::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; } /* 38px hit area */
+.share-card .s-close:hover { background: var(--ink); color: #fff; }
+.share-card h3 { font-size: .92rem; font-weight: 800; letter-spacing: -.01em; padding-right: 24px; }
+.share-card p { font-size: .76rem; color: var(--ink-secondary); margin: 4px 0 14px; line-height: 1.55; }
+.share-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.share-actions button, .share-actions a {
+  font-family: inherit; font-size: .76rem; font-weight: 700; cursor: pointer; text-decoration: none;
+  padding: 9px 16px; border-radius: 999px; border: 0;
+  transition: transform .2s var(--ease-out), box-shadow .2s, background .2s;
+}
+.share-actions .primary { background: var(--brand); color: #fff; box-shadow: 0 3px 10px rgba(11,117,225,.3); }
+.share-actions .primary:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(11,117,225,.4); }
+.share-actions .ghost { background: transparent; color: var(--brand-body); border: 1.5px solid rgba(11,117,225,.3); }
+.share-actions .ghost:hover { background: rgba(11,117,225,.07); }
+.rail a .tt {
+  position: absolute; bottom: calc(100% + 14px); left: 50%; transform: translateX(-50%) translateY(4px);
+  background: var(--brand-deep); color: #fff; font-size: .68rem; font-weight: 700;
+  padding: 5px 11px; border-radius: 8px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+}
+.rail a:hover .tt { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.content { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+
+/* ————— reveal choreography ————— */
+.reveal { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .js .reveal { opacity: 0; transform: translateY(14px); transition: opacity .7s var(--ease-out), transform .9s var(--ease-out); }
+  .js .reveal.in { opacity: 1; transform: none; }
+}
+
+/* ————— hero ————— */
+.hero {
+  position: relative;
+  border-radius: var(--r-hero);
+  color: #fff;
+  padding: clamp(28px, 4vw, 52px);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  background: linear-gradient(155deg, #003264 0%, #002246 62%, #001B38 100%);
+  min-height: 470px;
+  display: flex; flex-direction: column;
+}
+.hero-photo {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: center 35%;
+  transform: scale(1.38);
+  transform-origin: 0% 42%;
+}
+.hero-scrim {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(95deg, rgba(2,10,20,.88) 0%, rgba(2,14,28,.62) 42%, rgba(2,14,28,.08) 75%),
+    linear-gradient(0deg, rgba(2,10,20,.45) 0%, rgba(2,10,20,0) 40%);
+}
+.hero > *:not(.hero-photo):not(.hero-scrim):not(.hero-top) { position: relative; z-index: 1; }
+.hero > .hero-top { position: relative; z-index: 1; }
+.hero-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: auto; }
+.hero-pill {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  background: var(--brand-deep); border: 1.5px solid rgba(94,180,255,.45);
+  padding: 8px 20px; border-radius: 999px; color: #fff;
+  box-shadow: 0 4px 14px rgba(0,27,56,.3);
+}
+.hero h1 {
+  margin-top: clamp(28px, 4.5vw, 56px);
+  font-size: clamp(2.3rem, 4.6vw, 3.7rem);
+  font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;
+  max-width: 16ch;
+  text-shadow: 0 2px 24px rgba(0,27,56,.4);
+}
+.hero-sub {
+  margin-top: 16px; max-width: 48ch;
+  font-size: clamp(.92rem, 1.3vw, 1rem); color: rgba(255,255,255,.78);
+}
+.hero-sub strong { color: #fff; font-weight: 600; }
+.hero-meta { margin-top: 26px; font-size: .72rem; color: rgba(255,255,255,.5); font-weight: 600; letter-spacing: .02em; }
+/* large screens: the cover breathes (~25% taller); credentials anchor to the base
+   so the extra room opens between the copy and the lockup, not below it */
+@media (min-width: 1100px) {
+  .hero { min-height: 660px; }
+  .hero .hero-powered { margin-top: auto; padding-top: 24px; } /* out-specifies the base rule below; padding keeps the 24px floor when content is tight */
+}
+
+/* ————— section header ————— */
+.sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; padding: 26px 10px 10px; flex-wrap: wrap; }
+.sec-head h2 { font-size: clamp(1.35rem, 2.4vw, 1.8rem); font-weight: 700; letter-spacing: -.015em; line-height: 1.2; }
+.sec-head p { font-size: .85rem; color: var(--ink-secondary); max-width: 58ch; margin-top: 6px; }
+
+/* segmented toggle */
+.seg {
+  display: inline-flex; gap: 4px; padding: 4px;
+  background: rgba(24,29,39,.05); border-radius: 999px; flex-shrink: 0;
+}
+.seg button {
+  font-family: inherit; font-size: .78rem; font-weight: 700; color: var(--ink-secondary);
+  background: transparent; border: 0; padding: 8px 18px; border-radius: 999px; cursor: pointer;
+  transition: color .2s, background .2s, box-shadow .2s;
+}
+.seg button.active { color: var(--ink); background: var(--surface-raised); box-shadow: 0 1px 4px rgba(24,29,39,.12); }
+.seg.mini button { font-size: .7rem; padding: 6px 14px; }
+
+/* ————— region cards ————— */
+:root { --r-west: #0B75E1; --r-central: #5EB4FF; --r-east: #003264; }
+.region-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.region {
+  background: var(--surface); border-radius: var(--r-card); padding: 24px 26px 22px;
+  box-shadow: var(--shadow-card);
+}
+.region-name { display: flex; align-items: center; gap: 8px; font-size: .72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-secondary); }
+.region-name i { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); display: inline-block; }
+.region-val {
+  font-size: clamp(2rem, 3.2vw, 2.6rem); font-weight: 700; letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums; line-height: 1.15; margin-top: 8px;
+  transition: opacity .25s;
+}
+.region-val.dim { opacity: 0; }
+.region-cap { font-size: .78rem; color: var(--ink-secondary); font-weight: 500; }
+.region-bar { height: 6px; border-radius: 999px; background: rgba(24,29,39,.06); margin-top: 18px; overflow: hidden; }
+.region-bar i { display: block; height: 100%; border-radius: 999px; background: var(--c, var(--brand)); width: var(--w, 0%); transition: width .7s var(--ease-out), background .3s; }
+.region-bar i.neg { background: var(--ink-faint); }
+.region-scale { display: flex; justify-content: space-between; font-size: .6rem; color: var(--ink-faint); font-weight: 600; margin-top: 5px; }
+/* "?" helper popover */
+.q-wrap { position: relative; display: inline-flex; }
+.qmark {
+  position: relative; /* anchors the ::after hitbox */
+  width: 22px; height: 22px; border-radius: 50%; border: 0; cursor: pointer;
+  background: rgba(24,29,39,.09); color: var(--ink-secondary);
+  font-family: inherit; font-size: .72rem; font-weight: 800; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background .2s, color .2s;
+}
+.qmark::after { content: ''; position: absolute; inset: -7px; border-radius: 50%; } /* 36px hit area, 22px visual */
+.qmark:hover, .qmark[aria-expanded="true"] { background: var(--brand-deep); color: #fff; }
+.q-pop {
+  position: absolute; right: 0; top: calc(100% + 12px); width: 300px; z-index: 60;
+  background: var(--surface-raised); border-radius: 14px;
+  box-shadow: var(--shadow-float);
+  padding: 16px 18px;
+  opacity: 0; transform: translateY(4px); pointer-events: none;
+  transition: opacity .25s, transform .25s var(--ease-out);
+}
+.q-pop.open, .q-wrap:hover .q-pop, .qmark:focus-visible + .q-pop { opacity: 1; transform: none; pointer-events: auto; }
+@media (max-width: 940px) { .q-pop { left: 0; right: auto; } }
+.q-pop b { display: block; font-size: .76rem; font-weight: 800; color: var(--brand-deep); }
+.q-pop p { font-size: .74rem; color: var(--ink-secondary); line-height: 1.55; margin: 2px 0 12px; }
+.q-pop p:last-child { margin-bottom: 0; }
+
+.ghost-link {
+  font-family: inherit; font-size: .78rem; font-weight: 700; cursor: pointer;
+  color: var(--brand-body); background: transparent;
+  border: 1.5px solid rgba(11,117,225,.35); border-radius: 999px; padding: 8px 18px;
+  transition: background .2s, border-color .2s;
+}
+.ghost-link:hover { background: rgba(11,117,225,.07); border-color: var(--brand); }
+
+/* region map modal */
+.modal-scrim {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgba(0,27,56,.5);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  opacity: 0; pointer-events: none; transition: opacity .25s;
+}
+.modal-scrim.open { opacity: 1; pointer-events: auto; }
+.modal-card {
+  background: var(--surface-raised); border-radius: var(--r-card);
+  box-shadow: var(--shadow-float);
+  max-width: 640px; width: 100%; max-height: 88vh; overflow: auto; overscroll-behavior: contain;
+  padding: clamp(22px, 3vw, 34px);
+  transform: translateY(12px) scale(.98); transition: transform .3s var(--ease-out);
+}
+.modal-scrim.open .modal-card { transform: none; }
+.modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 4px; }
+.modal-head h3 { font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em; }
+.modal-close {
+  width: 34px; height: 34px; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--canvas); color: var(--ink-secondary);
+  font-size: 1rem; font-weight: 700; line-height: 1;
+  transition: background .2s, color .2s;
+}
+.modal-close:hover { background: var(--ink); color: #fff; }
+.modal-card .m-sub { font-size: .82rem; color: var(--ink-secondary); margin-bottom: 18px; }
+.modal-card svg { width: 100%; }
+.modal-legend { display: flex; gap: 18px; margin-top: 14px; flex-wrap: wrap; }
+.modal-legend span { font-size: .74rem; font-weight: 600; color: var(--ink-secondary); display: inline-flex; align-items: center; gap: 7px; }
+.modal-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.modal-card .m-note { font-size: .66rem; color: var(--ink-faint); margin-top: 12px; font-style: italic; }
+
+/* ————— chart cards ————— */
+.chart-card {
+  background: var(--surface); border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+  padding: clamp(22px, 3vw, 32px);
+}
+.chart-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.chart-title { font-size: 1.08rem; font-weight: 700; letter-spacing: -.01em; }
+.chart-title .hl { color: var(--brand-body); }
+.chart-note { font-size: .72rem; color: var(--ink-faint); font-weight: 600; }
+.chart-sub { font-size: .82rem; color: var(--ink-secondary); max-width: 66ch; margin-top: 2px; }
+.chart-wrap { position: relative; margin-top: 18px; }
+svg text { font-family: 'Manrope', sans-serif; }
+.mpt, #pts circle {
+  transform-box: fill-box; transform-origin: center;
+  transition: transform .2s var(--ease-out), filter .2s;
+}
+.mpt.on, #pts circle.on {
+  transform: scale(1.5);
+  filter: drop-shadow(0 0 5px rgba(11,117,225,.55));
+}
+.mbar { transition: filter .2s; }
+.mbar.on { filter: brightness(1.12); }
+.legend { display: flex; gap: 18px; margin-top: 12px; flex-wrap: wrap; }
+.legend span { display: inline-flex; align-items: center; gap: 7px; font-size: .72rem; font-weight: 600; color: var(--ink-secondary); }
+.legend i { width: 16px; height: 3px; border-radius: 2px; display: inline-block; }
+.legend i.sq { width: 10px; height: 10px; border-radius: 3px; }
+
+/* mini insight footer inside cards */
+.card-insight {
+  margin-top: 18px; padding: 14px 18px; border-radius: var(--r-inner);
+  background: var(--ice-2); border: 1px solid rgba(11,117,225,.1);
+  font-size: .8rem; color: var(--ink);
+}
+.card-insight strong { font-weight: 700; }
+.card-insight .k { color: var(--brand-body); font-weight: 800; font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; margin-right: 8px; }
+
+/* pro tip: a small chip beside each chart's controls — reading help lives at the
+   point of confusion, pulled on demand, instead of competing with the Insight below.
+   One-shot glow on first reveal says "there's value in here" without looping. */
+.protip-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: inherit; font-size: .72rem; font-weight: 800; color: var(--brand-body);
+  background: linear-gradient(135deg, var(--ice-1) 0%, var(--ice-2) 70%);
+  border: 1px solid rgba(11,117,225,.28); border-radius: 999px;
+  padding: 7px 14px; cursor: pointer; white-space: nowrap;
+  transition: transform .2s var(--ease-out), box-shadow .2s;
+}
+.protip-chip svg { width: 13px; height: 13px; stroke: var(--brand-body); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.protip-chip:hover, .protip-chip[aria-expanded="true"] { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(11,117,225,.22); }
+/* a quiet glow-ping every 8s draws the eye until the reader engages once */
+@media (prefers-reduced-motion: no-preference) {
+  .protip-chip { animation: protipPing 8s ease-in-out 3s infinite; }
+  .protip-chip.seen, .protip-chip[aria-expanded="true"], .q-wrap:hover .protip-chip { animation: none; }
+}
+@keyframes protipPing {
+  0%, 84%, 100% { box-shadow: 0 0 0 0 rgba(94,180,255,0); }
+  90% { box-shadow: 0 0 15px 2px rgba(94,180,255,.55); }
+}
+.chart-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.q-pop .tip-p { font-size: .74rem; color: var(--ink-secondary); line-height: 1.55; margin: 2px 0 0; }
+
+/* full-width insight + pro-tip stack that follows a card row (matches content rhythm) */
+.row-notes { display: flex; flex-direction: column; gap: 10px; }
+.row-notes .card-insight, .row-notes .card-protip { margin-top: 0; }
+
+/* spark mark: every insight carries the AMP-intelligence icon */
+.card-insight .k .spark, .insight-tag .spark {
+  width: 17px; height: 17px; border-radius: 50%; background: var(--brand);
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-right: 7px; vertical-align: -0.5px; /* icon center = cap-height center of the label */
+}
+.card-insight .k .spark svg { width: 9px; height: 9px; fill: #fff; }
+.insight-tag .spark { width: 22px; height: 22px; margin-right: 0; vertical-align: middle; }
+
+/* AMP spotlight: the handoff is a chapter cover — the hero's full-bleed photo language,
+   shorter, opening the AMP act. A photo card can't be mistaken for another bento box. */
+.spot {
+  --sp: 1; /* scroll-grow progress; JS drives 0→1 as the cover enters view */
+  position: relative; border-radius: var(--r-hero); color: #fff;
+  padding: clamp(26px, 3.6vw, 44px);
+  overflow: hidden; box-shadow: var(--shadow-card);
+  background: linear-gradient(155deg, #003264 0%, #002246 62%, #001B38 100%);
+  min-height: min(86vh, 720px); display: flex; flex-direction: column; justify-content: flex-end;
+  transform: scale(calc(.8 + .2 * var(--sp)));
+  transform-origin: 50% 50%; /* symmetric swell — equal breathing above and below */
+  will-change: transform;
+  /* the callout lands late in the swell: invisible until ~55% grown, settled by ~85% */
+  --pp: clamp(0, calc((var(--sp) - .55) / .3), 1);
+  /* the wordmark stamps in one beat after the pill: ~65% → 95% of the swell */
+  --wp: clamp(0, calc((var(--sp) - .65) / .3), 1);
+}
+.spot-photo {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 24%;
+  /* zoom + slide so the attendant lands in the clear right side, out from under the gradient
+     (the left seam this opens hides under the near-opaque end of the scrim) */
+  transform: translateX(12%) scale(1.62); transform-origin: 0 30%;
+}
+.spot-scrim {
+  position: absolute; inset: 0;
+  background:
+    /* solid to 13%: the zoom+slide opens a 12% dead strip at the left edge — the scrim
+       must be fully opaque over it at every width, or the card background reads through */
+    linear-gradient(95deg, rgb(2,10,20) 0%, rgb(2,10,20) 13%, rgba(2,14,28,.82) 30%, rgba(2,14,28,.62) 46%, rgba(2,14,28,.05) 72%),
+    linear-gradient(0deg, rgba(2,10,20,.5) 0%, rgba(2,10,20,0) 45%);
+}
+.spot > *:not(.spot-photo):not(.spot-scrim):not(.hero-pill) { position: relative; z-index: 1; }
+.spot > .hero-pill {
+  position: relative; z-index: 1; align-self: flex-start; margin-bottom: clamp(20px, 3vw, 32px);
+  opacity: var(--pp);
+  transform: translateY(calc((1 - var(--pp)) * 12px));
+}
+.spot .hero-pill svg { width: 12.5px; height: 10px; }
+/* the wordmark signs the NCS→AMP handoff — same unboxed grammar as the finale, quieter scale */
+.spot > .spot-logo {
+  align-self: flex-start; height: clamp(22px, 2.6vw, 30px); width: auto; color: #fff;
+  margin-bottom: clamp(14px, 2vw, 22px);
+  filter: drop-shadow(0 2px 14px rgba(0,27,56,.5));
+  opacity: var(--wp);
+  transform: translateY(calc((1 - var(--wp)) * 12px));
+}
+.spot h2 {
+  font-size: clamp(1.8rem, 3.4vw, 2.7rem); font-weight: 700; letter-spacing: -.02em;
+  line-height: 1.12; max-width: 18ch; text-shadow: 0 2px 24px rgba(0,27,56,.4);
+}
+.spot p { margin-top: 14px; max-width: 54ch; font-size: clamp(.9rem, 1.25vw, .98rem); color: rgba(255,255,255,.78); }
+.spot p strong { color: #fff; font-weight: 600; }
+.src-row.light { padding-top: 20px; }
+.src-row.light > .lbl { color: rgba(255,255,255,.42); }
+.src-row.light b { color: rgba(255,255,255,.82); }
+.src-row.light i { background: rgba(255,255,255,.35); }
+
+/* trend view swap: one soft fade-through with a slight vertical drift */
+.trend-fade { transition: opacity .24s ease, transform .24s var(--ease-out); }
+.trend-fade.out { opacity: 0; transform: translateY(-4px); }
+.trend-fade.enter { opacity: 0; transform: translateY(7px); transition: none; }
+#trendNum, #trendCap, #trendInsight { transition: opacity .25s ease; }
+.dimmed { opacity: 0 !important; }
+
+/* aside stat: the one number a view is about */
+.aside-stat { margin: 4px 0 14px; }
+.aside-stat .as-num {
+  display: block; font-size: clamp(2.2rem, 3.4vw, 2.9rem); font-weight: 700;
+  letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.08; color: var(--ink);
+}
+.aside-stat .as-cap { font-size: .76rem; color: var(--ink-secondary); font-weight: 600; }
+
+/* leaders & laggards list (state performance aside) */
+.lb-aside { display: flex; flex-direction: column; }
+.lb-title { font-size: 1.02rem; font-weight: 700; letter-spacing: -.01em; }
+.lb-label { font-size: .62rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-faint); margin: 16px 0 6px; }
+.lb-row { display: grid; grid-template-columns: 100px 1fr 56px; gap: 10px; align-items: center; padding: 5px 0; }
+.lb-st { font-size: .78rem; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lb-bar { height: 6px; border-radius: 999px; background: rgba(24,29,39,.06); overflow: hidden; }
+.lb-bar i { display: block; height: 100%; border-radius: 999px; width: var(--w, 0%); background: var(--brand); transition: width .6s var(--ease-out); }
+.lb-row.neg .lb-bar i { background: #C4C9D4; }
+.lb-val { font-size: .78rem; font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); }
+.lb-row.neg .lb-val { color: var(--ink-secondary); }
+.lb-aside .card-insight { margin-top: auto; }
+/* aside tabs: same mini-seg grammar as the trend card */
+.lb-seg { align-self: flex-start; margin: 10px 0 2px; }
+#lbList, #lbCompare { margin-bottom: 14px; }
+.cmp-select {
+  width: 100%; margin-top: 2px; padding: 8px 12px; cursor: pointer;
+  font-family: inherit; font-size: .78rem; font-weight: 700;
+  color: var(--ink); background-color: var(--surface-raised);
+  border: 1px solid rgba(24,29,39,.14); border-radius: var(--r-chip);
+}
+.cmp-select:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.lb-row.cmp { grid-template-columns: 100px 1fr 56px 18px; }
+.cmp-x {
+  position: relative; width: 18px; height: 18px; border: 0; border-radius: 50%; cursor: pointer;
+  background: rgba(24,29,39,.06); color: var(--ink-faint);
+  font-size: .58rem; font-weight: 700; line-height: 1;
+  transition: background .2s, color .2s;
+}
+.cmp-x::after { content: ''; position: absolute; inset: -8px; border-radius: 50%; } /* 34px hit area */
+.cmp-x:hover { background: var(--ink); color: #fff; }
+.cmp-hint { font-size: .74rem; color: var(--ink-faint); margin-top: 10px; }
+
+/* data byline: names the data set a section is built on */
+.src-row { display: flex; align-items: center; gap: 9px; margin-top: 10px; flex-wrap: wrap; }
+.src-row > .lbl { font-size: .64rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); }
+.src-row b { font-size: .76rem; font-weight: 800; color: var(--ink-secondary); letter-spacing: -.005em; white-space: nowrap; }
+.src-row i { width: 3px; height: 3px; border-radius: 50%; background: var(--ink-faint); flex-shrink: 0; }
+.src-row .pw, .hero-powered .pw { display: inline-flex; align-items: center; gap: inherit; }
+
+/* hero powered-by lockup */
+.hero-powered { display: flex; align-items: center; gap: 8px 11px; margin-top: 24px; flex-wrap: wrap; }
+.hero-powered > span { font-size: .68rem; font-weight: 600; color: rgba(255,255,255,.48); }
+.hero-powered .amp-logo { height: 15px; width: 54px; color: rgba(255,255,255,.94); display: block; flex-shrink: 0; }
+.hero-powered .ncs-logo { height: 13px; width: 42px; color: rgba(255,255,255,.94); display: block; flex-shrink: 0; margin-right: -3px; }
+.hero-powered b { font-size: .88rem; font-weight: 800; color: rgba(255,255,255,.94); letter-spacing: .01em; white-space: nowrap; }
+.hero-powered i { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,.4); }
+@media (max-width: 640px) {
+  .hero-powered b { font-size: .8rem; }
+}
+
+/* state performance tile map */
+.state-svg { display: block; width: 100%; max-width: 760px; margin: 18px auto 0; }
+.state-svg rect { cursor: pointer; transition: filter .2s; }
+.state-svg rect:hover { filter: brightness(1.14) saturate(1.05); }
+.ramp-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.ramp-row .ramp { width: 190px; height: 8px; border-radius: 999px; background: linear-gradient(90deg, #545D6E 0%, #EEF0F3 50%, #0B75E1 100%); }
+.ramp-row span { font-size: .66rem; font-weight: 600; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+
+/* ————— payment section: editorial intro ————— */
+.feature-intro { display: grid; grid-template-columns: 1.35fr 1fr; gap: 12px; }
+.feature-copy {
+  background: var(--brand-deep); border-radius: var(--r-card); color: #fff;
+  padding: clamp(26px, 3.4vw, 40px); box-shadow: var(--shadow-card);
+  display: flex; flex-direction: column;
+  background-image: radial-gradient(80% 120% at 90% -20%, rgba(11,117,225,.4) 0%, transparent 55%);
+}
+.feature-copy h2 { font-size: clamp(1.7rem, 3.2vw, 2.5rem); font-weight: 300; letter-spacing: -.01em; line-height: 1.12; max-width: 16ch; }
+.feature-copy h2 strong { font-weight: 700; }
+.feature-copy p { margin-top: 16px; font-size: .9rem; color: rgba(255,255,255,.75); max-width: 52ch; }
+.feature-copy p strong { color: #fff; font-weight: 600; }
+.feature-photo {
+  border-radius: var(--r-card); overflow: hidden; position: relative;
+  box-shadow: var(--shadow-card); min-height: 300px;
+  background: linear-gradient(155deg, #0A5FBA 0%, #003264 100%);
+}
+.feature-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.feature-photo .cap {
+  position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 1;
+  background: rgba(0,27,56,.55); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.14);
+  color: #fff; font-size: .74rem; font-weight: 600;
+  padding: 10px 16px; border-radius: 14px;
+}
+
+/* ————— 100-invoice flow card ————— */
+.flow-figure { margin-top: 22px; }
+.flow-bar { display: flex; height: 64px; border-radius: var(--r-inner); }
+.flow-seg {
+  position: relative; display: flex; align-items: center; justify-content: center; min-width: 0;
+  transition: flex-grow .5s var(--ease-out), filter .3s, box-shadow .3s;
+}
+.flow-seg:first-child { border-radius: var(--r-inner) 0 0 var(--r-inner); }
+/* these three animate layout properties (width / flex-grow) — acceptable at this scale,
+   but they must respect reduced motion like every other animation on the page */
+@media (prefers-reduced-motion: reduce) {
+  .region-bar i { transition: background .3s; }
+  .lb-bar i { transition: none; }
+  .flow-seg { transition: filter .3s, box-shadow .3s; }
+}
+.flow-seg:last-child { border-radius: 0 var(--r-inner) var(--r-inner) 0; }
+.flow-seg:hover { filter: brightness(1.05) saturate(1.08); }
+.flow-labels.hovering .flow-label { opacity: .4; transition: opacity .3s; }
+.flow-labels.hovering .flow-label.hl { opacity: 1; }
+.flow-label { transition: opacity .3s; }
+.flow-seg.retries { background: #A9CCF3; }
+.flow-seg.retries span { color: var(--brand-deep); }
+.flow-seg.dunning {
+  background: var(--brand);
+  box-shadow: 0 6px 20px rgba(11,117,225,.45);
+  position: relative; z-index: 1; border-radius: 8px;
+  outline: 3px solid var(--surface);
+}
+/* the +4 segment is narrow — give it a forgiving invisible hit area so the cursor
+   doesn't skip past it to the neighbors */
+.flow-seg.dunning::after { content: ""; position: absolute; inset: -8px -12px; }
+.flow-seg.lost { background: #D3D7DF; }
+.flow-seg.lost span { color: var(--ink-secondary); transition: color .3s; }
+.flow-seg.lost:hover span { color: var(--ink); }
+.flow-seg span { color: #fff; font-weight: 800; font-size: clamp(1rem, 2vw, 1.35rem); font-variant-numeric: tabular-nums; }
+.flow-labels { display: flex; margin-top: 12px; }
+.flow-label { display: flex; flex-direction: column; gap: 2px; padding-right: 12px; }
+.flow-label b { font-size: .78rem; font-weight: 800; display: inline-flex; align-items: center; gap: 7px; }
+.flow-label b i { width: 9px; height: 9px; border-radius: 3px; display: inline-block; }
+.flow-label small { font-size: .7rem; color: var(--ink-secondary); font-weight: 500; line-height: 1.4; }
+.flow-label.amp b { color: var(--brand-body); }
+.flow-label.deemph b, .flow-label.deemph small { color: var(--ink-faint); transition: color .3s; }
+.flow-labels.hovering .flow-label.deemph.hl b { color: var(--ink); }
+.flow-labels.hovering .flow-label.deemph.hl small { color: #414651; }
+.flow-story {
+  margin-top: 26px; border-top: 1px solid var(--hairline); padding-top: 24px;
+  display: grid; grid-template-columns: 1fr 1fr 1.15fr; align-items: start;
+}
+.fs-row { padding: 0 26px; border-left: 1px solid var(--hairline); }
+.fs-row:first-child { padding-left: 0; border-left: 0; }
+.fs-row .fs-num {
+  display: block;
+  font-size: 1.7rem; font-weight: 700; letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums; color: var(--ink);
+}
+.fs-row .fs-num small { font-size: .85rem; font-weight: 700; color: var(--ink-secondary); }
+.fs-row p { font-size: .82rem; color: var(--ink-secondary); margin-top: 6px; max-width: 44ch; }
+.fs-row.emph .fs-num { color: var(--brand-body); }
+.fs-row.emph p { color: var(--ink); }
+.flow-story .calc-link { grid-column: 1 / -1; justify-self: start; margin-top: 24px; }
+.calc-link {
+  display: inline-flex; align-items: center; margin-top: 18px;
+  font-size: .82rem; font-weight: 700; color: #fff; text-decoration: none;
+  background: var(--brand); padding: 11px 22px; border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(11,117,225,.35);
+  transition: transform .25s var(--ease-out), box-shadow .25s;
+}
+.calc-link:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(11,117,225,.45); }
+/* buttons never wrap their label onto two lines */
+.calc-link, .calc-cta a, .calc-presets button, .insight-chips a, .insight-chips button,
+.ghost-link, .seg button, .share-actions a, .share-actions button { white-space: nowrap; }
+
+/* ————— band: chart + aside ————— */
+.band { display: grid; grid-template-columns: 1.9fr 1fr; gap: 12px; align-items: stretch; }
+
+/* insight card */
+.insight-card {
+  background: linear-gradient(140deg, var(--ice-1) 0%, var(--ice-2) 70%);
+  border-radius: var(--r-card);
+  padding: clamp(22px, 3vw, 30px);
+  box-shadow: var(--shadow-card);
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.insight-card::after {
+  content: ""; position: absolute; right: -60px; top: -60px; width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(11,117,225,.12) 0%, transparent 70%);
+}
+.insight-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: .68rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--brand-body); margin-bottom: 14px;
+}
+.insight-tag .spark { width: 22px; height: 22px; border-radius: 50%; background: var(--brand); display: inline-flex; align-items: center; justify-content: center; }
+.insight-tag .spark svg { width: 11px; height: 11px; fill: #fff; }
+.insight-card p { font-size: .92rem; color: var(--ink); position: relative; z-index: 1; }
+.insight-card p strong { font-weight: 700; }
+.insight-chips { display: flex; gap: 8px; margin-top: auto; padding-top: 18px; flex-wrap: wrap; position: relative; z-index: 1; }
+.insight-chips a, .insight-chips button {
+  font-family: inherit; font-size: .78rem; font-weight: 700; color: var(--brand-deep);
+  text-decoration: none; border: 0; cursor: pointer;
+  background: var(--surface-raised); padding: 9px 18px; border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(24,29,39,.08);
+  transition: transform .25s var(--ease-out), box-shadow .25s;
+}
+.insight-chips a:hover, .insight-chips button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(24,29,39,.12); }
+
+/* data appendix tables */
+.data-table { width: 100%; border-collapse: collapse; margin: 6px 0 20px; }
+.data-table th {
+  font-size: .62rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--ink-faint); text-align: left; padding: 6px 10px 6px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.data-table td {
+  font-size: .78rem; color: var(--ink); padding: 7px 10px 7px 0;
+  border-bottom: 1px solid var(--hairline); font-variant-numeric: tabular-nums;
+}
+.data-table th.num, .data-table td.num { text-align: right; padding-right: 0; }
+.state-table { margin-bottom: 8px; }
+/* sticky offset cancels the modal-card padding so the header pins flush to the card top,
+   with no strip above it for rows to slide through */
+.state-table thead th { position: sticky; top: calc(-1 * clamp(22px, 3vw, 34px)); background: var(--surface-raised); z-index: 1; }
+.state-table th.num, .state-table td.num { padding-left: 16px; }
+.modal-card h4 { font-size: .8rem; font-weight: 800; color: var(--brand-deep); margin-top: 4px; }
+
+/* ————— exposure calculator ————— */
+.calc-card {
+  background:
+    radial-gradient(90% 130% at 85% -15%, rgba(11,117,225,.5) 0%, rgba(11,117,225,0) 55%),
+    linear-gradient(155deg, #003264 0%, #002246 60%, #001B38 100%);
+  border-radius: var(--r-card); color: #fff;
+  padding: clamp(24px, 3.4vw, 40px);
+  box-shadow: var(--shadow-card);
+  display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(24px, 3.5vw, 48px);
+}
+.calc-inputs { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.calc-result { min-width: 0; }
+.calc-field { min-width: 0; }
+.calc-field .row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.calc-field .name { font-size: .8rem; font-weight: 700; color: rgba(255,255,255,.85); }
+.calc-field .val { font-size: 1.35rem; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.calc-field .minmax { display: flex; justify-content: space-between; font-size: .62rem; color: rgba(255,255,255,.4); font-weight: 600; margin-top: 6px; }
+/* the input is the hit area (28px); the visible 6px track is drawn on the track pseudos */
+input[type=range].cslider {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 28px; border-radius: 999px;
+  background: transparent;
+  outline: none; cursor: pointer;
+}
+input[type=range].cslider:focus-visible { outline: 2px solid #5EB4FF; outline-offset: 2px; }
+input[type=range].cslider::-webkit-slider-runnable-track {
+  height: 6px; border-radius: 999px;
+  background: linear-gradient(90deg, #5EB4FF var(--p, 50%), rgba(255,255,255,.16) var(--p, 50%));
+}
+input[type=range].cslider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; margin-top: -8px;
+  background: #fff; border: 3px solid #5EB4FF;
+  box-shadow: 0 2px 10px rgba(0,0,0,.35);
+  transition: transform .15s var(--ease-out);
+}
+input[type=range].cslider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+input[type=range].cslider::-moz-range-track {
+  height: 6px; border-radius: 999px;
+  background: linear-gradient(90deg, #5EB4FF var(--p, 50%), rgba(255,255,255,.16) var(--p, 50%));
+}
+input[type=range].cslider::-moz-range-thumb {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; border: 3px solid #5EB4FF;
+  box-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+.calc-presets { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.calc-presets button {
+  font-family: inherit; font-size: .66rem; font-weight: 700; cursor: pointer;
+  color: rgba(255,255,255,.75); background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.14); border-radius: 999px; padding: 6px 13px;
+  transition: background .2s, color .2s;
+}
+.calc-presets button:hover { background: rgba(255,255,255,.2); color: #fff; }
+.calc-presets button.active { background: #fff; color: var(--brand-deep); border-color: #fff; }
+.calc-note-sm { font-size: .62rem; color: rgba(255,255,255,.35); line-height: 1.6; margin-top: auto; padding-top: 12px; }
+.calc-note-sm .note-short { display: none; }
+
+.calc-result { display: flex; flex-direction: column; }
+.calc-result .r-label { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.55); }
+.calc-result .r-big {
+  font-size: clamp(2.6rem, 4.6vw, 3.6rem); font-weight: 800; letter-spacing: -.025em;
+  font-variant-numeric: tabular-nums; line-height: 1.05; margin-top: 6px;
+  transition: color .4s;
+}
+.calc-result .r-big { transform-origin: left center; }
+.calc-result .r-big.saving { color: #4FD0FF; text-shadow: 0 0 22px rgba(79,208,255,.42); }
+.calc-result .r-equiv { font-size: .8rem; color: rgba(255,255,255,.6); margin-top: 8px; }
+.calc-result .r-equiv strong { color: #fff; }
+.calc-saved {
+  display: inline-flex; align-items: center; gap: 8px; align-self: flex-start;
+  margin-top: 14px; padding: 8px 16px; border-radius: 999px;
+  background: rgba(95,216,255,.14); border: 1px solid rgba(95,216,255,.5);
+  font-size: .8rem; font-weight: 700; color: #5FD8FF;
+  font-variant-numeric: tabular-nums;
+  opacity: 0; transform: translateY(4px); transition: opacity .4s, transform .4s var(--ease-out);
+}
+.calc-saved.show { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .calc-saved.show { animation: chipBloom .9s .2s both; }
+  .r-big.pop { animation: savePop .85s var(--ease-out); }
+}
+@keyframes chipBloom {
+  0% { box-shadow: 0 0 0 rgba(95,216,255,0); }
+  40% { box-shadow: 0 0 26px rgba(95,216,255,.65); }
+  100% { box-shadow: 0 0 12px rgba(95,216,255,.28); }
+}
+@keyframes savePop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.03); text-shadow: 0 0 38px rgba(79,208,255,.95); }
+  100% { transform: scale(1); }
+}
+.calc-toggle-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  margin-top: 22px; padding: 16px 18px; border-radius: var(--r-inner);
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1);
+}
+.calc-toggle-row .t-copy b { display: flex; align-items: center; gap: 7px; font-size: .85rem; font-weight: 700; }
+.calc-toggle-row .amp-logo-s { height: 12px; width: 43px; flex-shrink: 0; display: block; }
+.calc-toggle-row .t-copy small { font-size: .68rem; color: rgba(255,255,255,.5); }
+.switch { position: relative; width: 54px; height: 30px; flex-shrink: 0; cursor: pointer; }
+.switch input { opacity: 0; width: 100%; height: 100%; position: absolute; cursor: pointer; z-index: 1; margin: 0; }
+.switch .knob {
+  position: absolute; inset: 0; border-radius: 999px;
+  background: rgba(255,255,255,.22); transition: background .3s;
+}
+.switch .knob::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px;
+  border-radius: 50%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.35);
+  transition: transform .3s var(--ease-out);
+}
+.switch input:checked + .knob { background: #2FA9E6; box-shadow: 0 0 12px rgba(63,198,255,.45); }
+.switch input:checked + .knob::after { transform: translateX(24px); }
+.switch input:focus-visible + .knob { outline: 2px solid #5EB4FF; outline-offset: 2px; }
+
+.calc-grid100 { margin-top: 22px; }
+.calc-grid100 .g-label { font-size: .68rem; font-weight: 700; color: rgba(255,255,255,.55); margin-bottom: 10px; }
+.calc-grid100 .g { display: grid; grid-template-columns: repeat(20, 1fr); gap: 4px; }
+.calc-grid100 .g i {
+  aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,.2);
+  transition: background .35s, box-shadow .35s;
+}
+.calc-grid100 .g i.ok { background: rgba(169,204,243,.75); }
+.calc-grid100 .g i.dun { background: rgba(255,255,255,.42); }
+.calc-grid100 .g i.dun.saved {
+  background: #3FC6FF;
+  box-shadow: 0 0 5px rgba(63,198,255,1), 0 0 14px rgba(63,198,255,.85), 0 0 26px rgba(63,198,255,.45);
+}
+.calc-grid100 .g i.lost { background: rgba(255,255,255,.16); }
+.calc-grid100 .g-legend { display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
+.calc-grid100 .g-legend span { font-size: .64rem; font-weight: 600; color: rgba(255,255,255,.6); display: inline-flex; align-items: center; gap: 6px; }
+.calc-grid100 .g-legend i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+.calc-cta {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
+  border-top: 1px solid rgba(255,255,255,.12);
+  margin-top: 10px; padding-top: 22px;
+}
+.calc-cta p { font-size: .92rem; color: rgba(255,255,255,.75); }
+.calc-cta p strong { color: #fff; font-weight: 700; }
+.calc-cta a {
+  font-size: .88rem; font-weight: 800; color: var(--brand-deep); text-decoration: none;
+  background: #fff; padding: 13px 28px; border-radius: 999px;
+  box-shadow: 0 6px 22px rgba(0,0,0,.3);
+  transition: transform .25s var(--ease-out), box-shadow .25s;
+  flex-shrink: 0;
+}
+.calc-cta a:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.4); }
+
+/* ————— why amp finale: the third act — one closing cover, not a footnote.
+   Hero opens the report, the spotlight pivots it, this card ends it. ————— */
+.finale {
+  position: relative; border-radius: var(--r-hero); color: #fff; overflow: hidden;
+  /* the card itself radiates — brand light spills onto the canvas around it */
+  box-shadow: var(--shadow-card), 0 30px 110px rgba(11,117,225,.3);
+  background:
+    radial-gradient(80% 120% at 88% 110%, rgba(11,117,225,.55) 0%, transparent 58%),
+    linear-gradient(155deg, #003264 0%, #002246 62%, #001B38 100%);
+  padding: clamp(30px, 4.6vw, 64px);
+  min-height: min(92vh, 780px);
+  display: flex; flex-direction: column; justify-content: center;
+  margin-top: 26px;
+}
+/* ambient glow that breathes slowly under the content — the finale is lit from within */
+.finale::after {
+  content: ""; position: absolute; inset: -15%;
+  background: radial-gradient(55% 45% at 78% 82%, rgba(11,117,225,.38) 0%, transparent 62%);
+  pointer-events: none; opacity: .55;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .finale::after { animation: finaleBreathe 6s ease-in-out infinite alternate; }
+}
+@keyframes finaleBreathe {
+  from { opacity: .4; }
+  to { opacity: 1; }
+}
+.finale-photo {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 26%;
+  /* zoom + slide so the tablet-holding subject lands in the clear right side (~66% of the card) */
+  transform: translateX(-20px) scale(1.5); transform-origin: 0 34%;
+}
+/* progressive blur: the photo's signage sits behind the copy — frost that half so the
+   type owns it, dissolving before the subject so he stays crisp. Sits under the scrim. */
+.finale-blur {
+  position: absolute; inset: 0; pointer-events: none;
+  -webkit-backdrop-filter: blur(16px) saturate(1.05);
+  backdrop-filter: blur(16px) saturate(1.05);
+  -webkit-mask-image: linear-gradient(95deg, #000 0%, #000 38%, transparent 62%);
+  mask-image: linear-gradient(95deg, #000 0%, #000 38%, transparent 62%);
+}
+.finale-scrim {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(95deg, rgba(2,10,20,.94) 0%, rgba(2,14,28,.8) 44%, rgba(2,14,28,.1) 78%),
+    linear-gradient(0deg, rgba(2,10,20,.35) 0%, rgba(2,10,20,0) 45%);
+}
+/* engines without backdrop-filter get no frost — deepen the scrim so the signage
+   still can't compete with the copy */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .finale-scrim {
+    background:
+      linear-gradient(95deg, rgb(2,10,20) 0%, rgba(2,10,20,.96) 40%, rgba(2,14,28,.82) 55%, rgba(2,14,28,.1) 78%),
+      linear-gradient(0deg, rgba(2,10,20,.35) 0%, rgba(2,10,20,0) 45%);
+  }
+}
+.finale > *:not(.finale-photo):not(.finale-scrim):not(.finale-blur) { position: relative; z-index: 1; }
+/* the wordmark itself opens the closing act — confident, unboxed */
+.finale > .finale-logo {
+  align-self: flex-start; height: clamp(26px, 3vw, 34px); width: auto; color: #fff;
+  margin-bottom: clamp(18px, 2.6vw, 28px);
+  filter: drop-shadow(0 2px 14px rgba(0,27,56,.5));
+}
+.finale h2 {
+  font-size: clamp(2.2rem, 4.8vw, 3.8rem); font-weight: 700; letter-spacing: -.02em;
+  line-height: 1.08; max-width: 15ch; text-shadow: 0 2px 24px rgba(0,27,56,.4);
+}
+.finale > p { margin-top: 16px; max-width: 56ch; font-size: clamp(.92rem, 1.3vw, 1rem); color: rgba(255,255,255,.78); }
+.finale > p strong { color: #fff; font-weight: 600; }
+.finale-stats { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; margin-top: clamp(24px, 3.4vw, 40px); }
+.finale-stat { padding: 0 clamp(22px, 3vw, 40px); border-left: 1px solid rgba(255,255,255,.14); }
+.finale-stat:first-child { padding-left: 0; border-left: 0; }
+.finale-stat b {
+  display: block; font-size: clamp(2rem, 3.4vw, 2.8rem); font-weight: 700;
+  letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: #5EB4FF; line-height: 1.1;
+  text-shadow: 0 0 14px rgba(94,180,255,.35);
+}
+.finale-stat span { display: block; font-size: .78rem; color: rgba(255,255,255,.62); font-weight: 600; margin-top: 4px; max-width: 22ch; line-height: 1.45; }
+.finale-note { margin-top: 20px; font-size: .62rem; color: rgba(255,255,255,.38); font-style: italic; max-width: 66ch; }
+.cta-actions { display: flex; gap: 10px; margin-top: clamp(26px, 3.6vw, 40px); flex-wrap: wrap; }
+
+/* finale arrival: one-shot choreography when the closing act enters view —
+   pill → headline → pitch → stats (count-up + bloom) → CTA lands with a ring */
+@media (prefers-reduced-motion: no-preference) {
+  .js .finale:not(.lit) > .finale-logo,
+  .js .finale:not(.lit) h2,
+  .js .finale:not(.lit) > p,
+  .js .finale:not(.lit) .finale-stats,
+  .js .finale:not(.lit) .cta-actions,
+  .js .finale:not(.lit) .finale-note { opacity: 0; }
+  .finale.lit > .finale-logo { animation: finUp .6s var(--ease-out) .05s both; }
+  .finale.lit h2 { animation: finUp .8s var(--ease-out) .2s both; }
+  .finale.lit > p { animation: finUp .8s var(--ease-out) .4s both; }
+  .finale.lit .finale-stats { animation: finUp .8s var(--ease-out) .6s both; }
+  .finale.lit .finale-stat b { animation: statBloom 1.3s ease-out .95s both; }
+  .finale.lit .cta-actions { animation: finUp .8s var(--ease-out) .85s both; }
+  .finale.lit .cta-actions .primary { animation: finUp .8s var(--ease-out) .85s both, ctaRing 1.5s ease-out 1.7s 2; }
+  .finale.lit .finale-note { animation: finUp .8s ease 1.05s both; }
+}
+@keyframes finUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes statBloom {
+  0% { text-shadow: 0 0 0 rgba(94,180,255,0); }
+  40% { text-shadow: 0 0 30px rgba(94,180,255,1); }
+  100% { text-shadow: 0 0 14px rgba(94,180,255,.35); }
+}
+@keyframes ctaRing {
+  0% { box-shadow: 0 6px 22px rgba(0,0,0,.3), 0 0 0 0 rgba(255,255,255,.55); }
+  100% { box-shadow: 0 6px 22px rgba(0,0,0,.3), 0 0 0 18px rgba(255,255,255,0); }
+}
+.cta-actions a { text-decoration: none; white-space: nowrap; }
+.cta-actions .primary {
+  font-size: .88rem; font-weight: 800; color: var(--brand-deep); background: #fff;
+  padding: 13px 26px; border-radius: 999px; box-shadow: 0 6px 22px rgba(0,0,0,.3);
+  transition: transform .25s var(--ease-out), box-shadow .25s;
+}
+.cta-actions .primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.4); }
+.cta-actions .ghost {
+  font-size: .82rem; font-weight: 700; color: #fff;
+  border: 1.5px solid rgba(255,255,255,.35); padding: 12px 22px; border-radius: 999px;
+  transition: background .2s, border-color .2s;
+}
+.cta-actions .ghost:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.6); }
+
+.foot { text-align: center; font-size: .7rem; color: var(--ink-faint); font-weight: 500; padding: 20px 0 8px; max-width: 72ch; margin: 0 auto; }
+
+/* chart tooltip */
+.tip {
+  position: absolute; pointer-events: none; z-index: 5;
+  background: var(--brand-deep); color: #fff; font-size: .72rem; font-weight: 600;
+  padding: 7px 12px; border-radius: 10px; white-space: nowrap;
+  transform: translate(-50%, calc(-100% - 12px));
+  opacity: 0; transition: opacity .2s;
+  font-variant-numeric: tabular-nums;
+}
+.tip.show { opacity: 1; }
+.tip small { display: block; font-weight: 500; color: rgba(255,255,255,.65); }
+
+/* ————— phone rebuild ————— */
+@media (max-width: 640px) {
+  html { font-size: 17.5px; } /* global type lift — everything rem-based scales up */
+  body { padding: 10px 10px 96px; }
+  .content { gap: 10px; }
+
+  /* phones: the photo becomes its own band and melts into a solid navy text area —
+     text never sits on top of imagery at this width */
+  .hero { min-height: 0; padding: 272px 20px 26px; background: linear-gradient(180deg, #003264 0%, #002246 70%, #001B38 100%); }
+  .hero-photo { inset: 0 0 auto 0; height: 262px; transform: none; object-position: center 32%; }
+  .hero-scrim { inset: 0 0 auto 0; height: 264px; background: linear-gradient(180deg, rgba(0,20,40,.2) 0%, rgba(0,42,84,0) 45%, #002A54 100%); }
+  .hero > .hero-top { position: absolute; top: 16px; left: 16px; }
+  .hero h1 { font-size: 2rem; max-width: none; margin-top: 0; }
+  .hero-sub { font-size: .95rem; }
+  .hero-pill { font-size: .68rem; padding: 7px 14px; letter-spacing: .08em; }
+  .hero-meta { font-size: .72rem; line-height: 1.6; }
+
+  .sec-head { padding: 20px 4px 6px; gap: 12px; }
+  .sec-head h2 { font-size: 1.35rem; }
+  .sec-head p { font-size: .88rem; }
+  .seg button { padding: 8px 14px; font-size: .76rem; }
+  .ghost-link { padding: 8px 14px; font-size: .76rem; }
+
+  .region-val { font-size: 2.1rem; }
+  .region-cap { font-size: .84rem; }
+  .region-scale { font-size: .66rem; }
+
+  .chart-card { padding: 18px 14px 16px; }
+  .chart-title { font-size: 1.02rem; }
+  .chart-sub { font-size: .85rem; }
+  .chart-note { font-size: .74rem; }
+  .legend { gap: 12px; }
+  .legend span { font-size: .76rem; }
+  .card-insight { font-size: .84rem; padding: 12px 14px; }
+
+  /* flow bar: labels stack full-width; every label fully readable, no hover needed */
+  .flow-bar { height: 54px; }
+  .flow-seg span { font-size: 1rem; }
+  .flow-labels { flex-direction: column; gap: 12px; margin-top: 16px; }
+  .flow-label { flex: none !important; padding-right: 0; }
+  .flow-label small { font-size: .78rem; }
+  .flow-label b { font-size: .84rem; }
+  .fs-row { grid-template-columns: 104px 1fr; gap: 14px; }
+  .fs-row .fs-num { font-size: 1.35rem; }
+  .fs-row .fs-num small { font-size: .72rem; }
+  .fs-row p { font-size: .85rem; }
+  .calc-link { width: 100%; justify-content: center; }
+
+  .feature-copy h2 { font-size: 1.5rem; }
+  .feature-copy p { font-size: .9rem; }
+  .feature-photo { min-height: 240px; }
+
+  /* phones: chapter cover sized to its content — photo band on top, headline right
+     below it on solid navy (no dead space; full-screen wasn't worth the emptiness).
+     Stays a rounded card inside the shell; starts smaller so the swell is legible */
+  .spot { min-height: 0; padding: 260px 20px 30px; transform: scale(calc(.78 + .22 * var(--sp))); }
+  .spot-photo { inset: 0 0 auto 0; height: 242px; object-position: 70% 28%; transform: none; }
+  .spot-scrim { inset: 0 0 auto 0; height: 244px; background: linear-gradient(180deg, rgba(0,20,40,.15) 0%, rgba(0,42,84,0) 45%, #002A54 100%); }
+  .spot .hero-pill { position: absolute; top: 16px; left: 16px; margin: 0; }
+  .spot > .spot-logo { height: 20px; margin-bottom: 12px; }
+  .spot h2 { font-size: 1.7rem; max-width: none; }
+  .spot p { font-size: .92rem; }
+
+  /* finale on phones: same stacked cover anatomy — photo band up top, pitch on solid navy */
+  .finale { min-height: 0; padding: 252px 20px 28px; }
+  .finale-photo { inset: 0 0 auto 0; height: 232px; object-position: 70% 30%; transform: none; }
+  .finale-scrim { inset: 0 0 auto 0; height: 234px; background: linear-gradient(180deg, rgba(0,20,40,.15) 0%, rgba(0,42,84,0) 45%, #002A54 100%); }
+  .finale-blur { display: none; } /* phones stack copy below the photo — nothing competes, keep the band crisp */
+  .finale > .finale-logo { height: 24px; margin-bottom: 16px; }
+  .finale h2 { font-size: 1.8rem; max-width: none; }
+  .finale > p { font-size: .92rem; }
+  .cta-actions .primary { width: 100%; text-align: center; }
+
+  .insight-card p { font-size: .9rem; }
+
+  /* calculator, phone-tuned: all three sliders stay; the 100-dot grid (the flow bar
+     told that story already) and the long disclaimer are desktop-only. */
+  .calc-grid100 { display: none; }
+  .calc-note-sm .note-full { display: none; }
+  .calc-note-sm .note-short { display: inline; }
+  .calc-card { padding: 18px 16px 0; gap: 14px; }
+  /* card-mix presets: one swipeable row instead of wrapping */
+  .calc-presets {
+    flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    margin: 8px -16px 0; padding: 2px 16px 6px;
+    scrollbar-width: none;
+  }
+  .calc-presets::-webkit-scrollbar { display: none; }
+  .calc-presets button { flex-shrink: 0; }
+  /* savings chip: no reserved gap when dunning is off */
+  .calc-saved { display: none; }
+  .calc-saved.show { display: inline-flex; }
+  /* the CTA detaches into its own light footer block — action, not fine print */
+  .calc-cta {
+    background: var(--surface-raised);
+    margin: 18px -16px 0; padding: 20px 16px;
+    border-radius: 0 0 var(--r-card) var(--r-card); border-top: 0;
+    flex-direction: column; align-items: stretch; text-align: center; gap: 12px;
+  }
+  .calc-cta p { color: var(--ink-secondary); font-size: .9rem; }
+  .calc-cta p strong { color: var(--ink); }
+  .calc-cta a {
+    background: var(--brand); color: #fff; text-align: center; padding: 15px 28px;
+    box-shadow: 0 4px 16px rgba(11,117,225,.35);
+  }
+  .calc-inputs { gap: 12px; }
+  .calc-field .row { margin-bottom: 6px; }
+  .calc-field .name { font-size: .84rem; }
+  .calc-field .val { font-size: 1.2rem; }
+  .calc-field .minmax { margin-top: 3px; font-size: .68rem; }
+  input[type=range].cslider { height: 32px; }
+  input[type=range].cslider::-webkit-slider-thumb { width: 26px; height: 26px; margin-top: -10px; }
+  input[type=range].cslider::-moz-range-thumb { width: 26px; height: 26px; }
+  .calc-presets { margin-top: 8px; }
+  .calc-presets button { padding: 7px 11px; font-size: .7rem; }
+  .calc-note-sm { font-size: .68rem; padding-top: 6px; }
+  .calc-result .r-label { font-size: .7rem; }
+  .calc-result .r-big { font-size: 2.4rem; }
+  .calc-result .r-equiv { font-size: .85rem; margin-top: 4px; }
+  .calc-saved { margin-top: 10px; }
+  .calc-toggle-row { padding: 11px 13px; margin-top: 14px; }
+  .calc-toggle-row .t-copy small { font-size: .72rem; }
+  .calc-grid100 { margin-top: 14px; }
+  .calc-grid100 .g-label { margin-bottom: 7px; font-size: .76rem; }
+  .calc-grid100 .g { gap: 3px; }
+  .calc-grid100 .g-legend { gap: 6px 14px; margin-top: 8px; }
+  .calc-grid100 .g-legend span { font-size: .74rem; }
+  .modal-card { padding: 20px 16px; }
+  .data-table td { font-size: .76rem; }
+  .data-table th { font-size: .64rem; }
+  .m-note, .foot { font-size: .72rem; }
+}
+
+@media (max-width: 940px) {
+  .calc-card { grid-template-columns: 1fr; }
+  .finale-stats { grid-template-columns: 1fr; gap: 16px; }
+  .finale-stat { padding: 0; border-left: 0; }
+  .flow-story { grid-template-columns: 1fr; padding-top: 0; }
+  .fs-row {
+    display: grid; grid-template-columns: 148px 1fr; gap: 16px; align-items: baseline;
+    padding: 15px 0; border-left: 0; border-bottom: 1px solid var(--hairline);
+  }
+  .fs-row .fs-num { text-align: left; }
+  .fs-row p { margin-top: 0; max-width: none; }
+  .flow-story .calc-link { margin-top: 18px; }
+  .rail .mark { width: 34px; height: 34px; }
+  .rail a { width: 38px; height: 38px; }
+  .rail a .tt { display: none; }
+  .region-row { grid-template-columns: 1fr; gap: 10px; }
+  .band, .feature-intro { grid-template-columns: 1fr; }
+}
+
+/* ————— THE GATE · "Frost" (Gate H, login lab winner — LOGIN-PAGE-RESULTS.md) ————— */
+.gate-h { position: relative; }
+.gated { display: flex; flex-direction: column; gap: 12px; min-width: 0; position: relative; }
+/* while locked, the frosted report is inert: JS also sets inert + aria-hidden */
+.gate-h.locked .gated { pointer-events: none; user-select: none; -webkit-user-select: none; }
+.h-sticky {
+  position: sticky; top: clamp(120px, 18vh, 210px); z-index: 6;
+  height: 0; display: flex; justify-content: center; align-items: flex-start;
+  pointer-events: none;
+}
+/* after the unlock payoff — and on every return visit — the popup is simply gone
+   (the "You're In." confirmation shows once, then bows out; no lingering chrome) */
+.gate-h.settled .h-sticky, .gate-h.is-back .h-sticky { display: none; }
+/* the popup arrives once, bento-style: invisible until the gate scrolls into view,
+   then it fades in from zero and rises into place. (.js-scoped so no-JS readers see it.) */
+.js .gate-h.locked .h-popup:not(.arrived) { opacity: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .h-popup.arrived { animation: gateUp .7s var(--ease-out) both; }
+  .h-popup.departing { animation: gateDown .45s ease both; } /* back out the way it came */
+  @keyframes gateUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes gateDown {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(30px); }
+  }
+}
+.h-popup {
+  pointer-events: auto;
+  width: min(500px, calc(100vw - 32px));
+  background: linear-gradient(165deg, #003264 0%, #00264E 55%, #001B38 100%);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: var(--r-card);
+  box-shadow: 0 24px 64px rgba(0,20,45,.45);
+  padding: 32px 32px 27px; color: #fff;
+}
+.h-popup .gate-wordmark { height: 16px; width: 57px; margin-bottom: 16px; color: rgba(255,255,255,.94); display: block; }
+.h-popup h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.015em; line-height: 1.18; }
+.gate-form { display: grid; gap: 12px; margin-top: 19px; }
+.gate-form .field { display: grid; gap: 6px; }
+.gate-form label { font-size: .74rem; font-weight: 700; letter-spacing: .01em; color: rgba(255,255,255,.78); }
+.gate-form input {
+  font-family: inherit; font-size: .92rem; font-weight: 600;
+  min-height: 48px; padding: 10px 16px; border-radius: var(--r-chip); width: 100%;
+  color: #fff; background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.24);
+  transition: border-color .2s, background .2s;
+}
+.gate-form input::placeholder { color: rgba(255,255,255,.38); font-weight: 500; }
+.gate-form input:focus { background: rgba(255,255,255,.13); border-color: rgba(94,180,255,.7); }
+.gate-form input:focus-visible { outline: 2px solid #5EB4FF; outline-offset: 2px; }
+.gate-form .err { display: none; font-size: .74rem; font-weight: 600; color: #FFC7C7; }
+.gate-form .field.bad input { border-color: #FF9C9C; }
+.gate-form .field.bad .err { display: block; }
+.gate-form .submit {
+  font-family: inherit; font-size: .88rem; font-weight: 800; cursor: pointer;
+  min-height: 48px; padding: 13px 26px; border: 0; border-radius: 999px;
+  margin-top: 2px; white-space: nowrap;
+  color: var(--brand-deep); background: #fff; box-shadow: 0 6px 22px rgba(0,0,0,.3);
+  transition: transform .25s var(--ease-out), box-shadow .25s;
+}
+.gate-form .submit:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.4); }
+.gate-form .submit:focus-visible { outline: 2px solid #5EB4FF; outline-offset: 3px; }
+.gate-form .submit[disabled] { cursor: default; transform: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .gate-h.reading .submit { animation: readPulse 1.1s ease-in-out infinite; }
+  @keyframes readPulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+  .gate-h.is-done .h-popup { animation: none; transition: opacity .45s ease, transform .45s var(--ease-out); }
+  .gate-h.fading .h-popup { opacity: 0; transform: translateY(-8px); }
+}
+.gate-done { display: none; }
+.gate-h.is-done .gate-done { display: block; }
+.gate-h.is-done .gate-form { display: none; }
+.done-mark {
+  width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px; background: rgba(94,180,255,.18);
+}
+.done-mark svg { width: 20px; height: 20px; stroke: #5EB4FF; stroke-width: 3; fill: none; stroke-linecap: butt; stroke-linejoin: miter; }
+.gate-done h3 { font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em; color: #fff; }
+.gate-done p { font-size: .8rem; margin-top: 8px; max-width: 40ch; color: rgba(255,255,255,.72); }
+/* lens-blur frost: four stacked backdrop layers, staggered masks, compounding blur;
+   the deepest adds the highlight bloom real defocus has. Reaches 90px ABOVE the gate
+   so the ramp dissolves the tail of the last free insight card. Wall to wall. */
+.h-frost {
+  /* top offset leaves the section title and the first line of its description readable;
+     the ramp then frosts the controls and the first data set */
+  /* bottom extends past the gate by the body's dock-clearance padding, so the frost
+     reaches the true end of the document instead of leaving a canvas bar */
+  position: absolute; left: calc(50% - 50vw); right: calc(50% - 50vw); top: 74px;
+  bottom: calc(-96px - env(safe-area-inset-bottom, 0px));
+  z-index: 5; pointer-events: none;
+}
+.h-frost i { position: absolute; inset: 0; }
+.h-frost i:nth-child(1) {
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 70px);
+  mask-image: linear-gradient(180deg, transparent 0, #000 70px);
+}
+.h-frost i:nth-child(2) {
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  -webkit-mask-image: linear-gradient(180deg, transparent 30px, #000 130px);
+  mask-image: linear-gradient(180deg, transparent 30px, #000 130px);
+}
+.h-frost i:nth-child(3) {
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  -webkit-mask-image: linear-gradient(180deg, transparent 70px, #000 180px);
+  mask-image: linear-gradient(180deg, transparent 70px, #000 180px);
+}
+.h-frost i:nth-child(4) {
+  -webkit-backdrop-filter: blur(20px) saturate(1.18) brightness(1.05);
+  backdrop-filter: blur(20px) saturate(1.18) brightness(1.05);
+  -webkit-mask-image: linear-gradient(180deg, transparent 110px, #000 260px);
+  mask-image: linear-gradient(180deg, transparent 110px, #000 260px);
+}
+.h-veil {
+  position: absolute; left: calc(50% - 50vw); right: calc(50% - 50vw); top: 74px;
+  bottom: calc(-96px - env(safe-area-inset-bottom, 0px));
+  z-index: 5; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,27,56,0) 0, rgba(0,27,56,.16) 240px, rgba(0,27,56,.3) 55%, rgba(0,27,56,.38) 100%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .h-frost i { transition: backdrop-filter .9s ease, -webkit-backdrop-filter .9s ease; }
+  .h-veil { transition: opacity .9s ease; }
+}
+/* unlocking melts the frost: the payoff */
+.gate-h.is-done .h-frost i, .gate-h.is-back .h-frost i {
+  -webkit-backdrop-filter: blur(0px) saturate(1) brightness(1);
+  backdrop-filter: blur(0px) saturate(1) brightness(1);
+}
+.gate-h.is-done .h-veil, .gate-h.is-back .h-veil { opacity: 0; }
+.gate-h.is-done .h-frost, .gate-h.is-back .h-frost { pointer-events: none; }
+/* no backdrop-filter: flat blur on the content itself, no ramp */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .h-frost { display: none; }
+  .gate-h.locked .gated { filter: blur(20px) saturate(1.05); }
+}
+@media (max-width: 640px) {
+  .gated { gap: 10px; }
+  .h-popup { padding: 24px 20px 20px; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+<noscript>
+  <p style="max-width:1340px; margin:0 auto 12px; padding:14px 20px; background:#DCEDFF; color:#0A5FBA; border-radius:16px; font-weight:600; font-size:.88rem;">
+    The charts in this report are drawn with JavaScript. Enable it to see the full picture.
+  </p>
+</noscript>
+<span id="announcer" class="sr-only" role="status" aria-live="polite"></span>
+<div class="shell">
+
+  <!-- ————— LEFT RAIL ————— -->
+  <nav class="rail" aria-label="Report sections">
+    <a href="#benchmarks" data-sec="benchmarks" aria-label="National benchmarks"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.8 20.8h18.4"/><path d="M6 20.8v-6.2"/><path d="M12 20.8V10"/><path d="M18 20.8V3.6"/></svg><span class="tt">National benchmarks</span></a>
+    <a href="#states" data-sec="states" aria-label="State performance"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.3L9 3.9l6 2.4 5.5-2.4v13.8L15 20.1l-6-2.4-5.5 2.4V6.3z"/><path d="M9 3.9v13.8"/><path d="M15 6.3v13.8"/></svg><span class="tt">State performance</span></a>
+    <a href="#payment" data-sec="payment" aria-label="Payment health"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.8 5h15.9l2.5 2.5V19H2.8V5z"/><path d="M2.8 9.9h18.4"/></svg><span class="tt">Payment health</span></a>
+    <a href="#calculator" data-sec="calculator" aria-label="Exposure calculator"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.6 3h14.8v18H4.6V3z"/><path d="M8 7.3h8"/><path d="M7.5 12h1.7M11.2 12h1.7M14.9 12h1.7M7.5 16.2h1.7M11.2 16.2h1.7M14.9 16.2h1.7"/></svg><span class="tt">Exposure calculator</span></a>
+    <button type="button" class="rail-btn" id="shareBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="2.6"/><circle cx="17.5" cy="5.5" r="2.6"/><circle cx="17.5" cy="18.5" r="2.6"/><path d="M8.4 10.8l6.8-4M8.4 13.2l6.8 4"/></svg><span class="tt">Share this report</span></button>
+    <a class="mark" href="https://ampmemberships.com/?utm_source=washintel&utm_medium=report&utm_campaign=q2-2026-dock" target="_blank" rel="noopener" aria-label="AMP Memberships"><svg viewBox="0 0 875 700" fill="#fff" aria-hidden="true"><polygon points="37.18 666.59 250.8 666.17 682.33 248.15 682.33 667.15 837.82 667.15 837.82 34.89 686.1 34.89 37.18 666.59"/><polygon points="584.94 32.85 152.03 32.85 152.03 188.34 427.62 188.34 584.94 32.85"/></svg><span class="tt">AMP Memberships</span></a>
+  </nav>
+
+  <main class="content" id="top">
+
+    <!-- ————— HERO ————— -->
+    <header class="hero reveal">
+      <img class="hero-photo" src="images/hero.jpg?v=2" width="2400" height="1339" fetchpriority="high" alt="A wash member reviewing their vehicles in the AMP app over coffee">
+      <div class="hero-scrim"></div>
+      <div class="hero-top">
+        <span class="hero-pill">Q2 2026 Industry Insights</span>
+      </div>
+      <h1>The Quarterly Pulse of the Wash Industry.</h1>
+      <p class="hero-sub">National wash-count benchmarks from <strong>75% of U.S. tunnel wash sites</strong>. Plus this quarter’s spotlight: the <strong>12.9 million invoices</strong> that reveal where membership revenue silently leaks, and how much of it is recoverable.</p>
+      <div class="hero-powered">
+        <span>Powered by</span>
+        <svg class="amp-logo" viewBox="0 0 1200 333.33" fill="currentColor" role="img" aria-label="AMP"><polygon points="762.27 15.12 648.78 162.9 534.55 15.26 470.91 15.12 470.91 315.92 540.84 315.92 540.84 117.76 624.46 240.29 624.94 240.98 664.8 240.98 756.72 117.41 756.72 315.92 826.65 315.92 826.65 15.13 764.75 15.13 762.27 15.12"/><path d="M1155.32,104.3c-.01-48.29-44.39-87.57-98.94-87.57h-180.11v299.83h69.93l.2-97.26h110.59c54.35,0,98.57-39.15,98.57-87.29l-.23-27.72ZM1087.97,129.64c-2.58,14.31-17.59,25.1-34.95,25.1h-106.62l-.22-76.51h106.6c16.77,0,31.34,9.96,34.65,23.68.46,1.9.69,3.86.69,5.81v1.14c.05,16.31-.08,20.03-.16,20.77Z"/><polygon points="44.44 315.02 144.99 314.82 348.11 118.07 348.11 315.28 421.29 315.28 421.29 17.69 349.88 17.69 44.44 315.02"/><polygon points="302.26 16.73 98.5 16.73 98.5 89.92 228.22 89.92 302.26 16.73"/></svg>
+        <span class="pw"><i></i><svg class="ncs-logo" viewBox="0 0 203.73 62.89" fill="currentColor" role="img" aria-label="NCS"><path d="M.23,60.53L19.14,2.36c.57-1.57,1.59-2.36,3.05-2.36h13.8c1.22,0,2.05.52,2.48,1.57l12.07,29c.02.23.08.35.2.35.17,0,.28-.17.31-.52L60.19,2.36c.57-1.57,1.59-2.36,3.05-2.36h13.71c1.63,0,2.16.79,1.58,2.36l-18.9,58.17c-.57,1.57-1.62,2.36-3.13,2.36h-13.71c-1.22,0-2.05-.52-2.48-1.57l-11.99-29.09c-.08-.23-.17-.35-.29-.35-.06,0-.16.17-.31.52l-9.13,28.12c-.57,1.57-1.59,2.36-3.05,2.36H1.73c-1.57,0-2.07-.79-1.5-2.36Z"/><path d="M123.84,46.38c1.51,0,2.04.76,1.58,2.27l-3.87,11.88c-.57,1.57-1.59,2.36-3.05,2.36h-35.02c-4.14,0-7.17-1.43-9.12-4.28-1.94-2.85-2.23-6.35-.87-10.48l10.91-33.36c1.78-5.47,4.11-9.3,7-11.49,2.88-2.18,7.06-3.28,12.54-3.28h35.02c1.45,0,1.95.79,1.5,2.36l-3.87,11.88c-.46,1.51-1.45,2.27-2.97,2.27h-29.43c-.52,0-.91.32-1.15.96l-9.14,28.04c-.13.58.07.87.59.87h29.35Z"/><path d="M152.74,42.97c1.05,0,1.38.5.99,1.48l-.62,2.1c-.29.76-.06,1.14.7,1.14h20.88c.81,0,1.34-.38,1.57-1.14l2.24-6.99c.29-.76.03-1.14-.79-1.14h-24.81c-4.02,0-6.95-1.38-8.8-4.15-1.85-2.76-2.15-6.16-.89-10.18l3.25-9.78c1.69-5.18,3.97-8.87,6.86-11.05,2.88-2.18,6.92-3.28,12.1-3.28h27.86c4.02,0,6.95,1.38,8.8,4.15,1.85,2.77,2.15,6.16.89,10.18l-1.34,4.11c-.39.99-1.05,1.48-1.98,1.48h-14.15c-1.05,0-1.38-.49-.99-1.48l.62-2.1c.29-.76.05-1.14-.7-1.14h-20c-.82,0-1.34.38-1.57,1.14l-2.24,6.99c-.29.76-.03,1.14.79,1.14h24.81c4.02,0,6.95,1.38,8.8,4.15,1.85,2.77,2.15,6.16.89,10.18l-3.25,9.78c-1.75,5.18-4.06,8.87-6.95,11.05-2.88,2.18-6.89,3.28-12.01,3.28h-28.74c-4.02,0-6.97-1.38-8.84-4.15-1.88-2.77-2.16-6.16-.85-10.18l1.34-4.11c.39-.99,1.05-1.48,1.98-1.48h14.15Z"/></svg><b>Wash Intel</b></span>
+        <span class="pw"><i></i><b>Rubicon Analytics</b></span>
+      </div>
+      <p class="hero-meta">12,900,000 invoices · 26 operators · June 2025 – June 2026 · Monthly plans</p>
+    </header>
+
+    <!-- ————— NATIONAL BENCHMARKS ————— -->
+    <!-- ————— THE GATE · everything past the hero is gated; the Q2 Performance title and the first line of its description stay readable above the frost ramp.
+         Gate H from the login lab (design: LOGIN-PAGE-RESULTS.md). The localStorage
+         remember-me is presentation only. TODO: production gating is SERVER-SIDE —
+         the form POSTs to a lead endpoint, a signed cookie unlocks, and gated content
+         is only served after that. ————— -->
+    <section class="gate-h locked" id="gate" aria-label="Unlock the full report">
+      <div class="h-sticky">
+        <div class="h-popup">
+          <svg class="gate-wordmark" viewBox="0 0 1200 333.33" fill="currentColor" role="img" aria-label="AMP"><polygon points="762.27 15.12 648.78 162.9 534.55 15.26 470.91 15.12 470.91 315.92 540.84 315.92 540.84 117.76 624.46 240.29 624.94 240.98 664.8 240.98 756.72 117.41 756.72 315.92 826.65 315.92 826.65 15.13 764.75 15.13 762.27 15.12"/><path d="M1155.32,104.3c-.01-48.29-44.39-87.57-98.94-87.57h-180.11v299.83h69.93l.2-97.26h110.59c54.35,0,98.57-39.15,98.57-87.29l-.23-27.72ZM1087.97,129.64c-2.58,14.31-17.59,25.1-34.95,25.1h-106.62l-.22-76.51h106.6c16.77,0,31.34,9.96,34.65,23.68.46,1.9.69,3.86.69,5.81v1.14c.05,16.31-.08,20.03-.16,20.77Z"/><polygon points="44.44 315.02 144.99 314.82 348.11 118.07 348.11 315.28 421.29 315.28 421.29 17.69 349.88 17.69 44.44 315.02"/><polygon points="302.26 16.73 98.5 16.73 98.5 89.92 228.22 89.92 302.26 16.73"/></svg>
+          <h2>Keep Reading. It’s Free.</h2>
+          <!-- TODO: fake destination — production form must POST to the real server-side gate endpoint -->
+          <form class="gate-form" novalidate>
+            <div class="field">
+              <label for="gName">Name</label>
+              <input id="gName" name="name" type="text" autocomplete="name" placeholder="Sam Porter…">
+              <span class="err" id="gNameErr">Add your name so we know who’s reading.</span>
+            </div>
+            <div class="field">
+              <label for="gEmail">Work email</label>
+              <input id="gEmail" name="email" type="email" autocomplete="email" inputmode="email" placeholder="sam@porterwash.com…">
+              <span class="err" id="gEmailErr">That email doesn’t look complete. Try the full address, like sam@porterwash.com.</span>
+            </div>
+            <div class="field">
+              <label for="gCompany">Company</label>
+              <input id="gCompany" name="organization" type="text" autocomplete="organization" placeholder="Porter Wash Co…">
+              <span class="err" id="gCompanyErr">Add your company or wash name.</span>
+            </div>
+            <button class="submit" type="submit">Continue Reading</button>
+          </form>
+          <div class="gate-done">
+            <div class="done-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 6.5"/></svg></div>
+            <h3>You’re In.</h3>
+            <p>The frost just lifted. The report stays open on this device, every quarter.</p>
+          </div>
+        </div>
+      </div>
+      <div class="gated" id="gatedContent" inert aria-hidden="true">
+    <div class="sec-head" id="benchmarks">
+      <div>
+        <h2>Q2 Performance</h2>
+        <p>Year-over-year wash volume growth, January–June 2026. Benchmark your sites against national trends.</p>
+        <div class="src-row"><span class="lbl">Data</span><b>NCS Wash Intel</b><span class="pw"><i></i><b>Rubicon Analytics</b></span></div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <span class="q-wrap">
+          <button class="qmark" id="benchHelp" aria-expanded="false" aria-label="What’s the difference between Total market and Same-site?">?</button>
+          <div class="q-pop" id="benchPop" role="tooltip">
+            <b>Total market</b>
+            <p>Every reporting wash site, including newly opened locations. Shows how the industry’s overall volume is growing.</p>
+            <b>Same-site</b>
+            <p>Only sites with 12+ months of history, so new builds don’t inflate the number. Shows organic growth at established locations. The closest read on how an existing wash should expect to perform.</p>
+            <b>Pro tip</b>
+            <p id="regionProtip">This view counts every reporting wash, including brand-new ones that opened this year. The number can rise because new washes were built, not necessarily because drivers are washing more often.</p>
+          </div>
+        </span>
+        <div class="seg" role="group" aria-label="Benchmark view">
+          <button class="active" data-view="total" aria-pressed="true">Total market</button>
+          <button data-view="same" aria-pressed="false">Same-site</button>
+        </div>
+        <button class="ghost-link" id="openRegions" aria-haspopup="dialog">Region map</button>
+      </div>
+    </div>
+
+    <section class="region-row" aria-live="polite">
+      <article class="region reveal" style="transition-delay:.04s">
+        <span class="region-name"><i style="background:var(--r-central)"></i>Central</span>
+        <div class="region-val" data-region="central">−0.8%</div>
+        <p class="region-cap">YoY wash volume growth · Jan–Jun 2026</p>
+        <div class="region-bar"><i data-bar="central" class="neg" style="--c:var(--r-central); --w:20%"></i></div>
+        <div class="region-scale"><span>0%</span><span>4%</span></div>
+      </article>
+      <article class="region reveal" style="transition-delay:.1s">
+        <span class="region-name"><i style="background:var(--r-east)"></i>East</span>
+        <div class="region-val" data-region="east">+1.8%</div>
+        <p class="region-cap">YoY wash volume growth · Jan–Jun 2026</p>
+        <div class="region-bar"><i data-bar="east" style="--c:var(--r-east); --w:45%"></i></div>
+        <div class="region-scale"><span>0%</span><span>4%</span></div>
+      </article>
+      <article class="region reveal" style="transition-delay:.16s">
+        <span class="region-name"><i style="background:var(--r-west)"></i>West</span>
+        <div class="region-val" data-region="west">+1.6%</div>
+        <p class="region-cap">YoY wash volume growth · Jan–Jun 2026</p>
+        <div class="region-bar"><i data-bar="west" style="--c:var(--r-west); --w:40%"></i></div>
+        <div class="region-scale"><span>0%</span><span>4%</span></div>
+      </article>
+    </section>
+
+    <div class="row-notes reveal">
+      <div class="card-insight" id="regionInsight"><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>Total-market volume remained positive through June, with <strong>East (+1.8%)</strong> and <strong>West (+1.6%)</strong> offsetting a modest Central decline (−0.8%). The market is still expanding overall, with growth concentrated in regions capturing demand most effectively.</div>
+    </div>
+
+
+    <section class="band">
+      <article class="chart-card reveal">
+        <div class="chart-head">
+          <h3 class="chart-title">Same-site volume, <span class="hl" id="trendScope">month by month</span></h3>
+          <div class="chart-tools">
+            <span class="q-wrap">
+              <button class="protip-chip" id="trendTipBtn" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1.1 2h5a3.5 3.5 0 0 1 1.1-2A6 6 0 0 0 12 3z"/></svg>Pro tip</button>
+              <div class="q-pop" id="trendTipPop" role="tooltip">
+                <b>Pro tip</b>
+                <p class="tip-p" id="trendProtip"></p>
+              </div>
+            </span>
+            <div class="seg mini" role="group" aria-label="Trend view">
+              <button class="active" data-mode="month" aria-pressed="true">By month</button>
+              <button data-mode="quarter" aria-pressed="false">By quarter</button>
+              <button data-mode="region" aria-pressed="false">By region</button>
+            </div>
+          </div>
+        </div>
+        <p class="chart-sub">National YoY % change at established sites (12+ months of data). The closest read on how incumbents are weathering new market entrants.</p>
+        <div class="chart-wrap">
+          <div class="tip" id="tipBars"></div>
+          <svg id="monthBars" viewBox="0 0 640 240" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Monthly same-site year-over-year change, July 2025 through June 2026. Positive in 4 of 12 months, from +10.9% in February 2026 to -13.4% in October 2025."></svg>
+        </div>
+        <div class="legend" id="monthLegend"></div>
+      </article>
+
+      <aside class="insight-card reveal" style="transition-delay:.12s">
+        <span class="insight-tag"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>
+        <div class="aside-stat">
+          <span class="as-num" id="trendNum"></span>
+          <span class="as-cap" id="trendCap"></span>
+        </div>
+        <p id="trendInsight"></p>
+      </aside>
+    </section>
+
+    <!-- ————— STATE PERFORMANCE ————— -->
+    <div class="sec-head" id="states">
+      <div>
+        <h2>State Performance</h2>
+        <p>Trailing-twelve-month YoY wash volume change by state, through June 2026.</p>
+        <div class="src-row"><span class="lbl">Data</span><b>NCS Wash Intel</b><span class="pw"><i></i><b>Rubicon Analytics</b></span></div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <span class="q-wrap">
+          <button class="qmark" id="stateHelp" aria-expanded="false" aria-label="What’s the difference between Total market and Same-site?">?</button>
+          <div class="q-pop" id="statePop" role="tooltip">
+            <b>Total market</b>
+            <p>Every reporting wash site, including newly opened locations. Shows how each state’s overall volume is growing.</p>
+            <b>Same-site</b>
+            <p>Only sites with 12+ months of history, so new builds don’t inflate the number. Shows organic growth at established locations. The closest read on how an existing wash should expect to perform.</p>
+          </div>
+        </span>
+        <div class="seg" role="group" aria-label="State view">
+          <button class="active" data-stview="total" aria-pressed="true">Total market</button>
+          <button data-stview="same" aria-pressed="false">Same-site</button>
+        </div>
+        <button class="ghost-link" id="openStateTable" aria-haspopup="dialog">View as table</button>
+      </div>
+    </div>
+
+    <section class="band">
+      <article class="chart-card reveal">
+        <div class="chart-head">
+          <h3 class="chart-title" id="stateTitle">Total market: <span class="hl">36 of 51 states</span> above prior year</h3>
+          <span class="q-wrap">
+            <button class="protip-chip" id="stateTipBtn" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1.1 2h5a3.5 3.5 0 0 1 1.1-2A6 6 0 0 0 12 3z"/></svg>Pro tip</button>
+            <div class="q-pop" id="stateTipPop" role="tooltip">
+              <b>Pro tip</b>
+              <p class="tip-p" id="stateProtip"></p>
+            </div>
+          </span>
+        </div>
+        <div class="chart-wrap">
+          <div class="tip" id="tipStates"></div>
+          <svg id="stateMap" class="state-svg" viewBox="0 0 416 288" role="group" aria-label="Tile map of U.S. states colored by trailing-twelve-month year-over-year wash volume change"></svg>
+        </div>
+        <div class="ramp-row"><span>−16%</span><div class="ramp"></div><span>+16%</span></div>
+      </article>
+
+      <aside class="chart-card lb-aside reveal" style="transition-delay:.12s">
+        <h3 class="lb-title" id="lbTitle">Leaders &amp; laggards</h3>
+        <div class="seg mini lb-seg" role="group" aria-label="Aside view">
+          <button class="active" data-lbview="leaders" aria-pressed="true">Top &amp; bottom</button>
+          <button data-lbview="compare" aria-pressed="false">Compare</button>
+        </div>
+        <div id="lbList"></div>
+        <div id="lbCompare" hidden>
+          <label class="lb-label" for="cmpSelect">Add a state</label>
+          <select id="cmpSelect" class="cmp-select"><option value="">Choose a state…</option></select>
+          <div id="cmpRows"></div>
+          <p class="cmp-hint" id="cmpHint">Pick up to six states to set side by side.</p>
+        </div>
+        <div class="card-insight" id="stateInsight"></div>
+      </aside>
+    </section>
+
+    <!-- ————— AMP SPOTLIGHT: chapter cover — the report hands off to AMP's own data here ————— -->
+    <section class="spot" id="payment">
+      <img class="spot-photo" src="images/kiosk-attendant.jpg?v=2" width="1600" height="1066" decoding="async" alt="An attendant helping a member pay at a wash kiosk">
+      <div class="spot-scrim"></div>
+      <span class="hero-pill"><svg class="amp-ic" viewBox="0 0 875 700" fill="currentColor" aria-hidden="true"><polygon points="37.18 666.59 250.8 666.17 682.33 248.15 682.33 667.15 837.82 667.15 837.82 34.89 686.1 34.89 37.18 666.59"/><polygon points="584.94 32.85 152.03 32.85 152.03 188.34 427.62 188.34 584.94 32.85"/></svg>AMP Spotlight</span>
+      <svg class="spot-logo" viewBox="0 0 1200 333.33" fill="currentColor" role="img" aria-label="AMP"><polygon points="762.27 15.12 648.78 162.9 534.55 15.26 470.91 15.12 470.91 315.92 540.84 315.92 540.84 117.76 624.46 240.29 624.94 240.98 664.8 240.98 756.72 117.41 756.72 315.92 826.65 315.92 826.65 15.13 764.75 15.13 762.27 15.12"/><path d="M1155.32,104.3c-.01-48.29-44.39-87.57-98.94-87.57h-180.11v299.83h69.93l.2-97.26h110.59c54.35,0,98.57-39.15,98.57-87.29l-.23-27.72ZM1087.97,129.64c-2.58,14.31-17.59,25.1-34.95,25.1h-106.62l-.22-76.51h106.6c16.77,0,31.34,9.96,34.65,23.68.46,1.9.69,3.86.69,5.81v1.14c.05,16.31-.08,20.03-.16,20.77Z"/><polygon points="44.44 315.02 144.99 314.82 348.11 118.07 348.11 315.28 421.29 315.28 421.29 17.69 349.88 17.69 44.44 315.02"/><polygon points="302.26 16.73 98.5 16.73 98.5 89.92 228.22 89.92 302.26 16.73"/></svg>
+      <h2>Where Membership Revenue Silently Leaks.</h2>
+      <p>Most lost members <strong>never decided to cancel</strong>. Roughly <strong>1 in 12 recharges fails on the first attempt</strong>. Most recover through automatic retries. The rest silently walk away, often never knowing there was a problem. We analyzed <strong>12.9 million invoices</strong> to find where the money goes.</p>
+      <div class="src-row light"><span class="lbl">Data</span><b>AMP Platform</b><span class="pw"><i></i><b>12.9M invoices · 26 operators</b></span></div>
+    </section>
+
+    <article class="chart-card reveal">
+      <div class="chart-head">
+        <h3 class="chart-title">What happens to <span class="hl">100 failed invoices</span></h3>
+        <span class="chart-note">Portfolio averages · dunning = true-incremental estimate at 3 early adopters</span>
+      </div>
+      <div class="flow-figure">
+        <div class="flow-bar" id="flowBar">
+          <div class="flow-seg retries" data-key="retries" style="flex-grow:59"><span>59</span></div>
+          <div class="flow-seg dunning" data-key="dunning" style="flex-grow:4; min-width:30px;"><span>4</span></div>
+          <div class="flow-seg lost" data-key="lost" style="flex-grow:37"><span>37</span></div>
+        </div>
+        <div class="flow-labels" id="flowLabels">
+          <div class="flow-label" data-key="retries" style="flex-grow:59; flex-basis:0;">
+            <b><i style="background:#A9CCF3"></i>Recovered by retries</b>
+            <small>Automatic re-attempts over the first 7 days. Works when the card just needs a payday</small>
+          </div>
+          <div class="flow-label amp" data-key="dunning" style="flex-grow:22; flex-basis:0;">
+            <b><i style="background:var(--brand)"></i>+ AMP texts</b>
+            <small>Est. +4 more per 100. Limited by reachability, not results</small>
+          </div>
+          <div class="flow-label deemph" data-key="lost" style="flex-grow:37; flex-basis:0;">
+            <b><i style="background:#D3D7DF"></i>Lost · involuntary churn</b>
+            <small>Never collected. After day 14, winning them back means a brand-new membership</small>
+          </div>
+        </div>
+        <div class="flow-story">
+          <div class="fs-row reveal" style="transition-delay:.05s">
+            <span class="fs-num" data-count="8.3" data-suffix="%">8.3%</span>
+            <p>of monthly recharges fail on the first attempt. That’s 1 in 12 members whose payment silently bounces.</p>
+          </div>
+          <div class="fs-row reveal" style="transition-delay:.12s">
+            <span class="fs-num" data-count="59.0" data-suffix="%">59.0%</span>
+            <p>of those failures fix themselves. Automatic retries catch the card on a better day.</p>
+          </div>
+          <div class="fs-row emph reveal" style="transition-delay:.19s">
+            <span class="fs-num">$7<small>/member/yr</small></span>
+            <p>walks away with the rest. Across everything you invoice, 3.4% of charges are simply never collected. About 1 in 29.</p>
+          </div>
+          <a class="calc-link reveal" href="#calculator" style="transition-delay:.26s">See what this costs you →</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- ————— RECOVERY ————— -->
+    <section id="recovery" class="band">
+      <article class="chart-card reveal">
+        <div class="chart-head">
+          <h3 class="chart-title">The recovery window closes by <span class="hl">day 14</span></h3>
+          <span class="chart-note">Cumulative % of failed invoices recovered</span>
+        </div>
+        <p class="chart-sub">The first 7 days do the heavy lifting: 80% of all recoveries happen inside them. Navy markers show when AMP’s dunning texts send.</p>
+        <div class="chart-wrap">
+          <div class="tip" id="tipCurve"></div>
+          <svg id="recoveryChart" viewBox="0 0 640 260" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Cumulative recovery curve: 9.1% by day 1, 28.9% by day 3, 47.0% by day 7, 58.7% by day 14, flat at 59.0% afterwards"></svg>
+        </div>
+        <div class="legend">
+          <span><i style="background:#0B75E1"></i>Cumulative recovery</span>
+          <span><i style="background:#003264"></i>AMP dunning text sends</span>
+          <span><i style="background:#00B368"></i>Window closed</span>
+        </div>
+      </article>
+
+      <aside class="insight-card reveal" style="transition-delay:.15s">
+        <span class="insight-tag"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>AMP Insight</span>
+        <p><strong>Retries fix timing. Texts fix everything else.</strong> Stripe retries recover members whose card simply needs a few days. But members with an expired or replaced card don’t know there’s a problem unless someone tells them. <strong>31% of members reached by the first dunning text go on to recover</strong>: about 4 extra saves per 100 failures beyond what retries catch on their own.</p>
+        <div class="insight-chips">
+          <!-- TODO: swap for AMP's real demo/deep link (e.g. dashboard dunning setting) before launch -->
+          <a href="https://ampmemberships.com/?utm_source=washintel&utm_medium=report&utm_campaign=q2-2026-dunning" target="_blank" rel="noopener">Start with dunning today</a>
+          <button type="button" id="openData">View the data</button>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ————— EXPOSURE CALCULATOR ————— -->
+    <div class="sec-head" id="calculator">
+      <div>
+        <h2>What’s Your Exposure?</h2>
+        <p>Set your numbers, then flip the switch. Watch what dunning texts pull back.</p>
+      </div>
+    </div>
+
+    <section class="calc-card reveal" aria-label="Failed payment exposure calculator">
+      <div class="calc-inputs">
+        <div class="calc-field">
+          <div class="row"><label class="name" for="csMembers">Active members</label><span class="val" id="cvMembers">5,000</span></div>
+          <input type="range" class="cslider" id="csMembers" min="500" max="30000" step="250" value="5000" aria-label="Active members">
+          <div class="minmax"><span>500</span><span>30,000</span></div>
+        </div>
+        <div class="calc-field">
+          <div class="row"><label class="name" for="csPrice">Average plan price</label><span class="val" id="cvPrice">$30</span></div>
+          <input type="range" class="cslider" id="csPrice" min="15" max="60" step="1" value="30" aria-label="Average plan price in dollars">
+          <div class="minmax"><span>$15</span><span>$60</span></div>
+        </div>
+        <div class="calc-field calc-field-fail">
+          <div class="row"><label class="name" for="csFail">Monthly failure rate</label><span class="val" id="cvFail">8.3%</span></div>
+          <input type="range" class="cslider" id="csFail" min="3" max="20" step="0.1" value="8.3" aria-label="Monthly payment failure rate percent">
+          <div class="minmax"><span>3%</span><span>20%</span></div>
+          <div class="calc-presets" role="group" aria-label="Failure rate presets">
+            <button data-fail="3">Credit-heavy · 3%</button>
+            <button class="active" data-fail="8.3">Portfolio average · 8.3%</button>
+            <button data-fail="20">Prepaid-heavy · 20%</button>
+          </div>
+        </div>
+        <p class="calc-note-sm"><span class="note-full">Illustrative only, based on portfolio-average recovery rates (59% retries alone, ~63% with dunning: a true-incremental estimate measured at 3 early-adopter operators). Actual outcomes vary with card mix and plan structure.</span><span class="note-short">Illustrative. Portfolio-average recovery rates; actual results vary.</span></p>
+      </div>
+
+      <div class="calc-result">
+        <span class="r-label">Estimated revenue lost per year</span>
+        <div class="r-big" id="crLost">$61,254</div>
+        <p class="r-equiv">That’s <strong id="crEquiv">170 members</strong> paying dues for a year and washing none of it back.</p>
+        <span class="calc-saved" id="crSaved">↑ $5,976/yr recovered by dunning texts</span>
+
+        <div class="calc-toggle-row">
+          <div class="t-copy">
+            <b><svg class="amp-logo-s" viewBox="0 0 1200 333.33" fill="currentColor" role="img" aria-label="AMP"><polygon points="762.27 15.12 648.78 162.9 534.55 15.26 470.91 15.12 470.91 315.92 540.84 315.92 540.84 117.76 624.46 240.29 624.94 240.98 664.8 240.98 756.72 117.41 756.72 315.92 826.65 315.92 826.65 15.13 764.75 15.13 762.27 15.12"/><path d="M1155.32,104.3c-.01-48.29-44.39-87.57-98.94-87.57h-180.11v299.83h69.93l.2-97.26h110.59c54.35,0,98.57-39.15,98.57-87.29l-.23-27.72ZM1087.97,129.64c-2.58,14.31-17.59,25.1-34.95,25.1h-106.62l-.22-76.51h106.6c16.77,0,31.34,9.96,34.65,23.68.46,1.9.69,3.86.69,5.81v1.14c.05,16.31-.08,20.03-.16,20.77Z"/><polygon points="44.44 315.02 144.99 314.82 348.11 118.07 348.11 315.28 421.29 315.28 421.29 17.69 349.88 17.69 44.44 315.02"/><polygon points="302.26 16.73 98.5 16.73 98.5 89.92 228.22 89.92 302.26 16.73"/></svg>SMS dunning</b>
+            <small>One setting. Texts every failed payment a one-tap pay link.</small>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="cDunning" aria-label="Toggle AMP SMS dunning">
+            <span class="knob"></span>
+          </label>
+        </div>
+
+        <div class="calc-grid100">
+          <div class="g-label">Where your failed invoices go</div>
+          <div class="g" id="cGrid" aria-hidden="true"></div>
+          <div class="g-legend">
+            <span><i style="background:rgba(169,204,243,.75)"></i>59% recovered by retries</span>
+            <span id="cLegendDun"><i style="background:rgba(255,255,255,.42)"></i>4% recoverable · dunning off</span>
+            <span><i style="background:rgba(255,255,255,.16)"></i>37% lost either way</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-cta">
+        <p>Ready to stop the leak? Dunning is <strong>one setting</strong> in your AMP dashboard.</p>
+        <!-- TODO: swap for AMP's real demo/deep link (e.g. dashboard dunning setting) before launch -->
+        <a href="https://ampmemberships.com/?utm_source=washintel&utm_medium=report&utm_campaign=q2-2026-calculator" target="_blank" rel="noopener">Start with dunning today →</a>
+      </div>
+    </section>
+
+    <!-- ————— WHY AMP FINALE: the closing act — this report is the demo ————— -->
+    <section class="finale" id="why-amp">
+      <img class="finale-photo" src="images/team-tablet.jpg?v=2" width="1600" height="1066" decoding="async" alt="Wash managers reviewing member data on an AMP tablet, trackside">
+      <div class="finale-blur" aria-hidden="true"></div>
+      <div class="finale-scrim"></div>
+      <svg class="finale-logo" viewBox="0 0 1200 333.33" fill="currentColor" role="img" aria-label="AMP"><polygon points="762.27 15.12 648.78 162.9 534.55 15.26 470.91 15.12 470.91 315.92 540.84 315.92 540.84 117.76 624.46 240.29 624.94 240.98 664.8 240.98 756.72 117.41 756.72 315.92 826.65 315.92 826.65 15.13 764.75 15.13 762.27 15.12"/><path d="M1155.32,104.3c-.01-48.29-44.39-87.57-98.94-87.57h-180.11v299.83h69.93l.2-97.26h110.59c54.35,0,98.57-39.15,98.57-87.29l-.23-27.72ZM1087.97,129.64c-2.58,14.31-17.59,25.1-34.95,25.1h-106.62l-.22-76.51h106.6c16.77,0,31.34,9.96,34.65,23.68.46,1.9.69,3.86.69,5.81v1.14c.05,16.31-.08,20.03-.16,20.77Z"/><polygon points="44.44 315.02 144.99 314.82 348.11 118.07 348.11 315.28 421.29 315.28 421.29 17.69 349.88 17.69 44.44 315.02"/><polygon points="302.26 16.73 98.5 16.73 98.5 89.92 228.22 89.92 302.26 16.73"/></svg>
+      <h2>Ready to Turn Data Into Profit?</h2>
+      <p>Everything in this report came out of AMP’s platform: <strong>1,000+ active locations, 10M+ washes a year</strong>. Operators use the same engine to grow memberships, coach teams, and win back lost members. Get a walkthrough of <strong>your own numbers</strong> from the team behind this report.</p>
+      <div class="finale-stats">
+        <div class="finale-stat">
+          <b data-count="30" data-decimals="0" data-prefix="+" data-suffix="%">+30%</b>
+          <span>more unlimited memberships. Sold at kiosk, in app, lane-side</span>
+        </div>
+        <div class="finale-stat">
+          <b data-count="4" data-decimals="0" data-suffix="×">4×</b>
+          <span>sales gap between top and bottom attendants. Coach with facts</span>
+        </div>
+        <div class="finale-stat">
+          <b data-count="125" data-decimals="0" data-prefix="+" data-suffix="%">+125%</b>
+          <span>more reactivations with automatic win-back campaigns</span>
+        </div>
+      </div>
+      <div class="cta-actions">
+        <!-- TODO: swap for AMP's real demo-scheduling link before launch -->
+        <a class="primary" href="https://ampmemberships.com/?utm_source=washintel&utm_medium=report&utm_campaign=q2-2026-why-amp-demo" target="_blank" rel="noopener">Schedule a free demo →</a>
+        <a class="ghost" href="https://ampmemberships.com/?utm_source=washintel&utm_medium=report&utm_campaign=q2-2026-why-amp-platform" target="_blank" rel="noopener">Explore the AMP platform</a>
+      </div>
+      <p class="finale-note">+30% memberships and +125% reactivations are operator-reported results (ampmemberships.com) · 4× attendant gap from AMP’s Q1 2026 Industry Insights · results vary by site.</p>
+    </section>
+
+    <p class="foot">Wash-count benchmarks: NCS Wash Intel &amp; Rubicon Analytics, TTM through June 2026, sites with 12+ months of data for same-site views. Payment analysis: 12.9 million recharge invoices across 26 operators (≥1,000 invoices each) · Recovery = the invoice itself ultimately reached paid status · Dunning measured at 3 early-adopter operators; the combined ~63% is a true-incremental estimate, limited by reachability. All findings are observational.</p>
+      </div>
+      <div class="h-frost" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="h-veil"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- share card (anchored above the dock) -->
+<div class="share-card" id="shareCard" role="dialog" aria-label="Share this report">
+  <button class="s-close" id="shareClose" aria-label="Dismiss">✕</button>
+  <h3>Know someone who runs on this data?</h3>
+  <p>Send this quarter’s benchmarks to a GM, partner, or boss who’d want to see where the industry is moving. And where the money is going.</p>
+  <div class="share-actions">
+    <button class="primary" id="shareCopy">Copy link</button>
+    <a class="ghost" id="shareEmail" href="mailto:?subject=AMP%20Wash%20Intel%3A%20Q2%202026%20industry%20report">Email it</a>
+    <button class="ghost" id="shareNative" hidden>Share…</button>
+  </div>
+</div>
+
+<!-- data appendix modal -->
+<div class="modal-scrim" id="dataModal" role="dialog" aria-modal="true" aria-labelledby="dataModalTitle">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 id="dataModalTitle">The data behind recovery</h3>
+      <button class="modal-close" id="closeData" aria-label="Close data appendix">✕</button>
+    </div>
+    <p class="m-sub">12.9 million recharge invoices · 26 operators · June 2025 – June 2026 · monthly plans.</p>
+
+    <h4>Cumulative recovery, by days since first failure</h4>
+    <table class="data-table">
+      <tr><th>Window</th><th class="num">Cumulative recovered</th></tr>
+      <tr><td>Day 1</td><td class="num">9.1%</td></tr>
+      <tr><td>Day 3</td><td class="num">28.9%</td></tr>
+      <tr><td>Day 7</td><td class="num">47.0%</td></tr>
+      <tr><td>Day 14</td><td class="num">58.7%</td></tr>
+      <tr><td>Day 15+</td><td class="num">59.0%</td></tr>
+    </table>
+
+    <h4>Why payments fail, and which recover</h4>
+    <table class="data-table">
+      <tr><th>Reason</th><th class="num">Share of failures</th><th class="num">Recovery rate</th></tr>
+      <tr><td>Insufficient funds</td><td class="num">62%</td><td class="num">71%</td></tr>
+      <tr><td>Generic decline</td><td class="num">16%</td><td class="num">44%</td></tr>
+      <tr><td>Card can’t support (mostly prepaid)</td><td class="num">10%</td><td class="num">42%</td></tr>
+      <tr><td>Invalid account</td><td class="num">7%</td><td class="num">38%</td></tr>
+      <tr><td>Expired / wrong number</td><td class="num">5%</td><td class="num">40%</td></tr>
+    </table>
+
+    <h4>First-attempt failure by card type <span style="font-weight:600; color:var(--ink-faint)">(invoice grain)</span></h4>
+    <table class="data-table">
+      <tr><th>Card type</th><th class="num">Invoices</th><th class="num">First-attempt failure</th><th class="num">Recovery rate</th></tr>
+      <tr><td>Prepaid</td><td class="num">288,815</td><td class="num">51.7%</td><td class="num">50.6%</td></tr>
+      <tr><td>Debit</td><td class="num">6,905,282</td><td class="num">10.6%</td><td class="num">61.5%</td></tr>
+      <tr><td>Credit</td><td class="num">5,544,456</td><td class="num">3.2%</td><td class="num">56.1%</td></tr>
+    </table>
+
+    <p class="m-note">Failure = invoice needed more than one charge attempt or was never paid. Recovery = the invoice itself ultimately reached paid status. Dunning performance measured at 3 early-adopter operators; the combined ~63% is a true-incremental estimate, limited by reachability. All findings are observational.</p>
+  </div>
+</div>
+
+<!-- region map modal -->
+<div class="modal-scrim" id="regionModal" role="dialog" aria-modal="true" aria-labelledby="regionModalTitle">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 id="regionModalTitle">How we define the regions</h3>
+      <button class="modal-close" id="closeRegions" aria-label="Close region map">✕</button>
+    </div>
+    <p class="m-sub">Every state in this report rolls up to one of three benchmark regions.</p>
+    <svg id="tileMap" viewBox="0 0 416 288" role="img" aria-label="Tile map of U.S. states colored by benchmark region"></svg>
+    <div class="modal-legend">
+      <span><i style="background:var(--r-west)"></i>West</span>
+      <span><i style="background:var(--r-central)"></i>Central</span>
+      <span><i style="background:var(--r-east)"></i>East</span>
+    </div>
+    <p class="m-note">Official AMP region definitions: West 13 states · Central 17 · East 21, including D.C.</p>
+  </div>
+</div>
+
+<!-- state table modal -->
+<div class="modal-scrim" id="stateTableModal" role="dialog" aria-modal="true" aria-labelledby="stateTableTitle">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 id="stateTableTitle">State performance, as a table</h3>
+      <button class="modal-close" id="closeStateTable" aria-label="Close state table">✕</button>
+    </div>
+    <p class="m-sub">Trailing-twelve-month YoY wash volume change through June 2026. All 50 states plus D.C.</p>
+    <table class="data-table state-table">
+      <thead>
+        <tr><th>State</th><th class="num">Total market</th><th class="num">Same-site</th></tr>
+      </thead>
+      <tbody id="stateTableBody"></tbody>
+    </table>
+    <p class="m-note">Total market counts every reporting wash site; same-site includes only locations with 12+ months of history. Source: NCS Wash Intel · Rubicon Analytics.</p>
+  </div>
+</div>
+
+<script>
+document.documentElement.classList.add('js');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ————— scroll reveal ————— */
+const io = new IntersectionObserver((es) => {
+  for (const e of es) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+}, { threshold: 0.2 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* ————— rail scrollspy ————— */
+const secs = ['benchmarks', 'states', 'payment', 'calculator'].map(id => document.getElementById(id));
+const railLinks = [...document.querySelectorAll('.rail a')];
+const spy = new IntersectionObserver((es) => {
+  for (const e of es) {
+    if (!e.isIntersecting) continue;
+    railLinks.forEach(a => a.classList.toggle('active', a.dataset.sec === e.target.id));
+  }
+}, { rootMargin: '-30% 0px -55% 0px' });
+secs.forEach(s => s && spy.observe(s));
+
+/* ————— benchmark toggle ————— */
+/* YTD Jan–Jun 2026 YoY, NCS Wash Intel Q2 pack. Bar width = |value| / 4% scale. */
+const BENCH = {
+  total: {
+    central: ['−0.8%', '20%', true],
+    east:    ['+1.8%', '45%', false],
+    west:    ['+1.6%', '40%', false],
+  },
+  same: {
+    central: ['−3.4%', '85%', true],
+    east:    ['−0.5%', '12%', true],
+    west:    ['−0.9%', '23%', true],
+  }
+};
+/* every insight label carries the AMP-intelligence spark */
+const K_INSIGHT = '<span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>';
+const BENCH_NOTES = {
+  total: {
+    insight: K_INSIGHT + 'Total-market volume remained positive through June, with <strong>East (+1.8%)</strong> and <strong>West (+1.6%)</strong> offsetting a modest Central decline (−0.8%). The market is still expanding overall, with growth concentrated in regions capturing demand most effectively.',
+    protip: 'This view counts every reporting wash, including brand-new ones that opened this year. The number can rise because new washes were built, not necessarily because drivers are washing more often.'
+  },
+  same: {
+    insight: K_INSIGHT + 'Same-site results were <strong>modestly negative across all three regions</strong> through June, while total-market volume stayed positive. That divergence suggests the market is evolving rather than contracting: growth is shifting toward operators and sites best positioned to capture changing demand.',
+    protip: 'This view only counts washes open for more than a year, so brand-new sites are left out. It\'s the clearest look at whether the same established washes are washing more or fewer cars than this time last year.'
+  }
+};
+document.querySelectorAll('.seg button[data-view]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.seg button[data-view]').forEach(b => { b.classList.toggle('active', b === btn); b.setAttribute('aria-pressed', b === btn); });
+    const data = BENCH[btn.dataset.view];
+    for (const region of ['west', 'central', 'east']) {
+      const [val, barW, neg] = data[region];
+      const vEl = document.querySelector(`[data-region="${region}"]`);
+      const bEl = document.querySelector(`[data-bar="${region}"]`);
+      vEl.classList.add('dim');
+      setTimeout(() => {
+        vEl.textContent = val;
+        bEl.style.setProperty('--w', barW);
+        bEl.classList.toggle('neg', neg);
+        vEl.classList.remove('dim');
+      }, 250);
+    }
+    document.getElementById('regionInsight').innerHTML = BENCH_NOTES[btn.dataset.view].insight;
+    document.getElementById('regionProtip').textContent = BENCH_NOTES[btn.dataset.view].protip;
+  });
+});
+
+/* ————— screen-reader announcer: one polite live region for transient feedback ————— */
+const announce = (msg) => {
+  const a = document.getElementById('announcer');
+  a.textContent = '';
+  setTimeout(() => { a.textContent = msg; }, 30); /* clear-then-set so repeats re-announce */
+};
+
+/* ————— shared modal wiring: open/close, Escape, focus trap, scroll lock ————— */
+const wireModal = (modal, openBtn, closeBtn) => {
+  const open = () => { modal.classList.add('open'); document.body.style.overflow = 'hidden'; closeBtn.focus(); };
+  const close = () => { modal.classList.remove('open'); document.body.style.overflow = ''; openBtn.focus(); };
+  openBtn.addEventListener('click', open);
+  closeBtn.addEventListener('click', close);
+  modal.addEventListener('click', e => { if (e.target === modal) close(); });
+  document.addEventListener('keydown', e => {
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key !== 'Tab') return;
+    const f = modal.querySelectorAll('button, a[href], input, [tabindex]:not([tabindex="-1"])');
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    else if (!modal.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+  });
+};
+
+/* ————— tile-grid geometry, shared by the region modal and the state map ————— */
+/* [col, row] per state — classic tile-grid layout */
+const TILES = {
+  AK: [0, 0], ME: [11, 0],
+  VT: [10, 1], NH: [11, 1],
+  WA: [1, 2], ID: [2, 2], MT: [3, 2], ND: [4, 2], MN: [5, 2], WI: [6, 2], MI: [7, 2], NY: [9, 2], MA: [10, 2], RI: [11, 2],
+  OR: [1, 3], NV: [2, 3], WY: [3, 3], SD: [4, 3], IA: [5, 3], IL: [6, 3], IN: [7, 3], OH: [8, 3], PA: [9, 3], NJ: [10, 3], CT: [11, 3],
+  CA: [1, 4], UT: [2, 4], CO: [3, 4], NE: [4, 4], MO: [5, 4], KY: [6, 4], WV: [7, 4], VA: [8, 4], MD: [9, 4], DE: [10, 4],
+  AZ: [2, 5], NM: [3, 5], KS: [4, 5], AR: [5, 5], TN: [6, 5], NC: [7, 5], SC: [8, 5], DC: [9, 5],
+  OK: [4, 6], LA: [5, 6], MS: [6, 6], AL: [7, 6], GA: [8, 6],
+  HI: [0, 7], TX: [4, 7], FL: [9, 7]
+};
+
+/* ————— region modal ————— */
+(function regionMap() {
+  /* Official AMP/NCS region definitions (state_region_lookup.xlsx, confirmed 2026-07): West 13 · Central 17 · East 21 (incl. DC) */
+  const WEST = ['AK', 'HI', 'WA', 'OR', 'CA', 'ID', 'NV', 'MT', 'WY', 'UT', 'CO', 'AZ', 'NM'];
+  const CENTRAL = ['ND', 'SD', 'NE', 'KS', 'OK', 'TX', 'MN', 'IA', 'MO', 'AR', 'LA', 'WI', 'IL', 'MI', 'IN', 'OH', 'KY'];
+  const colorFor = st => WEST.includes(st) ? 'var(--r-west)' : CENTRAL.includes(st) ? 'var(--r-central)' : 'var(--r-east)';
+  const textFor = st => CENTRAL.includes(st) ? '#003264' : '#fff';
+
+  const svg = document.getElementById('tileMap');
+  const size = 30, gap = 4;
+  let g = '';
+  for (const [st, [c, r]] of Object.entries(TILES)) {
+    const x = 4 + c * (size + gap), y = 4 + r * (size + gap);
+    g += `<rect x="${x}" y="${y}" width="${size}" height="${size}" rx="7" fill="${colorFor(st)}"/>`;
+    g += `<text x="${x + size / 2}" y="${y + size / 2 + 3.5}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${textFor(st)}">${st}</text>`;
+  }
+  svg.innerHTML = g;
+
+  wireModal(document.getElementById('regionModal'), document.getElementById('openRegions'), document.getElementById('closeRegions'));
+})();
+
+/* ————— data appendix modal ————— */
+(function dataModal() {
+  wireModal(document.getElementById('dataModal'), document.getElementById('openData'), document.getElementById('closeData'));
+})();
+
+/* ————— share prompt: dock button + timed first-visit nudge ————— */
+(function sharePrompt() {
+  const SEEN_KEY = 'washintel-share-nudged-q2-2026';
+  const NUDGE_AFTER_MS = 120000; /* 2 minutes */
+  const btn = document.getElementById('shareBtn');
+  const card = document.getElementById('shareCard');
+  const closeBtn = document.getElementById('shareClose');
+  const copyBtn = document.getElementById('shareCopy');
+  const emailLink = document.getElementById('shareEmail');
+  const nativeBtn = document.getElementById('shareNative');
+
+  const url = location.href.split('#')[0];
+  const subject = 'AMP Wash Intel: Q2 2026 industry report';
+  const body = `Thought you’d want to see this quarter’s wash industry data. National benchmarks, plus a deep dive on where membership revenue leaks:\n\n${url}`;
+  emailLink.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+  const markSeen = () => { try { localStorage.setItem(SEEN_KEY, '1'); } catch (e) {} };
+  const seen = () => { try { return !!localStorage.getItem(SEEN_KEY); } catch (e) { return true; } };
+  /* anchor the card above the share button, tail pointing at it */
+  const positionCard = () => {
+    const r = btn.getBoundingClientRect();
+    const w = card.offsetWidth;
+    const btnCenter = r.left + r.width / 2;
+    let left = btnCenter - (w - 52);            /* card sits mostly left of the button */
+    left = Math.max(12, Math.min(left, innerWidth - w - 12));
+    card.style.left = left + 'px';
+    card.style.setProperty('--tail-x', (btnCenter - left) + 'px');
+  };
+  const setOpen = (on) => {
+    if (on) positionCard();
+    card.classList.toggle('open', on);
+    btn.setAttribute('aria-expanded', on);
+    if (on) btn.classList.remove('attn');
+  };
+  addEventListener('resize', () => { if (card.classList.contains('open')) positionCard(); });
+
+  btn.addEventListener('click', (e) => { e.stopPropagation(); setOpen(!card.classList.contains('open')); markSeen(); });
+  closeBtn.addEventListener('click', () => { setOpen(false); markSeen(); });
+  document.addEventListener('click', (e) => { if (card.classList.contains('open') && !card.contains(e.target)) setOpen(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      copyBtn.textContent = 'Copied ✓';
+      announce('Link copied to clipboard');
+    } catch (e) {
+      copyBtn.textContent = url; /* fallback: show it so they can copy manually */
+      announce('Copy failed. The link is shown on the button');
+    }
+    setTimeout(() => { copyBtn.textContent = 'Copy link'; }, 2200);
+  });
+
+  if (navigator.share) {
+    nativeBtn.hidden = false;
+    nativeBtn.addEventListener('click', () => navigator.share({ title: subject, url }).catch(() => {}));
+  }
+
+  /* the nudge: first visit only, after two minutes of reading */
+  if (!seen()) {
+    setTimeout(() => {
+      if (seen() || card.classList.contains('open')) return;
+      btn.classList.add('attn');
+      setOpen(true);
+      markSeen();
+      announce('A share panel opened near the bottom navigation. Know someone who runs on this data?');
+    }, NUDGE_AFTER_MS);
+  }
+})();
+
+/* ————— "?" helper + pro-tip popovers ————— */
+[['benchHelp', 'benchPop'], ['stateHelp', 'statePop'], ['trendTipBtn', 'trendTipPop'], ['stateTipBtn', 'stateTipPop']].forEach(([btnId, popId]) => {
+  const btn = document.getElementById(btnId);
+  const pop = document.getElementById(popId);
+  if (!btn || !pop) return;
+  /* keep the popover inside the viewport — narrow screens can otherwise clip it */
+  const clamp = () => {
+    pop.style.left = ''; pop.style.right = '';
+    const r = pop.getBoundingClientRect(), pad = 10;
+    if (r.right > innerWidth - pad) {
+      pop.style.left = (pop.offsetLeft - (r.right - (innerWidth - pad))) + 'px';
+      pop.style.right = 'auto';
+    } else if (r.left < pad) {
+      pop.style.left = (pop.offsetLeft + (pad - r.left)) + 'px';
+      pop.style.right = 'auto';
+    }
+  };
+  const set = (on) => { if (on) clamp(); pop.classList.toggle('open', on); btn.setAttribute('aria-expanded', on); };
+  btn.closest('.q-wrap')?.addEventListener('pointerenter', clamp);
+  btn.addEventListener('click', e => { e.stopPropagation(); set(!pop.classList.contains('open')); });
+  document.addEventListener('click', e => { if (pop.classList.contains('open') && !pop.contains(e.target)) set(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') set(false); });
+});
+
+/* pro-tip chips stop pinging once the reader engages */
+document.querySelectorAll('.protip-chip').forEach(b =>
+  b.addEventListener('click', () => b.classList.add('seen'), { once: true }));
+
+/* ————— AMP Spotlight scroll-grow: the cover swells to full size as it enters view.
+   Continuous mapping to scroll position — no jacking, scrolling never stalls. ————— */
+(function spotGrow() {
+  const spot = document.querySelector('.spot');
+  if (!spot || reduce) return; /* reduced motion: CSS default --sp:1, fully grown */
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const r = spot.getBoundingClientRect();
+    const vh = innerHeight;
+    if (r.top > vh + 60 || r.bottom < -60) return;
+    /* 0 when the cover's top touches the viewport bottom → 1 by the time it has risen 3/4 of the screen */
+    const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * 0.75)));
+    spot.style.setProperty('--sp', p.toFixed(3));
+  };
+  const schedule = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+  addEventListener('scroll', schedule, { passive: true });
+  addEventListener('resize', schedule);
+  spot.style.setProperty('--sp', '0');
+  update();
+})();
+
+/* ————— finale arrival: light the closing act once, when it enters view ————— */
+(function finaleArrive() {
+  const f = document.querySelector('.finale');
+  if (!f) return;
+  if (reduce) { f.classList.add('lit'); return; }
+  new IntersectionObserver((es, o) => {
+    if (!es[0].isIntersecting) return;
+    f.classList.add('lit');
+    o.disconnect();
+  }, { threshold: 0.3 }).observe(f);
+})();
+
+/* ————— same-site trends: month / quarter / region views (NCS Wash Intel Q2 pack) ————— */
+const MONTHS = [
+  ['Jul', 0.5], ['Aug', -0.3], ['Sep', 1.5], ['Oct', -13.4],
+  ['Nov', -1.1], ['Dec', 5.3], ['Jan', -8.4], ['Feb', 10.9],
+  ['Mar', -1.0], ['Apr', -4.4], ['May', -1.8], ['Jun', -5.4]
+];
+const QUARTERS = [
+  ['Q3 ’24', 0.8], ['Q4 ’24', 6.1], ['Q1 ’25', 9.4], ['Q2 ’25', -3.4],
+  ['Q3 ’25', 0.6], ['Q4 ’25', -4.0], ['Q1 ’26', 0.4], ['Q2 ’26', -3.8]
+];
+/* per-region quarterly YoY, same 8 quarters */
+const QREGIONS = [
+  ['Central', '#5EB4FF', [-2.6, 6.8, 8.6, -2.7, -0.3, 0.8, -0.2, -6.7]],
+  ['East', '#003264', [2.8, 8.8, 10.8, -5.7, 4.3, -3.6, -1.1, 0.2]],
+  ['West', '#0B75E1', [3.3, 1.8, 8.6, -1.3, -2.3, -11.4, 3.8, -4.8]]
+];
+
+const TREND_VIEWS = {
+  month: {
+    scope: 'month by month',
+    num: '−5.4%', cap: 'June 2026, the latest month',
+    aria: 'Monthly same-site year-over-year change, July 2025 through June 2026. From +10.9% in February 2026 to −13.4% in October 2025; June 2026 finished at −5.4%.',
+    insight: 'Monthly performance stayed mixed over the last 12 months, with rebounds including <strong>February’s +10.9%</strong>. June finished at <strong>−5.4%</strong>. Established-site trends remain uneven, but the swings point to volume operators can win back when execution and market conditions align.',
+    protip: 'This zooms in on how business bounces month to month. A blue bar means established washes did more business than that same month last year; a grey bar means less.'
+  },
+  quarter: {
+    scope: 'quarter by quarter',
+    num: '−3.8%', cap: 'Q2 2026 vs. Q2 2025',
+    aria: 'Quarterly same-site year-over-year change, Q3 2024 through Q2 2026. Q2 2026 came in at −3.8% after a modestly positive Q1.',
+    insight: 'Same-site performance softened in Q2 2026 after a modestly positive Q1: <strong>2 of the last 4 quarters negative</strong>. The pattern points to a more competitive operating environment where uptime, efficiency, and customer experience matter more than ever.',
+    protip: 'The same data in three-month blocks, compared with the same quarter a year earlier. Blue = ahead of last year; grey = behind. This is the big-picture view of national tunnel performance.'
+  },
+  region: {
+    scope: 'by region',
+    num: '+0.2%', cap: 'East, the only region positive in Q2',
+    aria: 'Quarterly same-site year-over-year change by region, Q3 2024 through Q2 2026. In Q2 2026: East +0.2%, West −4.8%, Central −6.7%.',
+    insight: 'Regional same-site results were mixed in Q2 2026: <strong>East essentially flat</strong>, while Central (−6.7%) and West (−4.8%) were softer. Same-site pressure isn’t uniform: some regions are holding share better than others despite a more competitive backdrop.',
+    protip: 'The quarterly view split into three big geographic neighborhoods: Central, East, and West. It shows whether a slow stretch is happening everywhere, or just in one part of the country.'
+  }
+};
+
+const monthChart = (function () {
+  const svg = document.getElementById('monthBars');
+  const legend = document.getElementById('monthLegend');
+  const insightEl = document.getElementById('trendInsight');
+  const protipEl = document.getElementById('trendProtip');
+  const scopeEl = document.getElementById('trendScope');
+  const numEl = document.getElementById('trendNum');
+  const capEl = document.getElementById('trendCap');
+  const PHONE = matchMedia('(max-width: 640px)');
+  let seen = false, mode = null;
+
+  /* phone gets its own chart geometry — larger relative type, sparser labels */
+  function geo(n, bwDesk, bwPhone) {
+    const m = PHONE.matches;
+    const d = m
+      ? { W: 380, H: 252, padL: 42, padR: 8, top: 16, bottom: 30, bw: bwPhone, fAxis: 10.5, fMonth: 10, every: n > 9 ? 2 : 1 }
+      : { W: 640, H: 240, padL: 56, padR: 18, top: 18, bottom: 34, bw: bwDesk, fAxis: 10, fMonth: 9, every: 1 };
+    d.zero = d.top + (d.H - d.top - d.bottom) * (15 / 30); /* scale -15..+15 */
+    d.yFor = v => d.zero - v * ((d.H - d.top - d.bottom) / 30);
+    d.span = (d.W - d.padL - d.padR) / n;
+    d.xMid = i => d.padL + d.span * i + d.span / 2;
+    return d;
+  }
+
+  function frame(d, labels) {
+    const m = PHONE.matches;
+    let g = `<g stroke="#181D27" stroke-opacity=".06" stroke-width="1">`;
+    for (const v of [-10, -5, 5, 10]) g += `<line x1="${d.padL}" y1="${d.yFor(v)}" x2="${d.W - d.padR}" y2="${d.yFor(v)}"/>`;
+    g += `</g>`;
+    g += `<line x1="${d.padL}" y1="${d.zero}" x2="${d.W - d.padR}" y2="${d.zero}" stroke="#181D27" stroke-opacity=".18" stroke-width="1.2"/>`;
+    g += `<g font-size="${d.fAxis}" fill="#A4A7AE" font-weight="600" text-anchor="end">`;
+    for (const v of [-10, 0, 10]) g += `<text x="${d.padL - 8}" y="${d.yFor(v) + 3.5}">${v > 0 ? '+' + v : v}%</text>`;
+    g += `</g><g font-size="${d.fMonth}" fill="#717680" font-weight="600" text-anchor="middle">`;
+    labels.forEach((lbl, i) => { if (i % d.every === 0) g += `<text x="${d.xMid(i)}" y="${d.H - 6}">${m ? lbl.replace(' ', '') : lbl}</text>`; });
+    g += `</g>`;
+    return g;
+  }
+  const fmt = v => (v > 0 ? '+' : '') + v.toFixed(1).replace('-', '−') + '%';
+
+  function renderBars(data, hl, animate) {
+    const d = geo(data.length, data.length > 9 ? 26 : 40, data.length > 9 ? 17 : 28);
+    const { xMid, yFor, zero, bw } = d;
+    svg.setAttribute('viewBox', `0 0 ${d.W} ${d.H}`);
+    let g = frame(d, data.map(([l]) => l));
+    data.forEach(([m, v], i) => {
+      const x = xMid(i) - bw / 2;
+      const h = Math.max(Math.abs(yFor(v) - zero), 2);
+      const r = Math.min(6, h);
+      const c = v > 0 ? 'var(--brand)' : (v === 0 ? '#A4A7AE' : '#C4C9D4');
+      const op = hl.includes(m) ? 1 : 0.78;
+      /* rounded outer end only — flat where the bar meets the zero line */
+      let p;
+      if (v >= 0) {
+        const y = zero - h;
+        p = `M${x},${zero} L${x},${y + r} Q${x},${y} ${x + r},${y} L${x + bw - r},${y} Q${x + bw},${y} ${x + bw},${y + r} L${x + bw},${zero} Z`;
+      } else {
+        const y = zero + h;
+        p = `M${x},${zero} L${x},${y - r} Q${x},${y} ${x + r},${y} L${x + bw - r},${y} Q${x + bw},${y} ${x + bw},${y - r} L${x + bw},${zero} Z`;
+      }
+      g += `<path class="mbar" d="${p}" fill="${c}" opacity="${op}" style="transform-origin:${xMid(i)}px ${zero}px"/>`;
+    });
+    svg.innerHTML = g;
+    legend.innerHTML = `<span><i class="sq" style="background:var(--brand)"></i>Above the line · growth vs. prior year</span>
+      <span><i class="sq" style="background:#C4C9D4"></i>Below the line · decline vs. prior year</span>`;
+    if (animate && !reduce) {
+      /* batched: set all start states, force ONE layout flush, then start all transitions */
+      const bars = [...svg.querySelectorAll('.mbar')];
+      bars.forEach(b => { b.style.transform = 'scaleY(0)'; });
+      void svg.getBoundingClientRect();
+      bars.forEach((b, i) => {
+        b.style.transition = `transform .7s cubic-bezier(.19,1,.22,1) ${i * 45}ms`;
+        b.style.transform = 'scaleY(1)';
+      });
+    }
+    return d;
+  }
+
+  function renderRegions(animate) {
+    const n = QUARTERS.length;
+    const d = geo(n, 40, 28);
+    const { xMid, yFor } = d;
+    svg.setAttribute('viewBox', `0 0 ${d.W} ${d.H}`);
+    let g = frame(d, QUARTERS.map(([l]) => l));
+    QREGIONS.forEach(([name, color, vals], ri) => {
+      const pts = vals.map((v, i) => `${xMid(i)},${yFor(v)}`).join(' ');
+      g += `<polyline class="qline" data-ri="${ri}" points="${pts}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+      vals.forEach((v, i) => {
+        g += `<circle class="mpt" cx="${xMid(i)}" cy="${yFor(v)}" r="3.5" fill="${color}" stroke="#FDFDFD" stroke-width="2"/>`;
+      });
+    });
+    svg.innerHTML = g;
+    legend.innerHTML = QREGIONS.map(([name, color]) => `<span><i style="background:${color}"></i>${name}</span>`).join('');
+    if (animate && !reduce) {
+      /* batched: all reads, all start states, ONE flush, then all transitions */
+      const lines = [...svg.querySelectorAll('.qline')];
+      const lens = lines.map(l => l.getTotalLength());
+      lines.forEach((l, i) => { l.style.strokeDasharray = lens[i]; l.style.strokeDashoffset = lens[i]; });
+      void svg.getBoundingClientRect();
+      lines.forEach((l, i) => {
+        l.style.transition = `stroke-dashoffset 1.3s cubic-bezier(.4,0,.2,1) ${i * 0.2}s`;
+        l.style.strokeDashoffset = 0;
+      });
+      svg.querySelectorAll('.mpt').forEach((c, i) => {
+        c.style.opacity = 0; c.style.transition = `opacity .4s ease ${.5 + i * 0.03}s`;
+        c.addEventListener('transitionend', () => { c.style.transition = ''; c.style.opacity = ''; }, { once: true });
+        requestAnimationFrame(() => { c.style.opacity = 1; });
+      });
+    }
+    return d;
+  }
+
+  function render(newMode, animate) {
+    mode = newMode;
+    const view = TREND_VIEWS[mode];
+    scopeEl.textContent = view.scope;
+    insightEl.innerHTML = view.insight;
+    protipEl.textContent = view.protip;
+    numEl.textContent = view.num;
+    capEl.textContent = view.cap;
+    svg.setAttribute('aria-label', view.aria);
+
+    let d, pts, marks;
+    if (mode === 'region') {
+      d = renderRegions(animate);
+      marks = [...svg.querySelectorAll('.mpt')];
+      pts = QUARTERS.map(([q], i) => ({
+        x: d.xMid(i),
+        y: Math.min(...QREGIONS.map(([, , vals]) => d.yFor(vals[i]))),
+        html: `${q} · same-site YoY<small>${QREGIONS.map(([n, , vals]) => `${n} ${fmt(vals[i])}`).join(' · ')}</small>`
+      }));
+      columnHover('monthBars', 'tipBars', pts, (i) => {
+        marks.forEach(el => el.classList.remove('on'));
+        if (i === null) return;
+        QREGIONS.forEach((_, ri) => marks[ri * QUARTERS.length + i]?.classList.add('on'));
+      });
+    } else {
+      const data = mode === 'month' ? MONTHS : QUARTERS;
+      const hl = mode === 'month' ? ['Feb', 'Oct'] : ['Q2 ’26'];
+      d = renderBars(data, hl, animate);
+      marks = [...svg.querySelectorAll('.mbar')];
+      pts = data.map(([m, v], i) => ({
+        x: d.xMid(i), y: Math.min(d.yFor(Math.max(v, 0)), d.zero),
+        html: `${fmt(v)}<small>${m} · same-site YoY</small>`
+      }));
+      columnHover('monthBars', 'tipBars', pts, (i) => {
+        marks.forEach(el => el.classList.remove('on'));
+        if (i !== null) marks[i]?.classList.add('on');
+      });
+    }
+  }
+
+  render('month', false);
+  PHONE.addEventListener('change', () => render(mode, false));
+  if (!reduce) {
+    new IntersectionObserver((es, o) => {
+      if (!es[0].isIntersecting) return;
+      seen = true; render(mode, true); o.disconnect();
+    }, { threshold: 0.35 }).observe(svg);
+  }
+  /* view switch: one soft fade-through — chart drifts out upward, the next view settles
+     in from below; the aside stat dims and returns like the region-card swap. The
+     entrance choreography stays reserved for first reveal. */
+  const chartGrp = [svg, legend];
+  const asideGrp = [numEl, capEl, insightEl];
+  chartGrp.forEach(el => el.classList.add('trend-fade'));
+  document.querySelectorAll('.seg.mini[aria-label="Trend view"] button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.mode === mode) return;
+      document.querySelectorAll('.seg.mini[aria-label="Trend view"] button').forEach(b => { b.classList.toggle('active', b === btn); b.setAttribute('aria-pressed', b === btn); });
+      if (reduce || document.hidden) { render(btn.dataset.mode, false); return; }
+      chartGrp.forEach(el => el.classList.add('out'));
+      asideGrp.forEach(el => el.classList.add('dimmed'));
+      setTimeout(() => {
+        render(btn.dataset.mode, false);
+        chartGrp.forEach(el => { el.classList.add('enter'); el.classList.remove('out'); });
+        void svg.getBoundingClientRect();
+        chartGrp.forEach(el => el.classList.remove('enter'));
+        asideGrp.forEach(el => el.classList.remove('dimmed'));
+      }, 240);
+    });
+  });
+  return { render };
+})();
+
+/* ————— state performance tile map ————— */
+(function statePerf() {
+  /* TTM YoY % through June 2026 — NCS Wash Intel Q2 pack (TM_2 / SS_5) */
+  const ST_TM = { VT: 15.9, AK: 11.4, CT: 10.4, NH: 10.3, RI: 9.9, MA: 8.2, WI: 7.7, ME: 6.7, VA: 6.6, OH: 6.4, MI: 6.1, PA: 5.2, WV: 5.2, MN: 5.0, IL: 4.6, KY: 4.1, NM: 4.0, SC: 3.5, NC: 3.3, TN: 3.1, NY: 2.8, MO: 2.6, WY: 2.4, WA: 2.3, NJ: 2.2, OR: 2.2, IA: 2.2, FL: 2.2, MD: 2.1, OK: 1.8, CO: 1.6, IN: 1.4, GA: 1.4, MS: 1.2, AR: 1.2, AL: 0.5, TX: -0.2, NV: -0.5, DC: -0.7, CA: -0.9, AZ: -1.3, ND: -2.0, LA: -2.3, SD: -2.5, NE: -2.7, UT: -2.8, KS: -3.4, ID: -3.6, MT: -3.8, HI: -5.5, DE: -6.0 };
+  const ST_SS = { NH: 11.0, VT: 6.9, MA: 6.7, CT: 5.6, OH: 4.6, ME: 4.2, RI: 4.2, WV: 3.5, MN: 2.0, PA: 1.6, KY: 1.4, WI: 1.4, IL: 1.3, NY: 0.8, NM: 0.4, VA: 0.4, IA: 0.4, NJ: 0.3, AR: -0.2, MO: -0.5, MI: -0.5, NC: -0.5, DC: -0.7, SC: -0.7, GA: -0.9, ND: -1.0, TN: -1.0, OK: -1.2, MD: -1.3, OR: -1.4, NV: -1.6, CO: -1.8, AL: -2.1, MS: -2.1, FL: -2.4, IN: -2.6, SD: -2.7, WA: -2.8, LA: -3.1, CA: -4.0, ID: -4.1, AZ: -4.5, KS: -4.5, UT: -4.7, DE: -5.0, WY: -5.3, HI: -5.5, MT: -5.6, NE: -5.6, TX: -5.9, AK: -8.4 };
+  const NAMES = { AL: 'Alabama', AK: 'Alaska', AZ: 'Arizona', AR: 'Arkansas', CA: 'California', CO: 'Colorado', CT: 'Connecticut', DE: 'Delaware', DC: 'District of Columbia', FL: 'Florida', GA: 'Georgia', HI: 'Hawaii', ID: 'Idaho', IL: 'Illinois', IN: 'Indiana', IA: 'Iowa', KS: 'Kansas', KY: 'Kentucky', LA: 'Louisiana', ME: 'Maine', MD: 'Maryland', MA: 'Massachusetts', MI: 'Michigan', MN: 'Minnesota', MS: 'Mississippi', MO: 'Missouri', MT: 'Montana', NE: 'Nebraska', NV: 'Nevada', NH: 'New Hampshire', NJ: 'New Jersey', NM: 'New Mexico', NY: 'New York', NC: 'North Carolina', ND: 'North Dakota', OH: 'Ohio', OK: 'Oklahoma', OR: 'Oregon', PA: 'Pennsylvania', RI: 'Rhode Island', SC: 'South Carolina', SD: 'South Dakota', TN: 'Tennessee', TX: 'Texas', UT: 'Utah', VT: 'Vermont', VA: 'Virginia', WA: 'Washington', WV: 'West Virginia', WI: 'Wisconsin', WY: 'Wyoming' };
+  const NOTES = {
+    total: {
+      title: 'Total market: <span class="hl">36 of 51 states</span> above prior year',
+      insight: K_INSIGHT + 'Total-market performance remained broadly positive on a trailing-twelve-month basis: <strong>36 of 51 states</strong> above prior-year levels, with a median gain of <strong>+2.2%</strong>. Vermont (+15.9%) and Alaska (+11.4%) led, showing meaningful growth is still available across a wide set of geographies.',
+      protip: 'Not every state has the same number of tunnel washes. In smaller states with only a few washes, a tiny change can look huge as a percentage. The same change in a bigger state would barely show. Hover or tap any state for its exact change.'
+    },
+    same: {
+      title: 'Same-site: <span class="hl">18 of 51 states</span> above prior year',
+      insight: K_INSIGHT + 'Same-site TTM performance was positive in <strong>18 of 51 states</strong>, with New Hampshire (+11.0%) and Vermont (+6.9%) proving established-site growth remains attainable. Softer states mark where operators have the most room to protect volume and strengthen site-level performance.',
+      protip: 'The past 12 months state by state, leaving out brand-new washes. Small states with few tunnels can swing much more than big ones, even when the actual change in cars washed is the same. Hover or tap any state for its exact change.'
+    }
+  };
+  const MAXV = 16;
+  const fillFor = v => v >= 0
+    ? `rgba(11,117,225,${(0.13 + 0.87 * Math.min(1, v / MAXV)).toFixed(3)})`
+    : `rgba(84,93,110,${(0.13 + 0.87 * Math.min(1, -v / MAXV)).toFixed(3)})`;
+  const fmt = v => (v > 0 ? '+' : '') + v.toFixed(1).replace('-', '−') + '%';
+
+  const svg = document.getElementById('stateMap');
+  const tip = document.getElementById('tipStates');
+  const wrap = svg.closest('.chart-wrap');
+  const size = 30, gap = 4;
+  let variant = 'total';
+
+  function render() {
+    const DATA = variant === 'total' ? ST_TM : ST_SS;
+    let g = '';
+    for (const [st, [c, r]] of Object.entries(TILES)) {
+      const v = DATA[st];
+      const x = 4 + c * (size + gap), y = 4 + r * (size + gap);
+      const strong = Math.abs(v) / MAXV > 0.42;
+      const label = `${NAMES[st]} ${fmt(v)} · TTM YoY, ${variant === 'total' ? 'total market' : 'same-site'}`;
+      g += `<rect data-st="${st}" x="${x}" y="${y}" width="${size}" height="${size}" rx="7" fill="${fillFor(v)}" role="img" aria-label="${label}"><title>${label}</title></rect>`;
+      g += `<text x="${x + size / 2}" y="${y + size / 2 + 3.5}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${strong ? '#fff' : '#181D27'}" pointer-events="none">${st}</text>`;
+    }
+    svg.innerHTML = g;
+    document.getElementById('stateTitle').innerHTML = NOTES[variant].title;
+    document.getElementById('stateInsight').innerHTML = NOTES[variant].insight;
+    document.getElementById('stateProtip').textContent = NOTES[variant].protip;
+
+    /* leaders & laggards: top and bottom 3, derived from the live data set */
+    const sorted = Object.entries(DATA).sort((a, b) => b[1] - a[1]);
+    const row = ([st, v]) => `<div class="lb-row${v < 0 ? ' neg' : ''}">
+      <span class="lb-st">${NAMES[st]}</span>
+      <div class="lb-bar"><i style="--w:${Math.max(4, Math.abs(v) / MAXV * 100).toFixed(0)}%"></i></div>
+      <span class="lb-val">${fmt(v)}</span>
+    </div>`;
+    document.getElementById('lbList').innerHTML =
+      `<div class="lb-label">Top 3 · ${variant === 'total' ? 'total market' : 'same-site'}</div>` +
+      sorted.slice(0, 3).map(row).join('') +
+      `<div class="lb-label">Bottom 3</div>` +
+      sorted.slice(-3).map(row).join('');
+  }
+
+  let hideTimer = null;
+  const hide = () => tip.classList.remove('show');
+  const handle = (e) => {
+    const rect = e.target.closest('rect[data-st]');
+    if (!rect) { hide(); return; }
+    clearTimeout(hideTimer);
+    const st = rect.dataset.st;
+    const v = (variant === 'total' ? ST_TM : ST_SS)[st];
+    const r = svg.getBoundingClientRect(), w = wrap.getBoundingClientRect();
+    const vb = svg.viewBox.baseVal;
+    const sx = r.width / vb.width, sy = r.height / vb.height;
+    const bb = rect;
+    tip.innerHTML = `${fmt(v)}<small>${NAMES[st]} · TTM YoY, ${variant === 'total' ? 'total market' : 'same-site'}</small>`;
+    tip.style.left = (r.left - w.left + (parseFloat(bb.getAttribute('x')) + size / 2) * sx) + 'px';
+    tip.style.top = (r.top - w.top + parseFloat(bb.getAttribute('y')) * sy) + 'px';
+    tip.classList.add('show');
+    if (e.pointerType === 'touch') hideTimer = setTimeout(hide, 1800);
+  };
+  svg.addEventListener('pointermove', handle);
+  svg.addEventListener('pointerdown', handle);
+  svg.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'touch') hide(); });
+
+  document.querySelectorAll('.seg button[data-stview]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.stview === variant) return;
+      document.querySelectorAll('.seg button[data-stview]').forEach(b => { b.classList.toggle('active', b === btn); b.setAttribute('aria-pressed', b === btn); });
+      variant = btn.dataset.stview;
+      render();
+    });
+  });
+  render();
+
+  /* view-as-table modal: rows built from the live consts so values can't drift */
+  document.getElementById('stateTableBody').innerHTML = Object.keys(NAMES)
+    .sort((a, b) => NAMES[a].localeCompare(NAMES[b]))
+    .map(st => `<tr><td>${NAMES[st]}</td><td class="num">${fmt(ST_TM[st])}</td><td class="num">${fmt(ST_SS[st])}</td></tr>`).join('');
+  wireModal(document.getElementById('stateTableModal'), document.getElementById('openStateTable'), document.getElementById('closeStateTable'));
+
+  /* ————— aside tabs: top & bottom / compare ————— */
+  const lbTitleEl = document.getElementById('lbTitle');
+  const LB_TITLES = { leaders: 'Leaders & laggards', compare: 'Compare states' };
+  const lbPanes = { leaders: document.getElementById('lbList'), compare: document.getElementById('lbCompare') };
+  let lbView = 'leaders';
+  Object.values(lbPanes).forEach(p => p.classList.add('trend-fade'));
+  lbTitleEl.classList.add('trend-fade');
+
+  /* the same lb-row grammar everywhere, so bars stay honest across views */
+  const lbRow = (labelHtml, v, extraCls = '', trailing = '') =>
+    `<div class="lb-row${v < 0 ? ' neg' : ''}${extraCls}">
+      <span class="lb-st">${labelHtml}</span>
+      <div class="lb-bar"><i style="--w:${Math.max(4, Math.abs(v) / MAXV * 100).toFixed(0)}%"></i></div>
+      <span class="lb-val">${fmt(v)}</span>${trailing}
+    </div>`;
+
+  /* — compare pane — */
+  const cmpSelect = document.getElementById('cmpSelect');
+  const cmpRows = document.getElementById('cmpRows');
+  const cmpHint = document.getElementById('cmpHint');
+  const CMP_MAX = 6;
+  const chosen = []; /* insertion order — the reader's own order of thought */
+
+  const buildSelect = () => {
+    cmpSelect.innerHTML = '<option value="">Choose a state…</option>' + Object.keys(NAMES)
+      .sort((a, b) => NAMES[a].localeCompare(NAMES[b]))
+      .map(st => `<option value="${st}"${chosen.includes(st) ? ' disabled' : ''}>${NAMES[st]}</option>`).join('');
+    cmpSelect.disabled = chosen.length >= CMP_MAX;
+  };
+  const renderCompare = () => {
+    const DATA = variant === 'total' ? ST_TM : ST_SS;
+    cmpRows.innerHTML = chosen.map(st =>
+      lbRow(NAMES[st], DATA[st], ' cmp',
+        `<button type="button" class="cmp-x" data-cmpx="${st}" aria-label="Remove ${NAMES[st]}">✕</button>`)).join('');
+    cmpHint.textContent = chosen.length >= CMP_MAX
+      ? 'Six is the limit. Remove one to add another.'
+      : chosen.length ? `Showing ${variant === 'total' ? 'total market' : 'same-site'}. Flip the toggle above to switch.`
+      : 'Pick up to six states to set side by side.';
+  };
+  cmpSelect.addEventListener('change', () => {
+    if (!cmpSelect.value || chosen.includes(cmpSelect.value) || chosen.length >= CMP_MAX) return;
+    chosen.push(cmpSelect.value);
+    buildSelect(); renderCompare();
+  });
+  cmpRows.addEventListener('click', (e) => {
+    const x = e.target.closest('[data-cmpx]');
+    if (!x) return;
+    chosen.splice(chosen.indexOf(x.dataset.cmpx), 1);
+    buildSelect(); renderCompare();
+  });
+  buildSelect(); renderCompare();
+
+  /* variant toggle refreshes the compare rows too (render is re-bound; the seg
+     handler resolves the name at call time) */
+  const renderMap = render;
+  render = () => { renderMap(); renderCompare(); };
+
+  /* — tab switching: the trend card's fade-through, title included — */
+  document.querySelectorAll('.lb-seg button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.lbview === lbView) return;
+      document.querySelectorAll('.lb-seg button').forEach(b => { b.classList.toggle('active', b === btn); b.setAttribute('aria-pressed', b === btn); });
+      const cur = lbPanes[lbView], next = lbPanes[btn.dataset.lbview];
+      lbView = btn.dataset.lbview;
+      const settle = () => {
+        cur.hidden = true; cur.classList.remove('out');
+        lbTitleEl.textContent = LB_TITLES[lbView];
+        next.hidden = false; next.classList.add('enter');
+        void next.getBoundingClientRect();
+        next.classList.remove('enter');
+        lbTitleEl.classList.remove('out');
+      };
+      if (reduce || document.hidden) { cur.hidden = true; next.hidden = false; lbTitleEl.textContent = LB_TITLES[lbView]; return; }
+      cur.classList.add('out'); lbTitleEl.classList.add('out');
+      setTimeout(settle, 240);
+    });
+  });
+})();
+
+/* ————— count-up ————— */
+if (!reduce) {
+  const ioNum = new IntersectionObserver((es) => {
+    for (const e of es) {
+      if (!e.isIntersecting) continue;
+      const el = e.target, target = parseFloat(el.dataset.count), suffix = el.dataset.suffix || '';
+      const prefix = el.dataset.prefix || '';
+      const dec = el.dataset.decimals !== undefined ? +el.dataset.decimals : 1;
+      const t0 = performance.now(), dur = 1100;
+      const tick = (t) => {
+        const p = Math.min(1, (t - t0) / dur), eased = 1 - Math.pow(1 - p, 4);
+        el.textContent = prefix + (target * eased).toFixed(dec) + suffix;
+        if (p < 1) requestAnimationFrame(tick); else el.textContent = prefix + target.toFixed(dec) + suffix;
+      };
+      requestAnimationFrame(tick);
+      ioNum.unobserve(el);
+    }
+  }, { threshold: 0.6 });
+  document.querySelectorAll('[data-count]').forEach(el => ioNum.observe(el));
+
+}
+
+/* ————— proximity tooltips: nearest point by cursor x, anywhere in the chart ————— */
+function columnHover(svgId, tipId, pts, onChange) {
+  const tip = document.getElementById(tipId);
+  const svg = document.getElementById(svgId);
+  const wrap = svg.closest('.chart-wrap');
+  let lastIdx = null, hideTimer = null;
+  svg.style.touchAction = 'pan-y'; /* vertical scroll stays free; horizontal press scrubs the chart */
+  const hide = () => { tip.classList.remove('show'); lastIdx = null; onChange && onChange(null); };
+  const handle = (e) => {
+    clearTimeout(hideTimer);
+    const r = svg.getBoundingClientRect(), w = wrap.getBoundingClientRect();
+    const vb = svg.viewBox.baseVal;
+    const mx = (e.clientX - r.left) / r.width * vb.width;
+    let best = null, bi = null, bd = Infinity;
+    pts.forEach((p, i) => { const d = Math.abs(p.x - mx); if (d < bd) { bd = d; best = p; bi = i; } });
+    if (!best) return;
+    const sx = r.width / vb.width, sy = r.height / vb.height;
+    tip.innerHTML = best.html;
+    tip.style.left = (r.left - w.left + best.x * sx) + 'px';
+    tip.style.top = (r.top - w.top + best.y * sy) + 'px';
+    tip.classList.add('show');
+    if (bi !== lastIdx) { lastIdx = bi; onChange && onChange(bi); }
+    /* touch: linger briefly after the finger lifts, then clear */
+    if (e.pointerType === 'touch') { hideTimer = setTimeout(hide, 1800); }
+  };
+  svg.onpointermove = handle;
+  svg.onpointerdown = handle;
+  svg.onpointerleave = (e) => { if (e.pointerType !== 'touch') hide(); };
+  svg.onpointercancel = hide;
+}
+
+/* ————— recovery chart: responsive, data-driven ————— */
+(function recoveryChart() {
+  const svg = document.getElementById('recoveryChart');
+  const DATA = [['Day 0', 0], ['Day 1', 9.1], ['Day 3', 28.9], ['Day 7', 47.0], ['Day 14', 58.7], ['Day 15+', 59.0]];
+  const TIP = ['0% · first failed charge', '9.1%', '28.9%', '47.0% · 80% of all recoveries', '58.7%', '59.0% · flat'];
+  const DUN = [0, 2, 3]; /* dunning texts send on day 0, 3, 7 */
+  const PHONE = matchMedia('(max-width: 640px)');
+  let seen = reduce; /* reduced motion: skip the draw-in entirely */
+
+  function render() {
+    const m = PHONE.matches;
+    const W = m ? 380 : 640, H = m ? 236 : 260;
+    const base = m ? 188 : 208, topPct = m ? 56 : 52;    /* y of 0% and 60% */
+    const yFor = v => base - v * ((base - topPct) / 60);
+    const x0 = m ? 46 : 76, x1 = m ? 366 : 604;
+    const xs = DATA.map((_, i) => x0 + i * (x1 - x0) / (DATA.length - 1));
+    /* phone type runs ~0.88× (380-unit viewBox in a ~335px card) — sizes bumped so nothing lands under ~9px rendered */
+    const fAxis = m ? 11 : 10, fDay = m ? 10.5 : 10, padL = m ? 38 : 54;
+
+    let g = `<defs><linearGradient id="fadeArea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0B75E1" stop-opacity=".14"/><stop offset="100%" stop-color="#0B75E1" stop-opacity="0"/>
+    </linearGradient></defs>`;
+    g += `<g stroke="#181D27" stroke-opacity=".06" stroke-width="1">`;
+    for (const v of [0, 20, 40, 60]) g += `<line x1="${padL + 8}" y1="${yFor(v)}" x2="${W - (m ? 6 : 24)}" y2="${yFor(v)}"/>`;
+    g += `</g><g font-size="${fAxis}" fill="#A4A7AE" font-weight="600" text-anchor="end">`;
+    for (const v of [0, 20, 40, 60]) g += `<text x="${padL}" y="${yFor(v) + 3.5}">${v}%</text>`;
+    g += `</g>`;
+    /* dunning markers */
+    DUN.forEach((di, n) => {
+      const x = xs[di], pw = m ? 46 : 44, ph = m ? 16 : 17, fy = m ? 14 : 24;
+      g += `<line x1="${x}" y1="${fy + ph - 1}" x2="${x}" y2="${base}" stroke="#003264" stroke-opacity=".18" stroke-width="1.5"/>`;
+      g += `<rect x="${x - pw / 2}" y="${fy}" width="${pw}" height="${ph}" rx="${ph / 2}" fill="#003264"/>`;
+      g += `<text x="${x}" y="${fy + ph - (m ? 4.5 : 5)}" text-anchor="middle" font-size="${m ? 9.5 : 8}" fill="#fff" font-weight="800">TEXT ${n + 1}</text>`;
+    });
+    /* area + line */
+    const linePts = DATA.map(([, v], i) => `${xs[i]},${yFor(v)}`).join(' ');
+    g += `<path id="area" d="M${linePts.split(' ').join(' L')} L${xs[xs.length - 1]},${base} L${xs[0]},${base} Z" fill="url(#fadeArea)"/>`;
+    g += `<polyline id="line" points="${linePts}" fill="none" stroke="#0B75E1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+    /* flat tail annotation */
+    g += `<line x1="${xs[4]}" y1="${yFor(58.7)}" x2="${xs[5]}" y2="${yFor(59.0)}" stroke="#00B368" stroke-width="2" stroke-dasharray="1 6" stroke-linecap="round"/>`;
+    g += `<text x="${(xs[4] + xs[5]) / 2}" y="${yFor(58.7) + 19}" text-anchor="middle" font-size="${m ? 11 : 9}" fill="#717680" font-weight="600">no recovery after day 14</text>`;
+    /* points */
+    g += `<g id="pts" fill="#0B75E1" stroke="#FDFDFD" stroke-width="2.5">`;
+    DATA.forEach(([, v], i) => {
+      if (i === 0) return;
+      const green = i >= 4;
+      g += `<circle cx="${xs[i]}" cy="${yFor(v)}" r="${i === 3 ? 6 : 5}"${green ? ' fill="#00B368"' : ''}/>`;
+    });
+    g += `</g>`;
+    g += `<g font-size="${m ? 11 : 10.5}" font-weight="700">
+      <text x="${xs[3]}" y="${yFor(47.0) - 13}" text-anchor="middle" fill="#0A5FBA">47.0%</text>
+      <text x="${xs[4]}" y="${yFor(58.7) - 13}" text-anchor="middle" fill="#00B368">58.7%</text></g>`;
+    g += `<g font-size="${fDay}" fill="#717680" font-weight="600" text-anchor="middle">`;
+    DATA.forEach(([lbl], i) => { g += `<text x="${xs[i]}" y="${base + (m ? 18 : 22)}">${m ? lbl.replace('Day ', 'D') : lbl}</text>`; });
+    g += `</g>`;
+    if (!m) g += `<text x="${W / 2}" y="${H - 8}" text-anchor="middle" font-size="9.5" fill="#A4A7AE" font-weight="600">Days since first failed charge</text>`;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.innerHTML = g;
+
+    /* proximity tooltips + dot highlight */
+    const dots = [...svg.querySelectorAll('#pts circle')];
+    columnHover('recoveryChart', 'tipCurve',
+      DATA.map(([lbl, v], i) => ({ x: xs[i], y: yFor(v), html: `${TIP[i]}<small>${lbl}</small>` })),
+      (i) => { dots.forEach(d => d.classList.remove('on')); if (i !== null && i > 0) dots[i - 1]?.classList.add('on'); });
+
+    /* draw-in on first view only */
+    if (!seen) {
+      const line = svg.querySelector('#line'), area = svg.querySelector('#area');
+      const len = line.getTotalLength();
+      line.style.strokeDasharray = len; line.style.strokeDashoffset = len;
+      area.style.opacity = 0;
+      new IntersectionObserver((es, o) => {
+        if (!es[0].isIntersecting) return;
+        seen = true;
+        line.style.transition = 'stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1)';
+        line.style.strokeDashoffset = 0;
+        area.style.transition = 'opacity .9s ease .9s'; area.style.opacity = 1;
+        o.disconnect();
+      }, { threshold: 0.4 }).observe(svg);
+    }
+  }
+  render();
+  PHONE.addEventListener('change', render);
+})();
+
+/* ————— flow bar hover: segment grows, its label takes focus ————— */
+(function flowHover() {
+  if (!matchMedia('(hover: hover)').matches) return; /* touch: labels are stacked and fully visible — no grow needed */
+  const labels = document.getElementById('flowLabels');
+  document.querySelectorAll('#flowBar .flow-seg').forEach(seg => {
+    const base = parseFloat(seg.style.flexGrow);
+    /* the narrow dunning segment opens wide on hover — it has the most to say */
+    const mult = seg.dataset.key === 'dunning' ? 3 : 1.35;
+    seg.addEventListener('mouseenter', () => {
+      seg.style.flexGrow = base * mult;
+      labels.classList.add('hovering');
+      labels.querySelectorAll('.flow-label').forEach(l =>
+        l.classList.toggle('hl', l.dataset.key === seg.dataset.key));
+    });
+    seg.addEventListener('mouseleave', () => {
+      seg.style.flexGrow = base;
+      labels.classList.remove('hovering');
+      labels.querySelectorAll('.flow-label').forEach(l => l.classList.remove('hl'));
+    });
+  });
+})();
+
+/* ————— exposure calculator ————— */
+(function calculator() {
+  /* v4 constants: 59% Stripe retries alone; 63% with dunning (true incremental: 41 × 63.3% reach × 15.9% action ≈ +4pp) */
+  const REC_BASE = 0.59, REC_DUN = 0.63;
+  const sM = document.getElementById('csMembers'), sP = document.getElementById('csPrice'), sF = document.getElementById('csFail');
+  const vM = document.getElementById('cvMembers'), vP = document.getElementById('cvPrice'), vF = document.getElementById('cvFail');
+  const rLost = document.getElementById('crLost'), rEquiv = document.getElementById('crEquiv'), rSaved = document.getElementById('crSaved');
+  const dun = document.getElementById('cDunning');
+  const grid = document.getElementById('cGrid'), legendDun = document.getElementById('cLegendDun');
+
+  /* build the 100-invoice grid: 59 retries / 4 dunning-swing / 37 lost */
+  const swing = [];
+  for (let i = 0; i < 100; i++) {
+    const d = document.createElement('i');
+    if (i < 59) d.className = 'ok';
+    else if (i < 63) { d.className = 'dun'; swing.push(d); }
+    else d.className = 'lost';
+    grid.appendChild(d);
+  }
+
+  /* slider fill % */
+  function paint(s) {
+    const p = (s.value - s.min) / (s.max - s.min) * 100;
+    s.style.setProperty('--p', p + '%');
+  }
+
+  /* number tween */
+  const money = n => '$' + Math.round(n).toLocaleString('en-US');
+  let curLost = null;
+  /* announce the settled value once per pause, not every tween frame */
+  let lostAnnounceT = null;
+  const announceLost = (v) => {
+    clearTimeout(lostAnnounceT);
+    lostAnnounceT = setTimeout(() => announce('Estimated revenue lost per year: ' + money(v)), 700);
+  };
+
+  function tweenLost(target) {
+    announceLost(target);
+    if (reduce || curLost === null || document.hidden) { rLost.textContent = money(target); curLost = target; return; }
+    const from = curLost, t0 = performance.now(), dur = 500;
+    curLost = target;
+    (function tick(t) {
+      const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      rLost.textContent = money(from + (target - from) * e);
+      if (p < 1 && curLost === target) requestAnimationFrame(tick);
+    })(t0);
+    /* rAF pauses in hidden tabs — guarantee the final value regardless */
+    setTimeout(() => { if (curLost === target) rLost.textContent = money(target); }, dur + 60);
+  }
+
+  function update(fromToggle) {
+    const m = +sM.value, p = +sP.value, f = +sF.value / 100;
+    vM.textContent = m.toLocaleString('en-US');
+    vP.textContent = '$' + p;
+    vF.textContent = (+sF.value).toFixed(1) + '%';
+    [sM, sP, sF].forEach(paint);
+
+    const failures = m * f;
+    const rec = dun.checked ? REC_DUN : REC_BASE;
+    const lost = failures * (1 - rec) * p * 12;
+    const saved = failures * (REC_DUN - REC_BASE) * p * 12;
+    const equivMembers = Math.round(failures * (1 - rec));
+
+    tweenLost(lost);
+    rLost.classList.toggle('saving', dun.checked);
+    rEquiv.textContent = equivMembers.toLocaleString('en-US') + ' members';
+    rSaved.textContent = '↑ ' + money(saved) + '/yr recovered by dunning texts';
+    rSaved.classList.toggle('show', dun.checked);
+    if (fromToggle && dun.checked) {
+      rLost.classList.remove('pop');
+      void rLost.offsetWidth; /* restart the bloom animation */
+      rLost.classList.add('pop');
+    }
+
+    if (fromToggle) {
+      swing.forEach((d, i) => {
+        setTimeout(() => d.classList.toggle('saved', dun.checked), reduce ? 0 : i * 55);
+      });
+      legendDun.innerHTML = dun.checked
+        ? '<i style="background:#3FC6FF;box-shadow:0 0 6px rgba(63,198,255,1)"></i>4% recovered by dunning texts'
+        : '<i style="background:rgba(255,255,255,.42)"></i>4% recoverable · dunning off';
+    }
+
+    /* preset chip state */
+    document.querySelectorAll('.calc-presets button').forEach(b =>
+      b.classList.toggle('active', Math.abs(parseFloat(b.dataset.fail) - +sF.value) < 0.05));
+  }
+
+  [sM, sP, sF].forEach(s => s.addEventListener('input', () => update(false)));
+  dun.addEventListener('change', () => update(true));
+
+  /* presets glide the slider into place instead of teleporting it */
+  let slideRaf = null;
+  function slideTo(target) {
+    cancelAnimationFrame(slideRaf);
+    const from = +sF.value;
+    if (reduce || document.hidden || Math.abs(target - from) < 0.05) { sF.value = target; update(false); return; }
+    const t0 = performance.now(), dur = 560;
+    const tick = (t) => {
+      const p = Math.min(1, (t - t0) / dur);
+      /* heavy quintic ease-in-out: leans in, rushes the middle, settles long */
+      const e = p < 0.5 ? 16 * Math.pow(p, 5) : 1 - Math.pow(-2 * p + 2, 5) / 2;
+      sF.value = (from + (target - from) * e).toFixed(2);
+      update(false);
+      if (p < 1) slideRaf = requestAnimationFrame(tick);
+      else { sF.value = target; update(false); }
+    };
+    slideRaf = requestAnimationFrame(tick);
+  }
+  document.querySelectorAll('.calc-presets button').forEach(b =>
+    b.addEventListener('click', () => slideTo(+b.dataset.fail)));
+  update(false);
+})();
+
+/* ————— THE GATE · Gate H wiring (login lab winner). localStorage is a stand-in:
+   TODO production remember-me is a server-set cookie/token and gated content is
+   only SERVED after the lead endpoint accepts the form. ————— */
+(function frostGate() {
+  const KEY = 'washintel-unlock-q2-2026';
+  const gate = document.getElementById('gate');
+  const gated = document.getElementById('gatedContent');
+  const form = gate.querySelector('.gate-form');
+
+  const unlockDOM = () => {
+    gate.classList.remove('locked');
+    gated.removeAttribute('aria-hidden');
+    gated.removeAttribute('inert');
+  };
+
+  const REMEMBER = true; /* hybrid gate: unlock once per device (flip to false to replay the gate for design review) */
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+  if (REMEMBER && saved && saved.when) {
+    gate.classList.add('is-back', 'settled'); /* silent open: frost off, no popup, no chrome */
+    unlockDOM();
+  }
+
+  /* one-shot arrival, bento grammar: the popup reveals the first time the gate
+     scrolls into view, then never re-plays */
+  const popup = gate.querySelector('.h-popup');
+  if (gate.classList.contains('locked')) {
+    if (reduce) { popup.classList.add('arrived'); }
+    else {
+      /* reversible arrival: never plays on load (scroll-driven only); eases in once you
+         scroll and the gate is in view, eases back out at the very top of the page.
+         Hysteresis (90 in / 24 out) so the boundary can't flicker. */
+      let shown = false;
+      const onGateScroll = () => {
+        if (!gate.classList.contains('locked')) return;
+        const inView = popup.getBoundingClientRect().top < innerHeight - 120;
+        if (!shown && scrollY > 90 && inView) {
+          shown = true;
+          popup.classList.remove('departing');
+          void popup.offsetWidth; /* restart the animation cleanly */
+          popup.classList.add('arrived');
+        } else if (shown && scrollY <= 24) {
+          shown = false;
+          popup.classList.remove('arrived');
+          void popup.offsetWidth;
+          popup.classList.add('departing');
+        }
+      };
+      addEventListener('scroll', onGateScroll, { passive: true });
+    }
+  }
+
+  const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+  form.addEventListener('submit', (e) => {
+    e.preventDefault(); /* TODO: fake destination — production POSTs server-side */
+    const fields = [...form.querySelectorAll('.field')];
+    let firstBad = null;
+    fields.forEach(f => {
+      const input = f.querySelector('input');
+      const bad = input.type === 'email' ? !emailOk(input.value) : !input.value.trim();
+      f.classList.toggle('bad', bad);
+      input.setAttribute('aria-invalid', String(bad));
+      if (bad) { input.setAttribute('aria-describedby', f.querySelector('.err').id); firstBad = firstBad || input; }
+      else input.removeAttribute('aria-describedby');
+    });
+    if (firstBad) { firstBad.focus(); return; }
+    const data = {
+      when: new Date().toISOString(),
+      name: form.querySelector('input[name="name"]').value.trim(),
+      company: form.querySelector('input[name="organization"]').value.trim()
+    };
+    if (REMEMBER) { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
+    const btn = form.querySelector('.submit');
+    const finish = () => {
+      gate.classList.remove('reading');
+      gate.classList.add('is-done'); /* the melt */
+      unlockDOM();
+      announce('Unlocked. The full report is open on this device.');
+    };
+    if (reduce) { finish(); gate.classList.add('settled'); return; }
+    btn.disabled = true; btn.textContent = 'One moment…';
+    gate.classList.add('reading');
+    setTimeout(finish, 700);                                  /* the reading beat */
+    setTimeout(() => gate.classList.add('fading'), 700 + 1500); /* payoff seen, popup bows out */
+    setTimeout(() => gate.classList.add('settled'), 700 + 2000);
+  });
+  form.querySelectorAll('input').forEach(input => input.addEventListener('input', () => {
+    const f = input.closest('.field');
+    if (!f.classList.contains('bad')) return;
+    const ok = input.type === 'email' ? emailOk(input.value) : !!input.value.trim();
+    if (ok) { f.classList.remove('bad'); input.setAttribute('aria-invalid', 'false'); input.removeAttribute('aria-describedby'); }
+  }));
+})();
+</script>
+</body>
+</html>
