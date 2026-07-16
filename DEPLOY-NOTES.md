@@ -1,6 +1,10 @@
 # AMP Wash Intel · Q2 2026 — Deploy Notes
 
-For the developer taking this live on Vercel. Prepared 2026-07-15 by Beze Creative. **Package v2** (same day): if you already deployed v1, redeploy with this index.html; nothing else in the bundle changed.
+For the developer taking this live on Vercel. Prepared 2026-07-15 by Beze Creative. **Package v3** (2026-07-16): if you already deployed v1 or v2, redeploy with this index.html; nothing else in the bundle changed.
+
+## What changed in v3 (rendering-glitch fix)
+
+One CSS addition: after the lead gate unlocks and settles, its four full-page progressive-blur layers are now removed from rendering (`display: none`) instead of idling at `blur(0px)`. `blur(0px)` still counts as an active backdrop-filter, so every unlocked pageview was compositing the entire document through four stacked filter surfaces. This is the suspected cause of the band-shaped paint dropouts Nathan saw while screen-recording on 2026-07-15 (partially blank state map, half-empty calculator card). It is also a straight GPU/battery win on mobile. The gate's melt animation is unchanged.
 
 ## What changed in v2 (client review round 1 response)
 
@@ -45,7 +49,7 @@ The report is lead-gated: hero + first section free, everything after sits under
 - **The gate is presentation, not security.** All content is served to the browser; the blur is CSS. This is understood and accepted for the review/launch phase. Real gating (content only served after a signed cookie from a lead endpoint) is scoped for the Next.js rebuild.
 - **The form does not send data anywhere yet.** Submissions validate client-side, unlock the page, and store a remember-me flag in localStorage (`washintel-unlock-q2-2026`). No lead is captured. If the client expects to receive leads during review, that needs an endpoint first; the submit handler is marked with a TODO.
 - Remember-me is ON (`const REMEMBER = true` in the gate script). Each device gates once. To demo the gate repeatedly, use a private window or clear that localStorage key.
-- A privacy/consent line was cut from the card for design reasons. If captured leads will feed marketing (Kit), legal language likely needs to come back somewhere (report footer works). Flag to Nathan/AMP before real lead capture goes live.
+- The card carries a short privacy line linking to ampmemberships.com/privacy-policy (added in v2). If captured leads will feed marketing (Kit), confirm that language satisfies legal before real lead capture goes live; flag to Nathan/AMP.
 
 ## Numbers are audited — do not edit copy
 

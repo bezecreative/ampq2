@@ -1307,6 +1307,11 @@ input[type=range].cslider::-moz-range-thumb {
 }
 .gate-h.is-done .h-veil, .gate-h.is-back .h-veil { opacity: 0; }
 .gate-h.is-done .h-frost, .gate-h.is-back .h-frost { pointer-events: none; }
+/* once settled, the frost must leave the render tree entirely: blur(0px) is still an
+   ACTIVE backdrop-filter, and four document-height filter surfaces kept the compositor
+   post-processing the whole page forever after unlock (suspected cause of the
+   2026-07-15 band-shaped paint dropouts under screen-recording GPU load) */
+.gate-h.settled .h-frost, .gate-h.settled .h-veil { display: none; }
 /* no backdrop-filter: flat blur on the content itself, no ramp */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .h-frost { display: none; }
