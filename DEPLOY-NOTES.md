@@ -1,6 +1,12 @@
 # AMP Wash Intel · Q2 2026 — Deploy Notes
 
-For the developer taking this live on Vercel. Prepared 2026-07-15 by Beze Creative.
+For the developer taking this live on Vercel. Prepared 2026-07-15 by Beze Creative. **Package v2** (same day): if you already deployed v1, redeploy with this index.html; nothing else in the bundle changed.
+
+## What changed in v2 (client review round 1 response)
+
+1. **Two new chart sections** in the gated region, between the calculator and the closing CTA: "When prices change, payments fail more often" and "They come back, and fast." Their data is validated against AMP's v4 source files.
+2. **A privacy line on the gate popup**, linking to https://ampmemberships.com/privacy-policy/ (opens in a new tab). This is the only external link the gate has; the page still makes zero third-party *requests* (fonts and assets stay same-origin).
+3. Heads-up for client feedback routing: the client's reference mockups are an OLD superseded spec with different numbers (e.g. 23.1% and "nearly 3×" where the live page correctly says 12.2% and +55%). If review notes claim the new charts' numbers are wrong, route to Nathan; do not change figures.
 
 ## What this is
 

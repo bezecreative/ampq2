@@ -1161,6 +1161,16 @@ input[type=range].cslider::-moz-range-thumb {
   .band, .feature-intro { grid-template-columns: 1fr; }
 }
 
+/* ————— price-change + comeback sections (client round 2, v4 CSVs 03/05) ————— */
+.pc-rows { margin-top: 20px; display: grid; gap: 4px; }
+.pc-rows .lb-row, .tcb .lb-row { grid-template-columns: minmax(120px, 190px) 1fr 56px; }
+.lb-row.pc-hi .lb-bar i { background: #545D6E; } /* elevated failure: the darker end of the grey ramp */
+.tcb { margin-top: 4px; }
+.tcb .lb-label { margin: 16px 0 5px; }
+@media (max-width: 640px) {
+  .pc-rows .lb-row, .tcb .lb-row { grid-template-columns: 116px 1fr 52px; }
+}
+
 /* ————— THE GATE · "Frost" (Gate H, login lab winner — LOGIN-PAGE-RESULTS.md) ————— */
 .gate-h { position: relative; }
 .gated { display: flex; flex-direction: column; gap: 12px; min-width: 0; position: relative; }
@@ -1226,6 +1236,10 @@ input[type=range].cslider::-moz-range-thumb {
 .gate-form .submit:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.4); }
 .gate-form .submit:focus-visible { outline: 2px solid #5EB4FF; outline-offset: 3px; }
 .gate-form .submit[disabled] { cursor: default; transform: none; }
+.gate-fine { margin-top: 12px; font-size: .68rem; color: rgba(255,255,255,.45); }
+.gate-fine a { color: rgba(255,255,255,.68); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; transition: color .2s; }
+.gate-fine a:hover { color: #fff; }
+.gate-fine a:focus-visible { outline: 2px solid #5EB4FF; outline-offset: 2px; border-radius: 2px; }
 @media (prefers-reduced-motion: no-preference) {
   .gate-h.reading .submit { animation: readPulse 1.1s ease-in-out infinite; }
   @keyframes readPulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
@@ -1234,7 +1248,7 @@ input[type=range].cslider::-moz-range-thumb {
 }
 .gate-done { display: none; }
 .gate-h.is-done .gate-done { display: block; }
-.gate-h.is-done .gate-form { display: none; }
+.gate-h.is-done .gate-form, .gate-h.is-done .gate-fine { display: none; }
 .done-mark {
   width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
   margin-bottom: 14px; background: rgba(94,180,255,.18);
@@ -1374,6 +1388,7 @@ input[type=range].cslider::-moz-range-thumb {
             </div>
             <button class="submit" type="submit">Continue Reading</button>
           </form>
+          <p class="gate-fine">Your info is covered by AMP’s <a href="https://ampmemberships.com/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a>.</p>
           <div class="gate-done">
             <div class="done-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 6.5"/></svg></div>
             <h3>You’re In.</h3>
@@ -1685,6 +1700,92 @@ input[type=range].cslider::-moz-range-thumb {
         <!-- TODO: swap for AMP's real demo/deep link (e.g. dashboard dunning setting) before launch -->
         <a href="https://ampmemberships.com/?utm_source=washintel&utm_medium=report&utm_campaign=q2-2026-calculator" target="_blank" rel="noopener">Start with dunning today →</a>
       </div>
+    </section>
+
+
+    <!-- ————— PRICE CHANGES: failure risk spikes right when revenue moves (v4 CSV 05) ————— -->
+    <section class="band">
+      <article class="chart-card reveal">
+        <div class="chart-head">
+          <h3 class="chart-title">When prices change, payments <span class="hl">fail more often</span></h3>
+          <span class="chart-note">First-attempt failure rate · both cohorts paid their previous invoice</span>
+        </div>
+        <p class="chart-sub">The first invoice at a new price (41,724 members) against the next invoice with no price change (10.9M invoices). Both groups were in good standing when the price moved.</p>
+        <div class="pc-rows">
+          <div class="lb-row neg">
+            <span class="lb-st">No price change</span>
+            <div class="lb-bar"><i style="--w:53%"></i></div>
+            <span class="lb-val">7.9%</span>
+          </div>
+          <div class="lb-row pc-hi">
+            <span class="lb-st">First invoice at a new price</span>
+            <div class="lb-bar"><i style="--w:81%"></i></div>
+            <span class="lb-val">12.2%</span>
+          </div>
+        </div>
+      </article>
+      <aside class="insight-card reveal" style="transition-delay:.12s">
+        <span class="insight-tag"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>AMP Insight</span>
+        <div class="aside-stat">
+          <span class="as-num" data-count="55" data-decimals="0" data-prefix="+" data-suffix="%">+55%</span>
+          <span class="as-cap">higher failure on the first invoice at a new price</span>
+        </div>
+        <p>Both groups paid their previous invoice, so this isn’t members already in payment trouble. The first bill at a new price still fails <strong>55% more often</strong> than the no-change baseline. <strong>Planning a price change? Have recovery live before the first new-price billing cycle.</strong></p>
+      </aside>
+    </section>
+
+    <!-- ————— THEY COME BACK: canceled members rejoin, failed payments most of all (v4 CSVs 03/08) ————— -->
+    <section class="band">
+      <article class="chart-card reveal">
+        <div class="chart-head">
+          <h3 class="chart-title">They come back, <span class="hl">and fast</span></h3>
+          <span class="chart-note">Cumulative share who rejoin the same wash · 307,047 canceled memberships · 20 operators</span>
+        </div>
+        <p class="chart-sub">Members who start a new membership at the same wash after canceling, matched by email, day 8 to 90 after the plan ended. Week-one re-signups are excluded as likely administrative.</p>
+        <div class="tcb">
+          <div class="lb-label">Within 30 days</div>
+          <div class="lb-row">
+            <span class="lb-st">Failed payments</span>
+            <div class="lb-bar"><i style="--w:51%"></i></div>
+            <span class="lb-val">8.4%</span>
+          </div>
+          <div class="lb-row neg">
+            <span class="lb-st">Chose to cancel</span>
+            <div class="lb-bar"><i style="--w:26%"></i></div>
+            <span class="lb-val">4.3%</span>
+          </div>
+          <div class="lb-label">Within 60 days</div>
+          <div class="lb-row">
+            <span class="lb-st">Failed payments</span>
+            <div class="lb-bar"><i style="--w:81%"></i></div>
+            <span class="lb-val">13.5%</span>
+          </div>
+          <div class="lb-row neg">
+            <span class="lb-st">Chose to cancel</span>
+            <div class="lb-bar"><i style="--w:45%"></i></div>
+            <span class="lb-val">7.5%</span>
+          </div>
+          <div class="lb-label">Within 90 days</div>
+          <div class="lb-row">
+            <span class="lb-st">Failed payments</span>
+            <div class="lb-bar"><i style="--w:100%"></i></div>
+            <span class="lb-val">16.6%</span>
+          </div>
+          <div class="lb-row neg">
+            <span class="lb-st">Chose to cancel</span>
+            <div class="lb-bar"><i style="--w:58%"></i></div>
+            <span class="lb-val">9.7%</span>
+          </div>
+        </div>
+      </article>
+      <aside class="insight-card reveal" style="transition-delay:.12s">
+        <span class="insight-tag"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>AMP Insight</span>
+        <div class="aside-stat">
+          <span class="as-num" data-count="1.7" data-decimals="1" data-suffix="×">1.7×</span>
+          <span class="as-cap">the return rate of deliberate cancels, among members lost to failed payments</span>
+        </div>
+        <p>Members lost to a declined card <strong>never decided to quit</strong>, and it shows: they rejoin at 1.7× the rate of deliberate cancels, and half of those returns land in the first 30 days. The window is short, and <strong>5 in 6 never make it back on their own</strong>. One more tell from the cancel reasons: members who left over <strong>price or budget</strong> return almost like failed payments do, 14.2% by day 90. A cancel isn’t always goodbye.</p>
+      </aside>
     </section>
 
     <!-- ————— WHY AMP FINALE: the closing act — this report is the demo ————— -->
