@@ -319,6 +319,9 @@ body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 .q-pop b { display: block; font-size: .76rem; font-weight: 800; color: var(--brand-deep); }
 .q-pop p { font-size: .74rem; color: var(--ink-secondary); line-height: 1.55; margin: 2px 0 12px; }
 .q-pop p:last-child { margin-bottom: 0; }
+.q-pop p strong { color: var(--ink); font-weight: 700; }
+.q-pop.wide { width: min(430px, calc(100vw - 40px)); } /* the two-layers explainer needs more room than a tip */
+.q-wrap.tl-tip { display: inline-block; margin-top: 12px; } /* explainer chip under the Two Layers heading — scoped so the "?" helpers beside the seg toggles stay vertically centered */
 
 .ghost-link {
   font-family: inherit; font-size: .78rem; font-weight: 700; cursor: pointer;
@@ -386,6 +389,23 @@ svg text { font-family: 'Manrope', sans-serif; }
 .mbar.on { filter: brightness(1.12); }
 .legend { display: flex; gap: 18px; margin-top: 12px; flex-wrap: wrap; }
 .legend span { display: inline-flex; align-items: center; gap: 7px; font-size: .72rem; font-weight: 600; color: var(--ink-secondary); }
+/* region-view legend entries are toggles: click to grey a region out of the chart */
+.legend .lg-toggle {
+  appearance: none; -webkit-appearance: none; background: none; border: 0; padding: 0;
+  font: inherit; display: inline-flex; align-items: center; gap: 7px;
+  font-size: .72rem; font-weight: 600; color: var(--ink-secondary); cursor: pointer;
+  transition: color .2s;
+}
+.legend .lg-toggle:hover { color: var(--ink); }
+.legend .lg-toggle.off { color: var(--ink-faint); }
+/* the toggle's checkbox: filled with the region color when on, hollow when off */
+.legend .cbx {
+  width: 15px; height: 15px; border-radius: 4px; flex-shrink: 0;
+  border: 1.5px solid #C4C9D4; background: transparent;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background .2s, border-color .2s;
+}
+.legend .cbx svg { width: 9px; height: 9px; display: block; }
 .legend i { width: 16px; height: 3px; border-radius: 2px; display: inline-block; }
 .legend i.sq { width: 10px; height: 10px; border-radius: 3px; }
 
@@ -397,6 +417,128 @@ svg text { font-family: 'Manrope', sans-serif; }
 }
 .card-insight strong { font-weight: 700; }
 .card-insight .k { color: var(--brand-body); font-weight: 800; font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; margin-right: 8px; }
+
+/* client note 2026-07-17: the AMP act's insight boxes are collapsible ("keep
+   things simple and clean"). Collapsed, a card-insight is just its Insight chip;
+   a wide aside keeps its tag + stat visible (the receipt stays on the page) and
+   tucks the paragraph + chips. Wired by collapsibleInsights(); without JS
+   everything renders expanded. */
+.ci-toggle { appearance: none; -webkit-appearance: none; background: none; border: 0; padding: 0; font: inherit; cursor: pointer; text-align: left; }
+.ci-toggle .chev { width: 13px; height: 13px; vertical-align: -2px; margin-left: 6px; color: var(--brand-body); transition: transform .2s var(--ease-out); }
+.ci-toggle[aria-expanded="true"] .chev { transform: rotate(180deg); }
+/* round 2 (Nathan): TWO full states only, closed (tag + stat, all data present)
+   and open. The hidden body eases open and closed (max-height + opacity, never a
+   jump), and on hover a CLOSED box opens partway: the first line of its own body
+   ghosts in under a fade mask to say there's more. The whole collapsed box is
+   the open target (wired in collapsibleInsights). */
+.ci-collapsed { cursor: pointer; }
+.card-insight .ci-body { display: block; overflow: hidden; max-height: 240px; margin-top: 8px; opacity: 1; }
+.card-insight.ci-collapsed .ci-body { max-height: 0; opacity: 0; margin-top: 0; }
+/* round 3 (Nathan): a closed aside shows ONLY the tag — the stat rides in the
+   eased body too, so the box collapses to a slim chip row. Row gaps ease shut
+   with it (gap is animatable). */
+.insight-card[data-collapse] > .aside-stat, .insight-card[data-collapse] > p, .insight-card[data-collapse] > .insight-chips { overflow: hidden; max-height: 240px; opacity: 1; }
+.insight-card.ci-collapsed > .aside-stat { max-height: 0; opacity: 0; margin: 0; }
+.insight-card.ci-collapsed > p { max-height: 0; opacity: 0; margin-top: 0; }
+.insight-card.ci-collapsed > .insight-chips { max-height: 0; opacity: 0; padding-top: 0; margin-top: 0; }
+.insight-card.ci-collapsed { row-gap: 0; }
+/* NCS bands: a collapsed aside shrinks to its chip instead of stretching to the
+   chart's full height as an empty ice slab */
+.band > .insight-card.ci-collapsed { align-self: start; }
+@media (prefers-reduced-motion: no-preference) {
+  .card-insight .ci-body,
+  .insight-card[data-collapse] > .aside-stat,
+  .insight-card[data-collapse] > p,
+  .insight-card[data-collapse] > .insight-chips {
+    transition: max-height .55s var(--ease-out), opacity .4s ease, margin .55s var(--ease-out), padding .55s var(--ease-out);
+  }
+  .insight-card[data-collapse] { transition: row-gap .55s var(--ease-out); }
+}
+/* the hover peek: the first thing inside the closed box ghosts in partway (the
+   stat for asides, the body's first line for card-insights); hover-capable +
+   motion only; the fade mask clears on full open */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .card-insight.ci-collapsed:hover .ci-body,
+  .insight-card.ci-collapsed:hover > .aside-stat {
+    opacity: .6;
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 96%);
+    mask-image: linear-gradient(180deg, #000 0%, transparent 96%);
+  }
+  .card-insight.ci-collapsed:hover .ci-body { max-height: 1.6em; }
+  .insight-card.ci-collapsed:hover > .aside-stat { max-height: 2.2em; }
+}
+
+/* design round 2026-07-17: Act-1 KPI ledger (kpi-lab concept B) — numbers on a
+   shared right-aligned rail, story in the copy, the $7 row in ice */
+.ledger { margin-top: 14px; }
+.lg-row { display: grid; grid-template-columns: 218px 1fr; gap: clamp(18px, 3vw, 44px); align-items: baseline; padding: 20px 0; border-bottom: 1px solid var(--hairline); }
+.lg-row:last-child { border-bottom: 0; }
+.lg-row .n { font-size: clamp(1.9rem, 3vw, 2.4rem); font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; text-align: right; }
+.lg-row .n small { font-size: .95rem; font-weight: 700; color: var(--ink-secondary); }
+.lg-row p { font-size: .95rem; color: var(--ink-secondary); max-width: 60ch; }
+.lg-row p strong { color: var(--ink); font-weight: 700; }
+.lg-row.hot { background: var(--ice-2); border: 1px solid rgba(11,117,225,.12); border-radius: var(--r-inner); padding: 20px 22px; margin-top: 6px; grid-template-columns: calc(218px - 23px) 1fr; } /* inset padding + border deducted so the number rail stays true */
+.lg-row.hot .n { color: var(--brand-body); }
+.lg-row.hot p { color: var(--ink); }
+@media (max-width: 640px) {
+  .lg-row { grid-template-columns: 1fr; gap: 2px; padding: 14px 0; }
+  .lg-row .n { text-align: left; }
+  .lg-row.hot { grid-template-columns: 1fr; padding: 14px 16px; }
+}
+
+/* chart-head variant: title + note stacked left (frees the right corner for a chip) */
+.ch-stack .chart-note { display: block; margin-top: 2px; }
+
+/* Nathan 2026-07-17: two chart pairs sit side by side (come-back + boomerang;
+   card-type + promo cliff) — full over/under was too much. Insight boxes still
+   stack UNDER (now under the pair, spanning). Collapses below 940. */
+.card-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch; }
+.card-pair > .chart-card { min-width: 0; }
+@media (max-width: 940px) { .card-pair { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .card-pair { gap: 10px; } }
+
+/* design round 2026-07-17 (rounds 2–3): Act-1 KPI as kpi-lab concept C "the
+   sentence" — one magazine-scale sentence, numbers set heavy inside it, receipts
+   underneath. Round 3: OUT of the white card (an on-canvas typographic moment,
+   act-break family), scaled up and running the full column width. */
+.kpi-sentence { padding: 14px 10px 8px; }
+.sentence { margin-top: 22px; }
+.sentence p.big {
+  font-size: clamp(1.7rem, 3.4vw, 2.9rem); font-weight: 500; line-height: 1.35;
+  letter-spacing: -.015em; color: var(--ink-secondary);
+}
+.sentence p.big b { font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
+.sentence p.big b.money { color: var(--brand-body); }
+.sentence .receipts { margin-top: 16px; font-size: .78rem; color: var(--ink-faint); font-weight: 600; }
+
+/* Nathan 2026-07-17: the 31% closes Act 4 as an on-canvas FULL-WIDTH sentence
+   (same grammar as the Act-1 kpi-sentence: data never tucked in a corner),
+   follow-up paragraph and View-the-data chip beneath */
+.stat-close > div { width: 100%; }
+.stat-close .sentence { margin-top: 0; }
+.stat-close .sentence p.big { max-width: none; }
+.stat-close p:not(.big) { max-width: none; margin-top: 12px; }
+.stat-close p strong { color: var(--ink); font-weight: 700; }
+.stat-close .insight-chips { margin-top: 14px; padding-top: 0; }
+
+/* design round 2026-07-17: operator mandate as a TITLE SECTION — sec-head type on
+   canvas, four bold-led action blocks in a 2×2 grid with hairline left rules */
+.oper-head { display: block; }
+.oper-acts { margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(18px, 2.4vw, 30px) clamp(28px, 3.4vw, 52px); }
+.oper-acts .oa { margin: 0; padding-left: 16px; border-left: 1px solid rgba(24,29,39,.14); font-size: .9rem; max-width: 60ch; }
+.oper-acts .oa b { color: var(--ink); font-weight: 700; }
+.oper-acts .oa span { display: block; color: var(--ink-secondary); margin-top: 3px; }
+@media (max-width: 640px) {
+  .oper-acts { grid-template-columns: 1fr; }
+}
+
+/* client comment 2026-07-17: the reinstated two-layers blurb — one card, two
+   bold-led columns (retries | dunning) and a closing line under a hairline */
+.duo { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px clamp(24px, 3vw, 44px); }
+.duo p, .duo-close { font-size: .85rem; color: var(--ink-secondary); line-height: 1.6; }
+.duo p strong, .duo-close strong { color: var(--ink); font-weight: 700; }
+.duo-close { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--hairline); }
+@media (max-width: 640px) { .duo { grid-template-columns: 1fr; } }
 
 /* pro tip: a small chip beside each chart's controls — reading help lives at the
    point of confusion, pulled on demand, instead of competing with the Insight below.
@@ -565,6 +707,11 @@ svg text { font-family: 'Manrope', sans-serif; }
 /* state performance tile map */
 .state-svg { display: block; width: 100%; max-width: 760px; margin: 18px auto 0; }
 .state-svg rect { cursor: pointer; transition: filter .2s; }
+/* fisheye hover: tiles transform around their own centers */
+.state-svg .tile { transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: no-preference) {
+  .state-svg .tile { transition: transform .28s var(--ease-out); }
+}
 .state-svg rect:hover { filter: brightness(1.14) saturate(1.05); }
 .ramp-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
 .ramp-row .ramp { width: 190px; height: 8px; border-radius: 999px; background: linear-gradient(90deg, #545D6E 0%, #EEF0F3 50%, #0B75E1 100%); }
@@ -1475,7 +1622,8 @@ input[type=range].cslider::-moz-range-thumb {
       <div class="hero-top">
         <span class="hero-pill">Q2 2026 Industry Insights</span>
       </div>
-      <h1>The Quarterly Pulse of the Wash Industry.</h1>
+      <!-- client note 2026-07-17: a competitor publishes a "Pulse Report"; renamed from "The Quarterly Pulse of…" -->
+      <h1>The Quarterly State of the Wash Industry.</h1>
       <p class="hero-sub">National wash-count benchmarks from <strong>75% of U.S. tunnel wash sites</strong>. Plus this quarter’s spotlight: the <strong>12.9 million recharges</strong> that reveal where membership revenue silently leaks, and how much of it is recoverable.</p>
       <div class="hero-powered">
         <span>Powered by</span>
@@ -1483,7 +1631,9 @@ input[type=range].cslider::-moz-range-thumb {
         <span class="pw"><i></i><svg class="ncs-logo" viewBox="0 0 203.73 62.89" fill="currentColor" role="img" aria-label="NCS"><path d="M.23,60.53L19.14,2.36c.57-1.57,1.59-2.36,3.05-2.36h13.8c1.22,0,2.05.52,2.48,1.57l12.07,29c.02.23.08.35.2.35.17,0,.28-.17.31-.52L60.19,2.36c.57-1.57,1.59-2.36,3.05-2.36h13.71c1.63,0,2.16.79,1.58,2.36l-18.9,58.17c-.57,1.57-1.62,2.36-3.13,2.36h-13.71c-1.22,0-2.05-.52-2.48-1.57l-11.99-29.09c-.08-.23-.17-.35-.29-.35-.06,0-.16.17-.31.52l-9.13,28.12c-.57,1.57-1.59,2.36-3.05,2.36H1.73c-1.57,0-2.07-.79-1.5-2.36Z"/><path d="M123.84,46.38c1.51,0,2.04.76,1.58,2.27l-3.87,11.88c-.57,1.57-1.59,2.36-3.05,2.36h-35.02c-4.14,0-7.17-1.43-9.12-4.28-1.94-2.85-2.23-6.35-.87-10.48l10.91-33.36c1.78-5.47,4.11-9.3,7-11.49,2.88-2.18,7.06-3.28,12.54-3.28h35.02c1.45,0,1.95.79,1.5,2.36l-3.87,11.88c-.46,1.51-1.45,2.27-2.97,2.27h-29.43c-.52,0-.91.32-1.15.96l-9.14,28.04c-.13.58.07.87.59.87h29.35Z"/><path d="M152.74,42.97c1.05,0,1.38.5.99,1.48l-.62,2.1c-.29.76-.06,1.14.7,1.14h20.88c.81,0,1.34-.38,1.57-1.14l2.24-6.99c.29-.76.03-1.14-.79-1.14h-24.81c-4.02,0-6.95-1.38-8.8-4.15-1.85-2.76-2.15-6.16-.89-10.18l3.25-9.78c1.69-5.18,3.97-8.87,6.86-11.05,2.88-2.18,6.92-3.28,12.1-3.28h27.86c4.02,0,6.95,1.38,8.8,4.15,1.85,2.77,2.15,6.16.89,10.18l-1.34,4.11c-.39.99-1.05,1.48-1.98,1.48h-14.15c-1.05,0-1.38-.49-.99-1.48l.62-2.1c.29-.76.05-1.14-.7-1.14h-20c-.82,0-1.34.38-1.57,1.14l-2.24,6.99c-.29.76-.03,1.14.79,1.14h24.81c4.02,0,6.95,1.38,8.8,4.15,1.85,2.77,2.15,6.16.89,10.18l-3.25,9.78c-1.75,5.18-4.06,8.87-6.95,11.05-2.88,2.18-6.89,3.28-12.01,3.28h-28.74c-4.02,0-6.97-1.38-8.84-4.15-1.88-2.77-2.16-6.16-.85-10.18l1.34-4.11c.39-.99,1.05-1.48,1.98-1.48h14.15Z"/></svg><b>Wash Intel</b></span>
         <span class="pw"><i></i><b>Rubicon Analytics</b></span>
       </div>
-      <p class="hero-meta">12,879,034 recharges · 26 operators · July 2025 – June 2026 · Monthly plans</p>
+      <!-- client note 2026-07-17: recharge-count meta removed from the hero; it described the AMP act,
+           not the NCS benchmarks that immediately follow, and read as misleading. The scope line lives
+           on the AMP act's cover + charts instead. -->
     </header>
 
     <!-- ————— NATIONAL BENCHMARKS ————— -->
@@ -1576,11 +1726,15 @@ input[type=range].cslider::-moz-range-thumb {
     </section>
 
     <div class="row-notes reveal">
-      <div class="card-insight" id="regionInsight"><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>Total-market volume remained positive through June, with <strong>East (+1.8%)</strong> and <strong>West (+1.6%)</strong> offsetting a modest Central decline (−0.8%). The market is still expanding overall, with growth concentrated in regions capturing demand most effectively.</div>
+      <!-- Nathan 2026-07-17: NCS insights collapse like the AMP ones. Static head +
+           a body span the view-toggle JS writes into, so the collapse wiring survives
+           every refill. -->
+      <div class="card-insight" id="regionInsight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span><span id="regionInsightBody">Total-market volume remained positive through June, with <strong>East (+1.8%)</strong> and <strong>West (+1.6%)</strong> offsetting a modest Central decline (−0.8%). The market is still expanding overall, with growth concentrated in regions capturing demand most effectively.</span></div>
     </div>
 
 
-    <section class="band">
+    <!-- Nathan 2026-07-17: trends band unwrapped — chart full width, insight stacked
+         below it (wide grammar), matching the AMP act's stacked rhythm. -->
       <article class="chart-card reveal">
         <div class="chart-head">
           <h3 class="chart-title">Same-site volume, <span class="hl" id="trendScope">month by month</span></h3>
@@ -1607,7 +1761,7 @@ input[type=range].cslider::-moz-range-thumb {
         <div class="legend" id="monthLegend"></div>
       </article>
 
-      <aside class="insight-card reveal" style="transition-delay:.12s">
+      <aside class="insight-card wide reveal" data-collapse>
         <span class="insight-tag"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>
         <div class="aside-stat">
           <span class="as-num" id="trendNum"></span>
@@ -1615,7 +1769,6 @@ input[type=range].cslider::-moz-range-thumb {
         </div>
         <p id="trendInsight"></p>
       </aside>
-    </section>
 
     <!-- ————— STATE PERFORMANCE ————— -->
     <div class="sec-head" id="states">
@@ -1674,7 +1827,7 @@ input[type=range].cslider::-moz-range-thumb {
           <div id="cmpRows"></div>
           <p class="cmp-hint" id="cmpHint">Pick up to six states to set side by side.</p>
         </div>
-        <div class="card-insight" id="stateInsight"></div>
+        <div class="card-insight" id="stateInsight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span><span id="stateInsightBody"></span></div>
       </aside>
     </section>
 
@@ -1693,30 +1846,26 @@ input[type=range].cslider::-moz-range-thumb {
       <div class="src-row light"><span class="lbl">Data</span><b>AMP Platform</b><span class="pw"><i></i><b>12.9M recharges · 26 operators</b></span></div>
     </section>
 
-    <article class="chart-card reveal">
+    <!-- design round 2026-07-17 (round 3): the sentence leaves the white card — an
+         on-canvas typographic moment (act-break family), scaled up to run the full
+         column instead of binding left at 30ch. -->
+    <section class="kpi-sentence reveal" aria-label="The payment health headline numbers">
       <div class="chart-head">
         <h3 class="chart-title">Most failed payments fix themselves. <span class="hl">The rest aren’t gone for good.</span></h3>
         <span class="chart-note">AMP Platform · 12.9M recharges · 26 operators · Jul 2025 – Jun 2026</span>
       </div>
-      <!-- v6 tryout · KPI trio on the NEW verified grain (first charge attempt).
-           Decision knob #1: "9.3%"/"62.9%" (shown) vs "about 1 in 11"/"about 6 in 10"
-           (in the copy). v6's "half" for the recover stat undersells the measured 62.9%
-           and was rejected. $7/member/yr survives (9.29% × (1−0.629) = 3.45% ≈ old 3.4%). -->
-      <div class="kpi-flow">
-        <div class="fs-row">
-          <span class="fs-num" data-count="9.3" data-suffix="%">9.3%</span>
-          <p>of monthly recharges fail on the first attempt: 1 in 11 members whose payment silently bounces.</p>
-        </div>
-        <div class="fs-row">
-          <span class="fs-num" data-count="62.9" data-suffix="%">62.9%</span>
-          <p><strong>But</strong> most failures fix themselves. Automatic retries catch the card on a better day.</p>
-        </div>
-        <div class="fs-row emph">
-          <span class="fs-num">$7<small>/member/yr</small></span>
-          <p><strong>Leaving</strong> 3.45% of every recharge you attempt, about 1 in 29, simply never collected.</p>
-        </div>
+      <div class="sentence">
+        <p class="big">Every month <b data-count="9.3" data-suffix="%">9.3%</b> of recharges fail. <b data-count="62.9" data-suffix="%">62.9%</b> quietly fix themselves. The rest walks away with <b class="money">$7 per member, every year.</b></p>
+        <p class="receipts">1 in 11 members fails on the first attempt · 3.45% of all recharges are never collected, about 1 in 29</p>
       </div>
-    </article>
+      <!-- A/B swap-back · concept B "the ledger" (tried earlier the same day):
+      <div class="ledger">
+        <div class="lg-row"><span class="n num" data-count="9.3" data-suffix="%">9.3%</span><p>of monthly recharges fail on the first attempt. That's <strong>1 in 11 members</strong> whose payment silently bounces.</p></div>
+        <div class="lg-row"><span class="n num" data-count="62.9" data-suffix="%">62.9%</span><p>of those failures never need you. <strong>Automatic retries</strong> catch the card on a better day.</p></div>
+        <div class="lg-row hot"><span class="n num">$7<small>/member/yr</small></span><p>walks away with what's left: <strong>3.45% of every recharge you attempt</strong>, about 1 in 29, simply never collected.</p></div>
+      </div>
+      -->
+    </section>
 
     <!-- v6 tryout · lifecycle strip (v6's genuinely good addition). Decision knob #7:
          this placement right after the KPI card, OR move into Act 4's sec-head area —
@@ -1725,8 +1874,17 @@ input[type=range].cslider::-moz-range-thumb {
          illustrative), each shown with a visible est. tag, PENDING Nathan's yes. -->
     <article class="chart-card reveal">
       <div class="chart-head">
-        <h3 class="chart-title">How a failed payment <span class="hl">gets recovered</span></h3>
-        <span class="chart-note">The full path, from prevention to win-back</span>
+        <div class="ch-stack">
+          <h3 class="chart-title">How a failed payment <span class="hl">gets recovered</span></h3>
+          <span class="chart-note">The full path, from prevention to win-back</span>
+        </div>
+        <span class="q-wrap">
+          <button class="protip-chip" id="lifecycleTipBtn" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1.1 2h5a3.5 3.5 0 0 1 1.1-2A6 6 0 0 0 12 3z"/></svg>Pro tip</button>
+          <div class="q-pop" id="lifecycleTipPop" role="tooltip">
+            <b>Pro tip</b>
+            <p class="tip-p">Stripe retries recover 59 of every 100 failed invoices. AMP dunning reaches a portion of the remaining 41 and recovers an estimated ~4 more, limited by reachability: 25% have no phone on file and 23% hit the daily send cap. Today, 15 operators have dunning campaigns configured but not turned on.</p>
+          </div>
+        </span>
       </div>
       <div class="lifecycle">
         <div class="lc-stage">
@@ -1762,8 +1920,10 @@ input[type=range].cslider::-moz-range-thumb {
     </article>
 
     <!-- ————— ACT 2 "THE PIVOT": they come back (CSV 03), then why they left (CSV 08).
-         Stacked chart→insight per the 2026-07-16 client meeting: no side-by-side
-         bands in the AMP act ("stacked makes a lot more sense for the AMP data"). ————— -->
+         Insight boxes still STACK under charts (2026-07-16 client meeting), but per
+         Nathan 2026-07-17 the two CHART CARDS sit side by side (.card-pair): full
+         over/under was too much. The 1.7× aside spans below the pair. ————— -->
+    <div class="card-pair">
       <article class="chart-card reveal">
         <div class="chart-head">
           <h3 class="chart-title">They come back, <span class="hl">and fast</span></h3>
@@ -1809,15 +1969,6 @@ input[type=range].cslider::-moz-range-thumb {
           </div>
         </div>
       </article>
-      <aside class="insight-card wide reveal">
-        <span class="insight-tag"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>AMP Insight</span>
-        <div class="aside-stat">
-          <span class="as-num" data-count="1.7" data-decimals="1" data-suffix="×">1.7×</span>
-          <span class="as-cap">the return rate of deliberate cancels, among members lost to failed payments</span>
-        </div>
-        <p>Members lost to a failed payment rejoin at 1.7× the rate of deliberate cancels, and half of those returns land inside 30 days. <strong>Treat a failed payment as a save opportunity, not a churn stat.</strong></p>
-      </aside>
-
     <article class="chart-card reveal">
       <div class="chart-head">
         <h3 class="chart-title">Why they left predicts <span class="hl">whether they come back</span></h3>
@@ -1866,7 +2017,7 @@ input[type=range].cslider::-moz-range-thumb {
         <span><i class="sq" style="background:#5EB4FF"></i>Other circumstantial exits</span>
         <span><i class="sq" style="background:#C4C9D4"></i>Deliberate exits</span>
       </div>
-      <div class="card-insight"><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span><strong>Circumstantial exits</strong> (a failed card, a sold car, a tight budget) return at the highest rates; <strong>deliberate exits</strong> (a competitor, a bad experience) rarely do. <strong>Price and budget cancels belong in your win-back audience: a price cancel is a pause, not a goodbye.</strong></div>
+      <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span><strong>Circumstantial exits</strong> (a failed card, a sold car, a tight budget) return at the highest rates; <strong>deliberate exits</strong> (a competitor, a bad experience) rarely do. <strong>Price and budget cancels belong in your win-back audience: a price cancel is a pause, not a goodbye.</strong></div>
 
       <!-- v6 tryout A/B · original 8-bucket ABSOLUTE version (chart-sub + rows + insight).
            Restore this block and remove the qualitative one above to switch back.
@@ -1884,9 +2035,18 @@ input[type=range].cslider::-moz-range-thumb {
       <div class="card-insight"><span class="k">Insight</span>Circumstantial exits (a failed card, a sold car, a tight budget) return at 14–17%; deliberate exits return at 2–8%. Price and budget cancels belong in your win-back audience: a price cancel is a pause, not a goodbye.</div>
       -->
     </article>
+    </div>
+      <aside class="insight-card wide reveal" data-collapse>
+        <span class="insight-tag"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>AMP Insight</span>
+        <div class="aside-stat">
+          <span class="as-num" data-count="1.7" data-decimals="1" data-suffix="×">1.7×</span>
+          <span class="as-cap">the return rate of deliberate cancels, among members lost to failed payments</span>
+        </div>
+        <p>Members lost to a failed payment rejoin at 1.7× the rate of deliberate cancels, and half of those returns land inside 30 days. <strong>Treat a failed payment as a save opportunity, not a churn stat.</strong></p>
+      </aside>
 
     <div class="act-break reveal">
-      <p class="ab-big">Still, <strong>5 in 6</strong> don’t make it back on their own.</p>
+      <p class="ab-big">Still, <strong>5 out of 6</strong> don’t make it back on their own.</p>
       <p class="ab-sub">Most of these failures are mechanical, not personal. Here’s what’s actually declining, and when.</p>
     </div>
 
@@ -1926,13 +2086,16 @@ input[type=range].cslider::-moz-range-thumb {
           <div class="lb-bar"><i style="--w:40%"></i></div><span class="lb-val">40%</span>
         </div>
       </div>
-      <div class="card-insight"><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span><strong>Insufficient funds dominates and recovers best.</strong> It’s a timing problem: the card has money again a few days later, so retries work. The hardest to save is <strong>card can’t support</strong>, which is mostly prepaid.</div>
+      <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span><strong>Insufficient funds dominates and recovers best.</strong> It’s a timing problem: the card has money again a few days later, so retries work. The hardest to save is <strong>card can’t support</strong>, which is mostly prepaid.</div>
     </article>
 
     <!-- v6 tryout · card-type rebuilt to v6's shape: two lb-rows (credit reliable = blue,
          debit = grey) with a volume column; prepaid moves into the insight. NOTE: 15×,
          not the old 16× — the multiple changed with the new grain (56.6 / 3.7 = 15.2).
-         The fs-row trio version is kept commented below for A/B. -->
+         The fs-row trio version is kept commented below for A/B.
+         Nathan 2026-07-17: paired side by side with the promo-cliff card (.card-pair);
+         the +55% aside spans below the pair. -->
+    <div class="card-pair">
     <article class="chart-card reveal">
       <div class="chart-head">
         <h3 class="chart-title">Debit fails <span class="hl">3× more often</span> than credit</h3>
@@ -1953,7 +2116,7 @@ input[type=range].cslider::-moz-range-thumb {
           <span class="lb-vol">54% of volume</span>
         </div>
       </div>
-      <div class="card-insight"><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>Prepaid cards fail <strong>15× more often</strong> than credit, more than half of first attempts, but they’re only ~2% of volume. <strong>Seeing high involuntary churn? Check your prepaid percentage first.</strong></div>
+      <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>Prepaid cards fail <strong>15× more often</strong> than credit, more than half of first attempts, but they’re only ~2% of volume. <strong>Seeing high involuntary churn? Check your prepaid percentage first.</strong></div>
 
       <!-- v6 tryout A/B · original fs-row trio (52 / 11 / 3, invoice grain). Restore to switch back.
       <p class="chart-sub">Whole-number failure rates across 12.9M recharges.</p>
@@ -1987,7 +2150,8 @@ input[type=range].cslider::-moz-range-thumb {
           </div>
         </div>
       </article>
-      <aside class="insight-card wide reveal">
+    </div>
+      <aside class="insight-card wide reveal" data-collapse>
         <span class="insight-tag"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>AMP Insight</span>
         <div class="aside-stat">
           <span class="as-num" data-count="55" data-decimals="0" data-prefix="+" data-suffix="%">+55%</span>
@@ -2006,7 +2170,18 @@ input[type=range].cslider::-moz-range-thumb {
              Then Texts" (client meeting liked the layers heading) OR v6's broader "Failed
              Payment Recovery Strategies". Dunning is defined at first use as email + text. -->
         <h2>Two Layers of Recovery: Retries, Then Texts</h2>
-        <p>Automatic retries quietly re-attempt the charge over several days: they fix timing problems. The second layer is dunning: an email and text to the member with a one-tap pay link, reaching the expired, replaced, and over-limit cards retries can never fix.</p>
+        <p>Automatic retries fix the failures that fix themselves. The rest need the member to act, and that takes a message: dunning, an email and text with a one-tap pay link.</p>
+        <!-- Nathan 2026-07-17: the two-layers explainer chip lives HERE, under the heading
+             that names the layers (it read as disjointed on the curve card). -->
+        <span class="q-wrap tl-tip">
+          <button class="protip-chip" id="twoLayersBtn" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1.1 2h5a3.5 3.5 0 0 1 1.1-2A6 6 0 0 0 12 3z"/></svg>How they work together</button>
+          <div class="q-pop wide" id="twoLayersPop" role="tooltip">
+            <b>How the two layers work together</b>
+            <p><strong>Stripe retries</strong> run automatically for every operator: the charge is re-attempted on days 1, 3, 5, and 7, which works when the card simply needs a few days. <strong>80% of all recoveries happen inside the first 7 days.</strong></p>
+            <p><strong>AMP dunning texts</strong> add the direct channel: a message on days 0, 3, and 7 with a one-tap pay link. They reach the members whose card is permanently declined, who don’t know there’s a problem until someone tells them. <strong>31% of members reached by the first text go on to recover.</strong></p>
+            <p>After day 14, same-invoice recovery is essentially zero: winning the member back means a new membership, not a retry. <strong>That’s the gap dunning closes in the first 7 days.</strong></p>
+          </div>
+        </span>
         <div class="src-row"><span class="lbl">Data</span><b>AMP Platform</b><span class="pw"><i></i><b>12.9M recharges · 26 operators</b></span></div>
       </div>
     </div>
@@ -2029,6 +2204,21 @@ input[type=range].cslider::-moz-range-thumb {
     </article>
     -->
 
+    <!-- design round 2026-07-17 (later): the two-layers blurb moved INTO a pro-tip-style
+         popover on the recovery-curve card (Nathan: bundle it into a button). Card
+         version kept commented for swap-back:
+    <article class="chart-card reveal">
+      <div class="chart-head">
+        <h3 class="chart-title">How the two layers <span class="hl">work together</span></h3>
+      </div>
+      <div class="duo">
+        <p><strong>Stripe retries</strong> run automatically for every operator: the charge is re-attempted on days 1, 3, 5, and 7, which works when the card simply needs a few days. <strong>80% of all recoveries happen inside the first 7 days.</strong></p>
+        <p><strong>AMP dunning texts</strong> add the direct channel: a message on days 0, 3, and 7 with a one-tap pay link. They reach the members whose card is permanently declined, who don't know there's a problem until someone tells them. <strong>31% of members reached by the first text go on to recover.</strong></p>
+      </div>
+      <p class="duo-close">After day 14, same-invoice recovery is essentially zero: winning the member back means a new membership, not a retry. Failed-payment cancels return at the highest rate of any cancellation reason, but 5 out of 6 don't make it back on their own. <strong>That's the gap dunning closes in the first 7 days.</strong></p>
+    </article>
+    -->
+
       <!-- v6 tryout · recovery curve NORMALIZED to day 14 = 100% of recoveries
            (0/15/49/80/100). No flat tail, so the green "window closed" marker/annotation
            is gone with it. DAY 0/3/7 navy pills kept (content-pack requirement). -->
@@ -2047,22 +2237,30 @@ input[type=range].cslider::-moz-range-thumb {
           <span><i style="background:#003264"></i>AMP dunning text sends</span>
         </div>
         <!-- v6 tryout · second angle from v6: the retry-schedule insight, house-toned. -->
-        <div class="card-insight"><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>With only <strong>14 days</strong> before the invoice closes, retrying at the same time every day leaves recovery on the table. <strong>Vary retry timing by card type and failure reason</strong> so each attempt lands when the charge is most likely to clear.</div>
+        <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>With only <strong>14 days</strong> before the invoice closes, retrying at the same time every day leaves recovery on the table. <strong>Vary retry timing by card type and failure reason</strong> so each attempt lands when the charge is most likely to clear.</div>
       </article>
 
-      <aside class="insight-card wide reveal">
-        <span class="insight-tag"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>AMP Insight</span>
-        <div class="aside-stat">
-          <span class="as-num" data-count="31" data-decimals="0" data-suffix="%">31%</span>
-          <span class="as-cap">of members reached by the first recovery text go on to recover</span>
-        </div>
-        <p>Those are saves retries alone never make: the members whose card needs replacing, not retrying. <strong>Whatever recovery you run must act inside 14 days. After that, the invoice is dead.</strong></p>
-        <div class="insight-chips">
-          <!-- TODO: swap for AMP's real demo/deep link (e.g. dashboard dunning setting) before launch -->
-          <a href="https://ampmemberships.com/?utm_source=washintel&utm_medium=report&utm_campaign=q2-2026-dunning" target="_blank" rel="noopener">Start with dunning today</a>
-          <button type="button" id="openData">View the data</button>
-        </div>
+      <!-- Nathan 2026-07-17: the 31% closes Act 4 as a TITLE-SECTION text block — no
+           box, no AMP Insight tag, not collapsible. Boxed aside kept for swap-back:
+      <aside class="insight-card wide reveal" data-collapse>
+        <span class="insight-tag">(spark svg)AMP Insight</span>
+        <div class="aside-stat">(31% stat)</div>
+        <p>(paragraph)</p>
+        <div class="insight-chips"><button type="button" id="openData">View the data</button></div>
       </aside>
+      -->
+      <section class="sec-head stat-close reveal" aria-label="First recovery text results">
+        <div>
+          <!-- Nathan 2026-07-17: full width, sentence grammar — data never tucked in a corner -->
+          <div class="sentence">
+            <p class="big"><b data-count="31" data-decimals="0" data-suffix="%">31%</b> of members reached by the first recovery text <b>go on to recover.</b></p>
+          </div>
+          <p>Those are saves retries alone never make: the members whose card needs replacing, not retrying. <strong>Whatever recovery you run must act inside 14 days. After that, the invoice is dead.</strong></p>
+          <div class="insight-chips">
+            <button type="button" id="openData">View the data</button>
+          </div>
+        </div>
+      </section>
 
     <!-- ————— ACT 5 "ROI & ACTION": calculator, operator mandate ————— -->
     <!-- v6 tryout: waterfall removed (v6 deleted it). The "15 operators" stat rode with it
@@ -2176,6 +2374,23 @@ input[type=range].cslider::-moz-range-thumb {
          in v6's priority order: prevention → recovery → capture contact info → win-backs.
          The "15 operators" stat left with the waterfall (de-AMP'd out of v6). Decision knob:
          keep this h2 or v6's "How Operators Can Act on This". -->
+    <!-- design round 2026-07-17: the operator mandate reworked from the navy card into
+         a TITLE SECTION (sec-head grammar, on canvas). The heading now names the job:
+         how operators should act on what the report just showed. It also stops fighting
+         the navy finale directly below for weight. Navy card kept commented for swap-back. -->
+    <section class="sec-head oper-head reveal" aria-label="How operators can act">
+      <div>
+        <h2>How Operators Can Act on This</h2>
+        <p>The numbers above only matter if they change what happens at the wash. Four moves, in priority order.</p>
+      </div>
+      <div class="oper-acts">
+        <p class="oa"><b>Activate failure prevention with your processor.</b><span>Network tokens, automatic card account updates, and real-time acceptance optimization stop as many false declines as possible before they ever reach recovery.</span></p>
+        <p class="oa"><b>Turn on recovery.</b><span>Email and text dunning plus an optimized retry schedule catch the failures that slip through, including the expired and replaced cards retries alone can’t fix.</span></p>
+        <p class="oa"><b>Capture verified contact info at signup.</b><span>A confirmed email and phone number are what let dunning reach the member. A missing phone number is one of the top reasons outreach gets skipped today.</span></p>
+        <p class="oa"><b>Target win-backs by cancellation reason.</b><span>Failed-payment and other circumstantial exits return at the highest rates. Reach them first, and where a full membership won’t land, a retail wash loyalty program can.</span></p>
+      </div>
+    </section>
+    <!-- A/B swap-back · the navy mandate card ("Turn Recovery On Before You Need It."):
     <section class="feature-copy mandate reveal" aria-label="How operators can act">
       <div class="m-head">
         <h2>Turn Recovery On <strong>Before You Need It.</strong></h2>
@@ -2183,11 +2398,12 @@ input[type=range].cslider::-moz-range-thumb {
       </div>
       <div class="m-actions">
         <p class="m-act"><b>Activate failure prevention with your processor.</b><span>Network tokens, automatic card account updates, and real-time acceptance optimization stop as many false declines as possible before they ever reach recovery.</span></p>
-        <p class="m-act"><b>Turn on recovery.</b><span>Email and text dunning plus an optimized retry schedule catch the failures that slip through, including the expired and replaced cards retries alone can’t fix.</span></p>
+        <p class="m-act"><b>Turn on recovery.</b><span>Email and text dunning plus an optimized retry schedule catch the failures that slip through, including the expired and replaced cards retries alone can't fix.</span></p>
         <p class="m-act"><b>Capture verified contact info at signup.</b><span>A confirmed email and phone number are what let dunning reach the member. A missing phone number is one of the top reasons outreach gets skipped today.</span></p>
-        <p class="m-act"><b>Target win-backs by cancellation reason.</b><span>Failed-payment and other circumstantial exits return at the highest rates. Reach them first, and where a full membership won’t land, a retail wash loyalty program can.</span></p>
+        <p class="m-act"><b>Target win-backs by cancellation reason.</b><span>Failed-payment and other circumstantial exits return at the highest rates. Reach them first, and where a full membership won't land, a retail wash loyalty program can.</span></p>
       </div>
     </section>
+    -->
 
     <!-- ————— WHY AMP FINALE: the closing act — this report is the demo ————— -->
     <section class="finale" id="why-amp">
@@ -2350,14 +2566,15 @@ const BENCH = {
   }
 };
 /* every insight label carries the AMP-intelligence spark */
-const K_INSIGHT = '<span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>';
+/* Insight chips are static in markup now (collapse wiring owns them); the view
+   toggles below write BODY text only, into #regionInsightBody / #stateInsightBody. */
 const BENCH_NOTES = {
   total: {
-    insight: K_INSIGHT + 'Total-market volume remained positive through June, with <strong>East (+1.8%)</strong> and <strong>West (+1.6%)</strong> offsetting a modest Central decline (−0.8%). The market is still expanding overall, with growth concentrated in regions capturing demand most effectively.',
+    insight: 'Total-market volume remained positive through June, with <strong>East (+1.8%)</strong> and <strong>West (+1.6%)</strong> offsetting a modest Central decline (−0.8%). The market is still expanding overall, with growth concentrated in regions capturing demand most effectively.',
     protip: 'This view counts every reporting wash, including brand-new ones that opened this year. The number can rise because new washes were built, not necessarily because drivers are washing more often.'
   },
   same: {
-    insight: K_INSIGHT + 'Same-site results were <strong>modestly negative across all three regions</strong> through June, while total-market volume stayed positive. That divergence suggests the market is evolving rather than contracting: growth is shifting toward operators and sites best positioned to capture changing demand.',
+    insight: 'Same-site results were <strong>modestly negative across all three regions</strong> through June, while total-market volume stayed positive. That divergence suggests the market is evolving rather than contracting: growth is shifting toward operators and sites best positioned to capture changing demand.',
     protip: 'This view only counts washes open for more than a year, so brand-new sites are left out. It\'s the clearest look at whether the same established washes are washing more or fewer cars than this time last year.'
   }
 };
@@ -2377,7 +2594,7 @@ document.querySelectorAll('.seg button[data-view]').forEach(btn => {
         vEl.classList.remove('dim');
       }, 250);
     }
-    document.getElementById('regionInsight').innerHTML = BENCH_NOTES[btn.dataset.view].insight;
+    document.getElementById('regionInsightBody').innerHTML = BENCH_NOTES[btn.dataset.view].insight;
     document.getElementById('regionProtip').textContent = BENCH_NOTES[btn.dataset.view].protip;
   });
 });
@@ -2519,7 +2736,7 @@ const TILES = {
 })();
 
 /* ————— "?" helper + pro-tip popovers ————— */
-[['benchHelp', 'benchPop'], ['stateHelp', 'statePop'], ['trendTipBtn', 'trendTipPop'], ['stateTipBtn', 'stateTipPop']].forEach(([btnId, popId]) => {
+[['benchHelp', 'benchPop'], ['stateHelp', 'statePop'], ['trendTipBtn', 'trendTipPop'], ['stateTipBtn', 'stateTipPop'], ['lifecycleTipBtn', 'lifecycleTipPop'], ['twoLayersBtn', 'twoLayersPop']].forEach(([btnId, popId]) => {
   const btn = document.getElementById(btnId);
   const pop = document.getElementById(popId);
   if (!btn || !pop) return;
@@ -2545,6 +2762,52 @@ const TILES = {
 /* pro-tip chips stop pinging once the reader engages */
 document.querySelectorAll('.protip-chip').forEach(b =>
   b.addEventListener('click', () => b.classList.add('seen'), { once: true }));
+
+/* ————— collapsible AMP insights (client note 2026-07-17): the act's insight
+   boxes open on demand. The tag row becomes the toggle; card-insights tuck their
+   text behind the chip, wide asides keep tag + stat and tuck paragraph + chips.
+   Progressive enhancement: with no JS, nothing collapses. ————— */
+(function collapsibleInsights() {
+  document.querySelectorAll('[data-collapse]').forEach((box, i) => {
+    const head = box.querySelector('.k, .insight-tag');
+    if (!head) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = head.className + ' ci-toggle';
+    while (head.firstChild) btn.appendChild(head.firstChild);
+    head.replaceWith(btn);
+    if (box.classList.contains('card-insight')) {
+      /* wrap the loose trailing text so display can toggle; inline keeps the
+         expanded flow byte-identical to the old layout */
+      const body = document.createElement('span');
+      body.className = 'ci-body';
+      body.id = 'ciBody' + i;
+      while (btn.nextSibling) body.appendChild(btn.nextSibling);
+      box.appendChild(body);
+      btn.setAttribute('aria-controls', body.id);
+    }
+    btn.insertAdjacentHTML('beforeend', '<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+    btn.setAttribute('aria-expanded', 'false');
+    box.classList.add('ci-collapsed');
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation(); /* keep the box's open-on-click from re-opening on collapse */
+      const collapsed = box.classList.toggle('ci-collapsed');
+      btn.setAttribute('aria-expanded', String(!collapsed));
+    });
+    /* client notes 2026-07-17: a collapsed box opens from a click anywhere on it.
+       An OPEN box closes from a click anywhere EXCEPT the text (paragraphs, the
+       stat, links, and buttons stay safe for reading, selecting, and acting). */
+    box.addEventListener('click', (e) => {
+      if (box.classList.contains('ci-collapsed')) {
+        box.classList.remove('ci-collapsed');
+        btn.setAttribute('aria-expanded', 'true');
+      } else if (!e.target.closest('p, a, button, .aside-stat, .ci-body')) {
+        box.classList.add('ci-collapsed');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+})();
 
 /* ————— AMP Spotlight scroll-grow: the cover swells to full size as it enters view.
    Continuous mapping to scroll position — no jacking, scrolling never stalls. ————— */
@@ -2703,6 +2966,18 @@ const monthChart = (function () {
   const PHONE = matchMedia('(max-width: 640px)');
   let seen = false, mode = null;
 
+  /* Nathan 2026-07-17: region view legend entries are toggles — toggled-off regions
+     grey out on the chart (same geometry, no rescale) so one region can be read
+     alone. State survives view switches. */
+  const regionOff = new Set();
+  legend.addEventListener('click', (e) => {
+    const b = e.target.closest('.lg-toggle');
+    if (!b || mode !== 'region') return;
+    const ri = +b.dataset.ri;
+    regionOff.has(ri) ? regionOff.delete(ri) : regionOff.add(ri);
+    render('region', false);
+  });
+
   /* phone gets its own chart geometry — larger relative type, sparser labels */
   function geo(n, bwDesk, bwPhone) {
     const m = PHONE.matches;
@@ -2776,14 +3051,36 @@ const monthChart = (function () {
     svg.setAttribute('viewBox', `0 0 ${d.W} ${d.H}`);
     let g = frame(d, QUARTERS.map(([l]) => l));
     QREGIONS.forEach(([name, color, vals], ri) => {
+      /* toggled-off regions grey out and recede; geometry never changes */
+      const off = regionOff.has(ri);
+      const stroke = off ? '#C4C9D4' : color;
+      const alpha = off ? ' opacity=".45"' : '';
       const pts = vals.map((v, i) => `${xMid(i)},${yFor(v)}`).join(' ');
-      g += `<polyline class="qline" data-ri="${ri}" points="${pts}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+      g += `<polyline class="qline" data-ri="${ri}" points="${pts}" fill="none" stroke="${stroke}"${alpha} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
       vals.forEach((v, i) => {
-        g += `<circle class="mpt" cx="${xMid(i)}" cy="${yFor(v)}" r="3.5" fill="${color}" stroke="#FDFDFD" stroke-width="2"/>`;
+        g += `<circle class="mpt" cx="${xMid(i)}" cy="${yFor(v)}" r="3.5" fill="${stroke}"${alpha} stroke="#FDFDFD" stroke-width="2"/>`;
       });
     });
+    /* direct line-end labels: sight-read which line is which; greyed with their
+       line when toggled off. A tiny collision pass keeps stacked labels apart. */
+    const lbls = QREGIONS.map(([name, color, vals], ri) => ({
+      name,
+      off: regionOff.has(ri),
+      fill: regionOff.has(ri) ? '#C4C9D4' : color,
+      y: yFor(vals[n - 1]) - 7
+    })).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < lbls.length; i++) if (lbls[i].y - lbls[i - 1].y < 13) lbls[i].y = lbls[i - 1].y + 13;
+    lbls.forEach(L => {
+      g += `<text class="qlabel" x="${xMid(n - 1) + 4}" y="${L.y}" text-anchor="end" font-size="10.5" font-weight="800" fill="${L.fill}"${L.off ? ' opacity=".55"' : ''}>${L.name}</text>`;
+    });
     svg.innerHTML = g;
-    legend.innerHTML = QREGIONS.map(([name, color]) => `<span><i style="background:${color}"></i>${name}</span>`).join('');
+    /* legend entries read as CHECKBOXES: filled with the region color when on,
+       hollow when off — the fill doubles as the line's color key */
+    const CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12.5l5 5L19.5 7" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    legend.innerHTML = QREGIONS.map(([name, color], ri) => {
+      const off = regionOff.has(ri);
+      return `<button type="button" class="lg-toggle${off ? ' off' : ''}" data-ri="${ri}" aria-pressed="${!off}" aria-label="${name}: ${off ? 'hidden, click to show' : 'shown, click to grey out'}"><span class="cbx"${off ? '' : ` style="background:${color};border-color:${color}"`}>${off ? '' : CHECK}</span>${name}</button>`;
+    }).join('');
     if (animate && !reduce) {
       /* batched: all reads, all start states, ONE flush, then all transitions */
       const lines = [...svg.querySelectorAll('.qline')];
@@ -2817,15 +3114,18 @@ const monthChart = (function () {
     if (mode === 'region') {
       d = renderRegions(animate);
       marks = [...svg.querySelectorAll('.mpt')];
+      /* tooltip + hover highlight track only the ACTIVE regions (all, if all are off) */
+      const activeRi = QREGIONS.map((_, ri) => ri).filter(ri => !regionOff.has(ri));
+      const list = activeRi.length ? activeRi : QREGIONS.map((_, ri) => ri);
       pts = QUARTERS.map(([q], i) => ({
         x: d.xMid(i),
-        y: Math.min(...QREGIONS.map(([, , vals]) => d.yFor(vals[i]))),
-        html: `${q} · same-site YoY<small>${QREGIONS.map(([n, , vals]) => `${n} ${fmt(vals[i])}`).join(' · ')}</small>`
+        y: Math.min(...list.map(ri => d.yFor(QREGIONS[ri][2][i]))),
+        html: `${q} · same-site YoY<small>${list.map(ri => `${QREGIONS[ri][0]} ${fmt(QREGIONS[ri][2][i])}`).join(' · ')}</small>`
       }));
       columnHover('monthBars', 'tipBars', pts, (i) => {
         marks.forEach(el => el.classList.remove('on'));
         if (i === null) return;
-        QREGIONS.forEach((_, ri) => marks[ri * QUARTERS.length + i]?.classList.add('on'));
+        list.forEach(ri => marks[ri * QUARTERS.length + i]?.classList.add('on'));
       });
     } else {
       const data = mode === 'month' ? MONTHS : QUARTERS;
@@ -2885,12 +3185,12 @@ const monthChart = (function () {
   const NOTES = {
     total: {
       title: 'Total market: <span class="hl">36 of 51 states</span> above prior year',
-      insight: K_INSIGHT + 'Total-market performance remained broadly positive on a trailing-twelve-month basis: <strong>36 of 51 states</strong> above prior-year levels, with a median gain of <strong>+2.2%</strong>. Vermont (+15.9%) and Alaska (+11.4%) led, showing meaningful growth is still available across a wide set of geographies.',
+      insight: 'Total-market performance remained broadly positive on a trailing-twelve-month basis: <strong>36 of 51 states</strong> above prior-year levels, with a median gain of <strong>+2.2%</strong>. Vermont (+15.9%) and Alaska (+11.4%) led, showing meaningful growth is still available across a wide set of geographies.',
       protip: 'Not every state has the same number of tunnel washes. In smaller states with only a few washes, a tiny change can look huge as a percentage. The same change in a bigger state would barely show. Hover or tap any state for its exact change.'
     },
     same: {
       title: 'Same-site: <span class="hl">18 of 51 states</span> above prior year',
-      insight: K_INSIGHT + 'Same-site TTM performance was positive in <strong>18 of 51 states</strong>, with New Hampshire (+11.0%) and Vermont (+6.9%) proving established-site growth remains attainable. Softer states mark where operators have the most room to protect volume and strengthen site-level performance.',
+      insight: 'Same-site TTM performance was positive in <strong>18 of 51 states</strong>, with New Hampshire (+11.0%) and Vermont (+6.9%) proving established-site growth remains attainable. Softer states mark where operators have the most room to protect volume and strengthen site-level performance.',
       protip: 'The past 12 months state by state, leaving out brand-new washes. Small states with few tunnels can swing much more than big ones, even when the actual change in cars washed is the same. Hover or tap any state for its exact change.'
     }
   };
@@ -2914,12 +3214,13 @@ const monthChart = (function () {
       const x = 4 + c * (size + gap), y = 4 + r * (size + gap);
       const strong = Math.abs(v) / MAXV > 0.42;
       const label = `${NAMES[st]} ${fmt(v)} · TTM YoY, ${variant === 'total' ? 'total market' : 'same-site'}`;
-      g += `<rect data-st="${st}" x="${x}" y="${y}" width="${size}" height="${size}" rx="7" fill="${fillFor(v)}" role="img" aria-label="${label}"><title>${label}</title></rect>`;
-      g += `<text x="${x + size / 2}" y="${y + size / 2 + 3.5}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${strong ? '#fff' : '#181D27'}" pointer-events="none">${st}</text>`;
+      /* each tile is a group so the fisheye hover moves rect + label together */
+      g += `<g class="tile" data-st="${st}"><rect data-st="${st}" x="${x}" y="${y}" width="${size}" height="${size}" rx="7" fill="${fillFor(v)}" role="img" aria-label="${label}"><title>${label}</title></rect>`;
+      g += `<text x="${x + size / 2}" y="${y + size / 2 + 3.5}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${strong ? '#fff' : '#181D27'}" pointer-events="none">${st}</text></g>`;
     }
     svg.innerHTML = g;
     document.getElementById('stateTitle').innerHTML = NOTES[variant].title;
-    document.getElementById('stateInsight').innerHTML = NOTES[variant].insight;
+    document.getElementById('stateInsightBody').innerHTML = NOTES[variant].insight;
     document.getElementById('stateProtip').textContent = NOTES[variant].protip;
 
     /* leaders & laggards: top and bottom 3, derived from the live data set */
@@ -2957,6 +3258,40 @@ const monthChart = (function () {
   svg.addEventListener('pointermove', handle);
   svg.addEventListener('pointerdown', handle);
   svg.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'touch') hide(); });
+
+  /* Nathan 2026-07-17: fisheye hover — the hovered state grows, its neighbors
+     shrink and step aside to make room. Falloff over ~2.6 grid rings; geometry
+     resets on leave and on every re-render. Hover-capable + motion only. */
+  if (!reduce && matchMedia('(hover: hover)').matches) {
+    const fisheye = (st) => {
+      const tiles = svg.querySelectorAll('g.tile');
+      if (!st) { tiles.forEach(t => { t.style.transform = ''; }); return; }
+      const [hc, hr] = TILES[st];
+      tiles.forEach(t => {
+        if (t.dataset.st === st) {
+          /* re-append BEFORE transforming: moving a node cancels its transition,
+             so paint-order first (while at rest), one reflow, THEN ease up */
+          if (svg.lastElementChild !== t) {
+            svg.appendChild(t);
+            void t.getBoundingClientRect();
+          }
+          t.style.transform = 'scale(1.3)';
+          return;
+        }
+        const [c, r] = TILES[t.dataset.st];
+        const dc = c - hc, dr = r - hr, d = Math.hypot(dc, dr);
+        const f = Math.max(0, 1 - d / 2.6);
+        t.style.transform = f
+          ? `translate(${(dc / d * 7 * f).toFixed(1)}px, ${(dr / d * 7 * f).toFixed(1)}px) scale(${(1 - .12 * f).toFixed(3)})`
+          : '';
+      });
+    };
+    svg.addEventListener('pointerover', (e) => {
+      const tile = e.target.closest('g.tile');
+      if (tile) fisheye(tile.dataset.st);
+    });
+    svg.addEventListener('pointerleave', () => fisheye(null));
+  }
 
   document.querySelectorAll('.seg button[data-stview]').forEach(btn => {
     btn.addEventListener('click', () => {
