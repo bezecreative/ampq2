@@ -1,6 +1,27 @@
 # AMP Wash Intel · Q2 2026 — Deploy Notes
 
-For the developer taking this live on Vercel. Prepared 2026-07-15 by Beze Creative. **Package v3** (2026-07-16): if you already deployed v1 or v2, redeploy with this index.html; nothing else in the bundle changed.
+For the developer taking this live on Vercel. Prepared 2026-07-15 by Beze Creative. **Package v5** (2026-07-17): if you already deployed v1–v4, redeploy with this index.html; nothing else in the bundle changed (images/team-tablet.jpg is no longer referenced by the page but stays in the bundle for repo parity).
+
+## What changed in v5 (new verified data grain + finale redesign, 2026-07-17)
+
+1. **The payment numbers moved to a new measurement grain**, verified against the client's own figures workbook (fresh Snowflake export: first charge attempt per payment, Jul 2025 - Jun 2026): blended failure is now **9.3% (1 in 11)**, total recovery **62.9%**, prepaid fails **15x** credit (was 16x), card-type shown as credit 1x / debit 3x with volume shares. The $7/member/yr foothold is unchanged (recomputes to ~3.45% never collected). Hero, meta description, methodology foot, and the data-appendix modal all carry the new grain and the Jul 2025 - Jun 2026 window.
+2. **Payment act copy pass** (client's v6 revisions, adopted after review): warmer cover intro; a new 5-stage recovery-lifecycle strip (its prevent/retries/dunning figures are the client's own illustrative estimates and carry visible "est." tags); They-Come-Back shown as relatives (~2x / ~1.8x / ~1.7x over baseline); the cancel-reason chart simplified to 6 qualitative buckets; the price-change card reframed as the promo cliff (baseline / +55%); recovery curve normalized to day 14 = 100% of recoveries (DAY 0/3/7 markers kept); the recovery waterfall card removed (still in source as a comment, trivially restorable); the operator mandate rebuilt as a headline + four-action grid.
+3. **The finale is redesigned**: the photo cover is gone; it is now a near-black plaque whose card scales/sharpens/brightens bound to scroll, with a cursor-following light that grows as the pointer nears the demo CTA and floods the card over it. Touch and reduced-motion devices get a static lamp; no-JS gets a fully lit static card. This removed the finale's use of team-tablet.jpg.
+4. **Calculator**: default failure rate is the new 9.3%; the recovery mechanics intentionally stay on the measured 59%/63% (a client question about a higher assumed rate is still open - do not "fix" this).
+5. Numbers audit rerun for every changed figure against `Q2_2026_Payment_Health_Figures.xlsx`. TODO count in index.html is unchanged (same 8 lines).
+
+## What changed in v4 (Payment Health five-act rebuild)
+
+The gated Payment Health section was restructured per the client design brief so it reads as an argument instead of a gallery. Same design system, same data, new order and three new charts:
+
+1. **Act order is now:** cover ("The Members Who Didn't Choose to Leave") → KPI flow (8.3% → 59% → 3.4%) → They Come Back + why-they-left boomerang chart → diagnosis (why payments fail, card-type risk, price changes) → recovery curve → waterfall + calculator → operator mandate. The dunning product is not mentioned until the recovery section, by design.
+2. **New charts:** the KPI flow card, the 8-bucket cancel-reason chart (307,047-cancel cohort, counts shown per bucket), the featured "Why payments fail" dual bars, and the card-type trio (52/11/3). All previously appendix-only or absent; every figure validated against AMP's CSVs.
+3. **Recovery-curve markers** are now day-labeled (DAY 0 / DAY 3 / DAY 7) instead of TEXT 1/2/3.
+4. **New closing card** ("Turn Recovery On Before You Need It.") between the calculator and the finale.
+5. The methodology footnote consolidates the reachability, day-14, and cancel-reason caveats.
+6. **2026-07-17 client-meeting alignment (same v4 package, refreshed before it shipped):** the third KPI leads with $7/member/yr (Nathan's "foothold" call from the 07-16 meeting), the three AMP-act insight boxes now stack UNDER their charts instead of sitting beside them (Andrew's ask), the recovery section heading names the layers plainly ("Two Layers of Recovery: Retries, Then Texts") with dunning defined at first use, and the AMP cover intro is larger/brighter.
+
+TODO count in index.html is unchanged (same 8 lines: 4 swap destinations, 4 marking the server-side-gating placeholder).
 
 ## What changed in v3 (rendering-glitch fix)
 
@@ -21,7 +42,7 @@ index.html                       the entire site
 vercel.json                      headers + config (see below)
 images/hero.jpg                  hero cover (also loads with fetchpriority=high)
 images/kiosk-attendant.jpg       AMP Spotlight cover
-images/team-tablet.jpg           finale cover
+images/team-tablet.jpg           unused as of v5 (was the finale cover); kept for repo parity
 images/AMP_Icon_CobaltNavy.svg   favicon
 images/og-image.jpg              1200×630 social card
 fonts/Manrope-latin-var.woff2    variable font, weights 400-800 (preloaded)
