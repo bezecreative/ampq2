@@ -1,6 +1,14 @@
 # AMP Wash Intel · Q2 2026 — Deploy Notes
 
-For the developer taking this live on Vercel. Prepared 2026-07-15 by Beze Creative. **Package v5** (2026-07-17): if you already deployed v1–v4, redeploy with this index.html; nothing else in the bundle changed (images/team-tablet.jpg is no longer referenced by the page but stays in the bundle for repo parity).
+For the developer taking this live on Vercel. Prepared 2026-07-15 by Beze Creative. **Package v6** (2026-07-20): if you already deployed v1–v5, redeploy with this index.html; nothing else in the bundle changed (images/team-tablet.jpg is no longer referenced by the page but stays in the bundle for repo parity).
+
+## What changed in v6 (client-verbatim payment act rewrap, 2026-07-20)
+
+1. **The AMP payment act now follows the client's own revised section file VERBATIM** in structure, copy, and data (the client file is the content authority; the house design system is the wrapper). New order: cover -> payment-failure-and-recovery flow -> why payments fail -> card-type + promo-cliff pair -> "Failed Payment Recovery Strategies" -> recovery curve -> retry-schedule insight -> "Win-Back: The Boomerang Effect" with two paired charts -> calculator. If review notes say the copy differs from earlier packages, this is why; do not revert wording.
+2. **Removed with the rewrap** (all client-instructed): the 9.3/62.9/$7 KPI sentence, the "5 out of 6" act break, the 31% first-text stat section AND its "View the data" appendix modal, the lifecycle Pro-tip and two-layers popovers, the DAY 0/3/7 pills on the recovery curve, all chart source/cohort lines, and the est. tags in the flow.
+3. **The calculator is the client's model now**: monthly at-risk = active plans x average price x failure rate, ~70% assumed recoverable, defaults 2,000 / $30 / ~9.0%, with an "Apply savings" switch inside the recoverable box (shows the residual at-risk) and a new CTA "Contact AMP to get started ->" (placeholder link, see TODOs). The dunning toggle, 100-dot grid, presets, yearly framing, and both "Start with dunning today" links are gone.
+4. The recovery curve sizes its drawing to the card width at render time (re-fits on resize); paired chart cards bottom-anchor their insight boxes so the chips align.
+5. TODO count is 7 lines: 3 placeholder destinations (listed below) + 4 marking the server-side-gating placeholder.
 
 ## What changed in v5 (new verified data grain + finale redesign, 2026-07-17)
 
@@ -8,9 +16,7 @@ For the developer taking this live on Vercel. Prepared 2026-07-15 by Beze Creati
 2. **Payment act copy pass** (client's v6 revisions, adopted after review): warmer cover intro; a new 5-stage recovery-lifecycle strip (its prevent/retries/dunning figures are the client's own illustrative estimates and carry visible "est." tags); They-Come-Back shown as relatives (~2x / ~1.8x / ~1.7x over baseline); the cancel-reason chart simplified to 6 qualitative buckets; the price-change card reframed as the promo cliff (baseline / +55%); recovery curve normalized to day 14 = 100% of recoveries (DAY 0/3/7 markers kept); the recovery waterfall card removed (still in source as a comment, trivially restorable); the operator mandate rebuilt as a headline + four-action grid.
 3. **The finale is redesigned**: the photo cover is gone; it is now a near-black plaque whose card scales/sharpens/brightens bound to scroll, with a cursor-following light that grows as the pointer nears the demo CTA and floods the card over it. Touch and reduced-motion devices get a static lamp; no-JS gets a fully lit static card. This removed the finale's use of team-tablet.jpg.
 4. **Calculator**: default failure rate is the new 9.3%; the recovery mechanics intentionally stay on the measured 59%/63% (a client question about a higher assumed rate is still open - do not "fix" this).
-5. Numbers audit rerun for every changed figure against `Q2_2026_Payment_Health_Figures.xlsx`.
-6. **Late v5 client-comment round (same bundle):** hero headline is now "The Quarterly State of the Wash Industry." (a competitor publishes a "Pulse Report"); the hero's recharge-count meta line is removed; the AMP act's insight boxes are collapsible (click anywhere to open; on desktop the wide asides collapse to just their tag and preview on hover); the recovery aside's "Start with dunning today" chip was dropped (the calculator CTA still carries that link), so **the TODO count is now 7 lines** (3 swap destinations + 4 marking the server-side-gating placeholder); a "How the two layers work together" card and a Pro tip on the lifecycle card were added; the Act-1 KPI card is now the text-forward ledger; the closing operator mandate is no longer a navy card but a title section headed "How Operators Can Act on This" (same four actions, on-canvas typography).
-7. **Design/interaction rounds (2026-07-17, later same day, all in this index.html):** the Act-1 numbers and the closing 31% stat are full-width typographic "sentence" sections on the canvas (not cards); every Insight box on the page (NCS act included) is a collapsible: closed shows the chip (asides also show nothing but the tag), the first line ghosts in on hover, click anywhere opens, click on non-text closes, all eased; two chart pairs sit side by side on desktop (come-back + cancel-reason; card-type + promo cliff) and stack below 940px; the two-layers explainer lives in a popover chip under the "Two Layers of Recovery" heading; the state tile map has a fisheye hover (hovered state grows, neighbors ease aside — desktop only); the trends chart's Region view has checkbox legend toggles plus direct line-end labels, and toggled-off regions grey out without rescaling. All interactions are gated on reduced-motion and hover capability where applicable; nothing changed in the data.
+5. Numbers audit rerun for every changed figure against `Q2_2026_Payment_Health_Figures.xlsx`. TODO count in index.html is unchanged (same 8 lines).
 
 ## What changed in v4 (Payment Health five-act rebuild)
 
@@ -58,12 +64,11 @@ fonts/Manrope-latin-var.woff2    variable font, weights 400-800 (preloaded)
 
 ## REQUIRED before real launch (fine to skip for the client-review deploy)
 
-Grep `TODO` in index.html; there are exactly four, all placeholder destinations:
+Grep `TODO` in index.html; there are exactly three placeholder destinations:
 
 1. `og:url` and `og:image` in the head: swap the host for the final production URL.
-2. Payment-act chip "Start with dunning today": real dashboard dunning deep link (keep the UTM params).
-3. Calculator CTA "Start with dunning today →": same real link (keep UTMs).
-4. Finale "Schedule a free demo →": real demo-scheduling link (keep UTMs).
+2. Calculator CTA "Contact AMP to get started →": real contact / get-started link (keep the UTM params).
+3. Finale "Schedule a free demo →": real demo-scheduling link (keep UTMs).
 
 ## The gate (read this before the client asks)
 

@@ -260,6 +260,7 @@ body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; padding: 26px 10px 10px; flex-wrap: wrap; }
 .sec-head h2 { font-size: clamp(1.35rem, 2.4vw, 1.8rem); font-weight: 700; letter-spacing: -.015em; line-height: 1.2; }
 .sec-head p { font-size: .85rem; color: var(--ink-secondary); max-width: 58ch; margin-top: 6px; }
+.sec-head p strong { color: var(--ink); font-weight: 700; }
 
 /* segmented toggle */
 .seg {
@@ -459,13 +460,15 @@ svg text { font-family: 'Manrope', sans-serif; }
    motion only; the fade mask clears on full open */
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .card-insight.ci-collapsed:hover .ci-body,
-  .insight-card.ci-collapsed:hover > .aside-stat {
+  .insight-card.ci-collapsed:hover > .aside-stat,
+  .insight-card.no-stat.ci-collapsed:hover > .ai-head {
     opacity: .6;
     -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 96%);
     mask-image: linear-gradient(180deg, #000 0%, transparent 96%);
   }
   .card-insight.ci-collapsed:hover .ci-body { max-height: 1.6em; }
-  .insight-card.ci-collapsed:hover > .aside-stat { max-height: 2.2em; }
+  .insight-card.ci-collapsed:hover > .aside-stat,
+  .insight-card.no-stat.ci-collapsed:hover > .ai-head { max-height: 2.2em; }
 }
 
 /* design round 2026-07-17: Act-1 KPI ledger (kpi-lab concept B) — numbers on a
@@ -494,6 +497,11 @@ svg text { font-family: 'Manrope', sans-serif; }
    stack UNDER (now under the pair, spanning). Collapses below 940. */
 .card-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch; }
 .card-pair > .chart-card { min-width: 0; }
+/* v7 round 3 (Nathan): in a pair, the insight anchors to the card BOTTOM so the chips
+   sit in the same place across neighbors regardless of content height — flex column,
+   the element above the insight absorbs the free space (insight keeps its 18px gap) */
+.card-pair > .chart-card { display: flex; flex-direction: column; }
+.card-pair > .chart-card > :nth-last-child(2) { margin-bottom: auto; }
 @media (max-width: 940px) { .card-pair { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .card-pair { gap: 10px; } }
 
@@ -633,6 +641,8 @@ svg text { font-family: 'Manrope', sans-serif; }
    makes sense without it. Larger and brighter than the hero-sub grammar on purpose. */
 .spot p { margin-top: 14px; max-width: 54ch; font-size: clamp(.95rem, 1.35vw, 1.06rem); color: rgba(255,255,255,.88); }
 .spot p strong { color: #fff; font-weight: 600; }
+/* v7 law · the cover kicker: the law's "why" line, a quiet lead-in between headline and intro */
+.spot p.spot-kick { margin-top: 12px; font-size: .92rem; font-weight: 600; color: rgba(255,255,255,.72); max-width: 54ch; }
 .src-row.light { padding-top: 20px; }
 .src-row.light > .lbl { color: rgba(255,255,255,.42); }
 .src-row.light b { color: rgba(255,255,255,.82); }
@@ -924,6 +934,41 @@ input[type=range].cslider::-moz-range-thumb {
 .calc-presets button.active { background: #fff; color: var(--brand-deep); border-color: #fff; }
 .calc-note-sm { font-size: .62rem; color: rgba(255,255,255,.35); line-height: 1.6; margin-top: auto; padding-top: 12px; }
 .calc-note-sm .note-short { display: none; }
+/* v7 law · calculator, law model: spanning title row; the recoverable box replaces
+   the dunning toggle + dot grid (light-brand on navy — the law's gold is off-system);
+   the illustrative note ships verbatim, spanning the card foot */
+.calc-title-row { grid-column: 1 / -1; }
+.calc-title { font-size: 1.08rem; font-weight: 700; letter-spacing: -.01em; color: #fff; }
+.calc-sub { font-size: .78rem; color: rgba(255,255,255,.55); margin-top: 2px; }
+.calc-recover {
+  margin-top: 18px; padding: 14px 18px; border-radius: var(--r-inner);
+  background: rgba(94,180,255,.12); border: 1px solid rgba(94,180,255,.45);
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+}
+/* v7 round 4: the Apply-savings switch rides inside the box, caption beneath it */
+.calc-recover .cr-action { display: flex; flex-direction: column; align-items: center; gap: 5px; flex-shrink: 0; }
+.calc-recover .cr-lbl { font-size: .64rem; font-weight: 700; letter-spacing: .02em; color: rgba(255,255,255,.6); white-space: nowrap; transition: color .3s; }
+.calc-recover.on .cr-lbl { color: #5FD8FF; }
+.calc-recover .amt { display: block; font-size: 1.25rem; font-weight: 800; color: #5EB4FF; font-variant-numeric: tabular-nums; }
+.calc-recover .lbl { display: block; font-size: .7rem; color: rgba(255,255,255,.6); line-height: 1.5; margin-top: 3px; }
+.calc-note-lg { grid-column: 1 / -1; font-size: .66rem; color: rgba(255,255,255,.38); line-height: 1.6; border-top: 1px solid rgba(255,255,255,.12); padding-top: 14px; margin-top: 2px; }
+.calc-note-lg strong { color: rgba(255,255,255,.6); font-weight: 700; }
+/* v7 round 2 (Nathan): mitigation toggle + result-column CTA. The recoverable box
+   "activates" toward the sanctioned working-cyan when the toggle is on; the CTA takes
+   the old dot-grid slot with the house white-pill button grammar. */
+.calc-recover { transition: background .3s, border-color .3s, box-shadow .3s; }
+.calc-recover.on { background: rgba(63,198,255,.12); border-color: rgba(95,216,255,.6); box-shadow: 0 0 18px rgba(63,198,255,.18); }
+.calc-go { margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.12); display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.calc-go p { font-size: .85rem; color: rgba(255,255,255,.75); }
+.calc-go p strong { color: #fff; font-weight: 700; }
+.calc-go a {
+  font-size: .82rem; font-weight: 800; color: var(--brand-deep); text-decoration: none;
+  background: #fff; padding: 12px 24px; border-radius: 999px;
+  box-shadow: 0 6px 22px rgba(0,0,0,.3);
+  transition: transform .25s var(--ease-out), box-shadow .25s;
+  flex-shrink: 0; white-space: nowrap;
+}
+.calc-go a:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.4); }
 
 .calc-result { display: flex; flex-direction: column; }
 .calc-result .r-label { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.55); }
@@ -1237,7 +1282,10 @@ input[type=range].cslider::-moz-range-thumb {
   .calc-grid100 { display: none; }
   .calc-note-sm .note-full { display: none; }
   .calc-note-sm .note-short { display: inline; }
-  .calc-card { padding: 18px 16px 0; gap: 14px; }
+  .calc-card { padding: 18px 16px 18px; gap: 14px; }
+  /* v7 round 2: CTA stacks and centers at phone width */
+  .calc-go { flex-direction: column; align-items: stretch; text-align: center; }
+  .calc-go a { text-align: center; padding: 14px 24px; }
   /* card-mix presets: one swipeable row instead of wrapping */
   .calc-presets {
     flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
@@ -1313,6 +1361,8 @@ input[type=range].cslider::-moz-range-thumb {
 .pc-rows { margin-top: 20px; display: grid; gap: 4px; }
 .pc-rows .lb-row, .tcb .lb-row { grid-template-columns: minmax(120px, 190px) 1fr 56px; }
 .lb-row.pc-hi .lb-bar i { background: #545D6E; } /* elevated failure: the darker end of the grey ramp */
+/* v7 law · promo dot-and-interval plot (replaces the two lb-rows) */
+.pc-plot { display: block; max-width: 640px; margin: 14px auto 0; }
 .tcb { margin-top: 4px; }
 .tcb .lb-label { margin: 16px 0 5px; }
 @media (max-width: 640px) {
@@ -1398,13 +1448,14 @@ input[type=range].cslider::-moz-range-thumb {
    "1 in 11 fail" reads brand; the prevent/retries/dunning figures are LABELED
    ESTIMATES (workbook marks them illustrative), each carrying a visible est. tag. */
 .lifecycle { margin-top: 16px; display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr auto 1fr; align-items: stretch; gap: 4px; }
-.lc-stage { text-align: center; padding: 6px 8px; display: flex; flex-direction: column; gap: 4px; }
+.lc-stage { text-align: left; padding: 6px 8px; display: flex; flex-direction: column; gap: 6px; }
 .lc-name { font-size: .82rem; font-weight: 700; color: var(--ink); }
 .lc-fig { font-size: 1.15rem; font-weight: 800; color: var(--ink-secondary); font-variant-numeric: tabular-nums; line-height: 1.05; }
 .lc-fig.on { color: var(--brand-body); }
 .lc-fig.soft { font-size: .95rem; font-weight: 700; color: var(--ink-faint); }
 .lc-fig .est { display: inline-block; font-size: .52rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); vertical-align: super; margin-left: 3px; font-style: normal; }
-.lc-stage small { font-size: .68rem; color: var(--ink-secondary); line-height: 1.35; }
+.lc-stage small { font-size: .72rem; color: var(--ink-secondary); line-height: 1.45; }
+.lc-stage small strong { color: var(--brand-body); font-weight: 800; font-variant-numeric: tabular-nums; }
 .lc-sep { display: flex; align-items: center; justify-content: center; color: var(--ink-faint); font-size: 1.05rem; font-weight: 700; }
 @media (max-width: 760px) {
   .lifecycle { grid-template-columns: 1fr 1fr; gap: 12px 8px; }
@@ -1435,11 +1486,16 @@ input[type=range].cslider::-moz-range-thumb {
 .insight-card.wide .insight-tag { grid-column: 1 / -1; margin-bottom: 0; }
 .insight-card.wide .aside-stat { margin: 0; }
 .insight-card.wide .insight-chips { grid-column: 1 / -1; padding-top: 8px; margin-top: 0; }
+/* v7 law · no-stat aside (the retry-schedule insight): the law's insight-head takes
+   the stat slot's weight and every child runs full width */
+.insight-card.wide.no-stat > p { grid-column: 1 / -1; }
+.insight-card .ai-head { font-size: 1.02rem; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
 @media (max-width: 940px) {
   .insight-card.wide { grid-template-columns: 1fr; align-items: start; }
 }
-/* the curve was drawn for band width — cap it so full-width doesn't balloon its type */
-#recoveryChart { display: block; max-width: 880px; margin: 0 auto; }
+/* v7 round 3 (Nathan): the curve fills the card left to right — no more 880px cap;
+   the render() viewBox width tracks the measured card width so type stays true-size */
+#recoveryChart { display: block; }
 
 /* ————— THE GATE · "Frost" (Gate H, login lab winner — LOGIN-PAGE-RESULTS.md) ————— */
 .gate-h { position: relative; }
@@ -1837,229 +1893,65 @@ input[type=range].cslider::-moz-range-thumb {
     <section class="spot" id="payment">
       <img class="spot-photo" src="images/kiosk-attendant.jpg?v=2" width="1600" height="1066" decoding="async" alt="An attendant helping a member pay at a wash kiosk">
       <div class="spot-scrim"></div>
-      <span class="hero-pill"><svg class="amp-ic" viewBox="0 0 875 700" fill="currentColor" aria-hidden="true"><polygon points="37.18 666.59 250.8 666.17 682.33 248.15 682.33 667.15 837.82 667.15 837.82 34.89 686.1 34.89 37.18 666.59"/><polygon points="584.94 32.85 152.03 32.85 152.03 188.34 427.62 188.34 584.94 32.85"/></svg>AMP Spotlight</span>
+      <span class="hero-pill"><svg class="amp-ic" viewBox="0 0 875 700" fill="currentColor" aria-hidden="true"><polygon points="37.18 666.59 250.8 666.17 682.33 248.15 682.33 667.15 837.82 667.15 837.82 34.89 686.1 34.89 37.18 666.59"/><polygon points="584.94 32.85 152.03 32.85 152.03 188.34 427.62 188.34 584.94 32.85"/></svg>Payment Health</span>
       <svg class="spot-logo" viewBox="0 0 1200 333.33" fill="currentColor" role="img" aria-label="AMP"><polygon points="762.27 15.12 648.78 162.9 534.55 15.26 470.91 15.12 470.91 315.92 540.84 315.92 540.84 117.76 624.46 240.29 624.94 240.98 664.8 240.98 756.72 117.41 756.72 315.92 826.65 315.92 826.65 15.13 764.75 15.13 762.27 15.12"/><path d="M1155.32,104.3c-.01-48.29-44.39-87.57-98.94-87.57h-180.11v299.83h69.93l.2-97.26h110.59c54.35,0,98.57-39.15,98.57-87.29l-.23-27.72ZM1087.97,129.64c-2.58,14.31-17.59,25.1-34.95,25.1h-106.62l-.22-76.51h106.6c16.77,0,31.34,9.96,34.65,23.68.46,1.9.69,3.86.69,5.81v1.14c.05,16.31-.08,20.03-.16,20.77Z"/><polygon points="44.44 315.02 144.99 314.82 348.11 118.07 348.11 315.28 421.29 315.28 421.29 17.69 349.88 17.69 44.44 315.02"/><polygon points="302.26 16.73 98.5 16.73 98.5 89.92 228.22 89.92 302.26 16.73"/></svg>
       <h2>The Members Who Didn’t Choose to Leave.</h2>
-      <!-- v6 tryout · cover intro: v6's warmer promise, de-em-dashed. Decision knob:
-           named "12.9M first-attempt recharges" vs v6's vaguer "millions" (named here). -->
-      <p>Some member cancellations were never a choice: a recharge quietly failed and the member churned without ever knowing. The good news: most of these failures are <strong>preventable or recoverable</strong>. Drawing on <strong>12.9 million first-attempt recharges across 26 operators</strong>, here’s where the money leaks, and how to claw it back.</p>
-      <div class="src-row light"><span class="lbl">Data</span><b>AMP Platform</b><span class="pw"><i></i><b>12.9M recharges · 26 operators</b></span></div>
+      <!-- v7 law · cover (law #1–2). Pill renamed per law (resolves the pill-rename knob).
+           The kicker is the law's "why" line, a NEW quiet element. Intro VERBATIM from the
+           law: the em dash and the "cancelations" spelling are the client's own copy
+           (knob 1), "millions of membership recharges" replaces 12.9M. Cover src-row
+           removed: the law carries no source lines (knob 5, flag at review). -->
+      <p class="spot-kick">Why we focused on payment health this quarter</p>
+      <p>Some of your member cancelations were never a choice: a recharge payment quietly failed and the member churned without ever knowing. The good news — <strong>most of these payment failures are preventable or recoverable</strong> through a variety of tactics. Drawing on millions of membership recharges across the AMP portfolio, here’s where the money actually leaks, and how you can claw it back.</p>
     </section>
 
-    <!-- design round 2026-07-17 (round 3): the sentence leaves the white card — an
-         on-canvas typographic moment (act-break family), scaled up to run the full
-         column instead of binding left at 30ch. -->
-    <section class="kpi-sentence reveal" aria-label="The payment health headline numbers">
-      <div class="chart-head">
-        <h3 class="chart-title">Most failed payments fix themselves. <span class="hl">The rest aren’t gone for good.</span></h3>
-        <span class="chart-note">AMP Platform · 12.9M recharges · 26 operators · Jul 2025 – Jun 2026</span>
-      </div>
-      <div class="sentence">
-        <p class="big">Every month <b data-count="9.3" data-suffix="%">9.3%</b> of recharges fail. <b data-count="62.9" data-suffix="%">62.9%</b> quietly fix themselves. The rest walks away with <b class="money">$7 per member, every year.</b></p>
-        <p class="receipts">1 in 11 members fails on the first attempt · 3.45% of all recharges are never collected, about 1 in 29</p>
-      </div>
-      <!-- A/B swap-back · concept B "the ledger" (tried earlier the same day):
-      <div class="ledger">
-        <div class="lg-row"><span class="n num" data-count="9.3" data-suffix="%">9.3%</span><p>of monthly recharges fail on the first attempt. That's <strong>1 in 11 members</strong> whose payment silently bounces.</p></div>
-        <div class="lg-row"><span class="n num" data-count="62.9" data-suffix="%">62.9%</span><p>of those failures never need you. <strong>Automatic retries</strong> catch the card on a better day.</p></div>
-        <div class="lg-row hot"><span class="n num">$7<small>/member/yr</small></span><p>walks away with what's left: <strong>3.45% of every recharge you attempt</strong>, about 1 in 29, simply never collected.</p></div>
-      </div>
-      -->
-    </section>
-
-    <!-- v6 tryout · lifecycle strip (v6's genuinely good addition). Decision knob #7:
-         this placement right after the KPI card, OR move into Act 4's sec-head area —
-         Nathan picks. "1 in 11 fail" is verified and stated plainly; the prevent /
-         retries / dunning figures are LABELED ESTIMATES (workbook marks them
-         illustrative), each shown with a visible est. tag, PENDING Nathan's yes. -->
+    <!-- v7 law #3 · the flow: five steps VERBATIM, figures stated plainly with no est.
+         markers (knob 3). House lifecycle strip grammar (no numbered circles — design
+         call); the law's bolded figures carry the data voice inline as brand strongs.
+         The lifecycle Pro tip chip is gone (kill list: not in law). -->
     <article class="chart-card reveal">
       <div class="chart-head">
-        <div class="ch-stack">
-          <h3 class="chart-title">How a failed payment <span class="hl">gets recovered</span></h3>
-          <span class="chart-note">The full path, from prevention to win-back</span>
-        </div>
-        <span class="q-wrap">
-          <button class="protip-chip" id="lifecycleTipBtn" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1.1 2h5a3.5 3.5 0 0 1 1.1-2A6 6 0 0 0 12 3z"/></svg>Pro tip</button>
-          <div class="q-pop" id="lifecycleTipPop" role="tooltip">
-            <b>Pro tip</b>
-            <p class="tip-p">Stripe retries recover 59 of every 100 failed invoices. AMP dunning reaches a portion of the remaining 41 and recovers an estimated ~4 more, limited by reachability: 25% have no phone on file and 23% hit the daily send cap. Today, 15 operators have dunning campaigns configured but not turned on.</p>
-          </div>
-        </span>
+        <h3 class="chart-title">How payment failure <span class="hl">and recovery works</span></h3>
       </div>
       <div class="lifecycle">
         <div class="lc-stage">
-          <b class="lc-name">Prevent</b>
-          <span class="lc-fig">~1 in 3<i class="est">est.</i></span>
-          <small>Current cards, smart acceptance</small>
+          <b class="lc-name">Prevent failures</b>
+          <small>Up-to-date card credentials and smart acceptance logic prevent approximately <strong>1 out of 3</strong> potential payment failures</small>
         </div>
         <div class="lc-sep" aria-hidden="true">›</div>
         <div class="lc-stage">
           <b class="lc-name">Payment fails</b>
-          <span class="lc-fig on">1 in 11</span>
-          <small>Reaches the recovery path</small>
+          <small>Ultimately, about <strong>1 out of 11</strong> initial recharge payments fail and move into recovery</small>
         </div>
         <div class="lc-sep" aria-hidden="true">›</div>
         <div class="lc-stage">
           <b class="lc-name">Retries</b>
-          <span class="lc-fig">~half<i class="est">est.</i></span>
-          <small>Re-charged on a schedule</small>
+          <small>Roughly <strong>half</strong> of failed payments are recovered through a payment retry schedule</small>
         </div>
         <div class="lc-sep" aria-hidden="true">›</div>
         <div class="lc-stage">
           <b class="lc-name">Dunning</b>
-          <span class="lc-fig">~1 in 5<i class="est">est.</i></span>
-          <small>Email and text to update the card</small>
+          <small>The member is nudged by email and text to update their payment method, recovering about <strong>1 of 5</strong> failed payments</small>
         </div>
         <div class="lc-sep" aria-hidden="true">›</div>
         <div class="lc-stage">
           <b class="lc-name">Win-back</b>
-          <span class="lc-fig soft">later</span>
-          <small>Invited to reactivate</small>
+          <small>If nothing works, the member is invited to reactivate later</small>
         </div>
       </div>
     </article>
 
-    <!-- ————— ACT 2 "THE PIVOT": they come back (CSV 03), then why they left (CSV 08).
-         Insight boxes still STACK under charts (2026-07-16 client meeting), but per
-         Nathan 2026-07-17 the two CHART CARDS sit side by side (.card-pair): full
-         over/under was too much. The 1.7× aside spans below the pair. ————— -->
-    <div class="card-pair">
-      <article class="chart-card reveal">
-        <div class="chart-head">
-          <h3 class="chart-title">They come back, <span class="hl">and fast</span></h3>
-          <span class="chart-note">Cumulative share who rejoin the same wash · 307,047 canceled memberships · 20 operators · day 8–90 window</span>
-        </div>
-        <p class="chart-sub">Members who start a new membership at the same wash after canceling, matched by email, day 8 to 90 after the plan ended. Week-one re-signups are excluded as likely administrative.</p>
-        <!-- v6 tryout · relative labels (~2× / ~1.8× / ~1.7×; grey rows = baseline).
-             Bar widths stay proportional to the real 8.4/4.3, 13.5/7.5, 16.6/9.7 rates —
-             honest geometry under the relative labels. Absolutes are the decision knob. -->
-        <div class="tcb">
-          <div class="lb-label">Within 30 days</div>
-          <div class="lb-row">
-            <span class="lb-st">Failed payments</span>
-            <div class="lb-bar"><i style="--w:51%"></i></div>
-            <span class="lb-val">~2×</span>
-          </div>
-          <div class="lb-row neg">
-            <span class="lb-st">Chose to cancel</span>
-            <div class="lb-bar"><i style="--w:26%"></i></div>
-            <span class="lb-val">baseline</span>
-          </div>
-          <div class="lb-label">Within 60 days</div>
-          <div class="lb-row">
-            <span class="lb-st">Failed payments</span>
-            <div class="lb-bar"><i style="--w:81%"></i></div>
-            <span class="lb-val">~1.8×</span>
-          </div>
-          <div class="lb-row neg">
-            <span class="lb-st">Chose to cancel</span>
-            <div class="lb-bar"><i style="--w:45%"></i></div>
-            <span class="lb-val">baseline</span>
-          </div>
-          <div class="lb-label">Within 90 days</div>
-          <div class="lb-row">
-            <span class="lb-st">Failed payments</span>
-            <div class="lb-bar"><i style="--w:100%"></i></div>
-            <span class="lb-val">~1.7×</span>
-          </div>
-          <div class="lb-row neg">
-            <span class="lb-st">Chose to cancel</span>
-            <div class="lb-bar"><i style="--w:58%"></i></div>
-            <span class="lb-val">baseline</span>
-          </div>
-        </div>
-      </article>
-    <article class="chart-card reveal">
-      <div class="chart-head">
-        <h3 class="chart-title">Why they left predicts <span class="hl">whether they come back</span></h3>
-        <span class="chart-note">Same cohort as above · 307,047 cancels · 20 operators · day 8–90 window</span>
-      </div>
-      <!-- v6 tryout · boomerang, decision knob #3: 6-bucket QUALITATIVE (live below)
-           vs 8-bucket ABSOLUTE (commented). v6 drops "Other / no reason given" and
-           "Moved away" and shows Highest…Lowest instead of rates. Cost of this variant:
-           the receipts test for the "14–17%" claim dies, so the insight goes qualitative
-           too. Bar widths reuse the measured ordering from the 8-bucket version. -->
-      <p class="chart-sub">Relative return rate within 90 days, by the reason recorded at cancellation. Bars are relative, not absolute rates.</p>
-      <div class="bmg qual">
-        <div class="lb-row">
-          <span class="lb-st">Failed payments</span>
-          <div class="lb-bar"><i style="--w:100%"></i></div>
-          <span class="lb-val">Highest</span>
-        </div>
-        <div class="lb-row">
-          <span class="lb-st">No car / car sold</span>
-          <div class="lb-bar"><i class="circ" style="--w:91%"></i></div>
-          <span class="lb-val">High</span>
-        </div>
-        <div class="lb-row">
-          <span class="lb-st">Price / budget</span>
-          <div class="lb-bar"><i class="circ" style="--w:86%"></i></div>
-          <span class="lb-val">High</span>
-        </div>
-        <div class="lb-row neg">
-          <span class="lb-st">Not using it enough</span>
-          <div class="lb-bar"><i style="--w:55%"></i></div>
-          <span class="lb-val">Moderate</span>
-        </div>
-        <div class="lb-row neg">
-          <span class="lb-st">Bad experience</span>
-          <div class="lb-bar"><i style="--w:46%"></i></div>
-          <span class="lb-val">Low</span>
-        </div>
-        <div class="lb-row neg">
-          <span class="lb-st">Went to competitor</span>
-          <div class="lb-bar"><i style="--w:15%"></i></div>
-          <span class="lb-val">Lowest</span>
-        </div>
-      </div>
-      <div class="legend">
-        <span><i class="sq" style="background:var(--brand)"></i>Failed payments</span>
-        <span><i class="sq" style="background:#5EB4FF"></i>Other circumstantial exits</span>
-        <span><i class="sq" style="background:#C4C9D4"></i>Deliberate exits</span>
-      </div>
-      <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span><strong>Circumstantial exits</strong> (a failed card, a sold car, a tight budget) return at the highest rates; <strong>deliberate exits</strong> (a competitor, a bad experience) rarely do. <strong>Price and budget cancels belong in your win-back audience: a price cancel is a pause, not a goodbye.</strong></div>
-
-      <!-- v6 tryout A/B · original 8-bucket ABSOLUTE version (chart-sub + rows + insight).
-           Restore this block and remove the qualitative one above to switch back.
-      <p class="chart-sub">Share who start a new membership at the same wash within 90 days, by the reason recorded at cancellation. The eight buckets sum to the full 307,047-cancel cohort above.</p>
-      <div class="bmg">
-        <div class="lb-row"><span class="lb-st">Failed payments<small>110,284 cancels</small></span><div class="lb-bar"><i style="--w:100%"></i></div><span class="lb-val">16.6%</span></div>
-        <div class="lb-row"><span class="lb-st">No car / car sold<small>8,724 cancels</small></span><div class="lb-bar"><i class="circ" style="--w:91%"></i></div><span class="lb-val">15.1%</span></div>
-        <div class="lb-row"><span class="lb-st">Price / budget<small>27,122 cancels</small></span><div class="lb-bar"><i class="circ" style="--w:86%"></i></div><span class="lb-val">14.2%</span></div>
-        <div class="lb-row neg"><span class="lb-st">Other / no reason given<small>90,919 cancels</small></span><div class="lb-bar"><i style="--w:56%"></i></div><span class="lb-val">9.3%</span></div>
-        <div class="lb-row neg"><span class="lb-st">Not using it enough<small>35,672 cancels</small></span><div class="lb-bar"><i style="--w:55%"></i></div><span class="lb-val">9.1%</span></div>
-        <div class="lb-row neg"><span class="lb-st">Bad experience<small>9,916 cancels</small></span><div class="lb-bar"><i style="--w:46%"></i></div><span class="lb-val">7.6%</span></div>
-        <div class="lb-row neg"><span class="lb-st">Moved away<small>23,474 cancels</small></span><div class="lb-bar"><i style="--w:39%"></i></div><span class="lb-val">6.4%</span></div>
-        <div class="lb-row neg"><span class="lb-st">Went to competitor<small>936 cancels</small></span><div class="lb-bar"><i style="--w:15%"></i></div><span class="lb-val">2.5%</span></div>
-      </div>
-      <div class="card-insight"><span class="k">Insight</span>Circumstantial exits (a failed card, a sold car, a tight budget) return at 14–17%; deliberate exits return at 2–8%. Price and budget cancels belong in your win-back audience: a price cancel is a pause, not a goodbye.</div>
-      -->
-    </article>
-    </div>
-      <aside class="insight-card wide reveal" data-collapse>
-        <span class="insight-tag"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>AMP Insight</span>
-        <div class="aside-stat">
-          <span class="as-num" data-count="1.7" data-decimals="1" data-suffix="×">1.7×</span>
-          <span class="as-cap">the return rate of deliberate cancels, among members lost to failed payments</span>
-        </div>
-        <p>Members lost to a failed payment rejoin at 1.7× the rate of deliberate cancels, and half of those returns land inside 30 days. <strong>Treat a failed payment as a save opportunity, not a churn stat.</strong></p>
-      </aside>
-
-    <div class="act-break reveal">
-      <p class="ab-big">Still, <strong>5 out of 6</strong> don’t make it back on their own.</p>
-      <p class="ab-sub">Most of these failures are mechanical, not personal. Here’s what’s actually declining, and when.</p>
-    </div>
-
-    <!-- ————— ACT 3 "THE DIAGNOSIS": failure reasons (CSV 02) + the two landmines:
-         card type (CSV 04) and price changes (CSV 05). Still no product mention. ————— -->
+    <!-- v7 law #4 · why payments fail: data identical to current (62/16/10/7/5 ·
+         71/44/42/38/40), sub + column head + insight re-copied verbatim. Chart-note
+         provenance line removed (knob 5). Full width — the law's order puts the two
+         pairable neighbors (#5 card type + #6 promo) side by side below. -->
     <article class="chart-card reveal">
       <div class="chart-head">
         <h3 class="chart-title">Why payments fail, <span class="hl">and which recover</span></h3>
-        <span class="chart-note">AMP Platform · 12.9M recharges · 26 operators</span>
       </div>
-      <p class="chart-sub">Every failure carries a reason. Grey is how much of the problem each reason is; blue is how often automatic retries win that invoice back on their own.</p>
+      <p class="chart-sub">Most payment failures are due to insufficient funds, but they recover at the highest rate</p>
       <div class="wf">
-        <div class="wf-head"><span></span><span>Share of failures</span><span></span><span>Recovered by retries</span><span></span></div>
+        <div class="wf-head"><span></span><span>Share of failures</span><span></span><span>% that recover</span><span></span></div>
         <div class="wf-row">
           <span class="lb-st">Insufficient funds</span>
           <div class="lb-bar"><i class="share" style="--w:100%"></i></div><span class="lb-val">62%</span>
@@ -2086,22 +1978,18 @@ input[type=range].cslider::-moz-range-thumb {
           <div class="lb-bar"><i style="--w:40%"></i></div><span class="lb-val">40%</span>
         </div>
       </div>
-      <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span><strong>Insufficient funds dominates and recovers best.</strong> It’s a timing problem: the card has money again a few days later, so retries work. The hardest to save is <strong>card can’t support</strong>, which is mostly prepaid.</div>
+      <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>Smart retry programs are able to recover a high portion of declines due to insufficient funds by retrying payments on an optimized schedule that maximizes success rates. Other declines, such as expired / wrong number are best handled through decline prevention tactics or dunning.</div>
     </article>
 
-    <!-- v6 tryout · card-type rebuilt to v6's shape: two lb-rows (credit reliable = blue,
-         debit = grey) with a volume column; prepaid moves into the insight. NOTE: 15×,
-         not the old 16× — the multiple changed with the new grain (56.6 / 3.7 = 15.2).
-         The fs-row trio version is kept commented below for A/B.
-         Nathan 2026-07-17: paired side by side with the promo-cliff card (.card-pair);
-         the +55% aside spans below the pair. -->
+    <!-- v7 law #5 + #6 · adjacent law neighbors, paired side by side (pairing is layout,
+         not order — legal carryover). Both insights ship verbatim inside their cards;
+         the old spanning +55% aside and the prepaid-15× insight are gone (kill list). -->
     <div class="card-pair">
     <article class="chart-card reveal">
       <div class="chart-head">
-        <h3 class="chart-title">Debit fails <span class="hl">3× more often</span> than credit</h3>
-        <span class="chart-note">First-attempt failure and share of recharge volume · credit = baseline</span>
+        <h3 class="chart-title">Card type is the <span class="hl">strongest predictor</span> of failure</h3>
       </div>
-      <p class="chart-sub">The card a member signs up with shapes everything downstream. Relative first-attempt failure rate, with each type’s share of recharge volume.</p>
+      <p class="chart-sub">Relative first-attempt failure rate and share of recharge volume by card type (credit = baseline)</p>
       <div class="ctype">
         <div class="lb-row">
           <span class="lb-st">Credit card</span>
@@ -2110,263 +1998,248 @@ input[type=range].cslider::-moz-range-thumb {
           <span class="lb-vol">44% of volume</span>
         </div>
         <div class="lb-row neg bad">
-          <span class="lb-st">Debit card</span>
+          <span class="lb-st">Debit</span>
           <div class="lb-bar"><i style="--w:100%"></i></div>
           <span class="lb-val">3×</span>
           <span class="lb-vol">54% of volume</span>
         </div>
       </div>
-      <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>Prepaid cards fail <strong>15× more often</strong> than credit, more than half of first attempts, but they’re only ~2% of volume. <strong>Seeing high involuntary churn? Check your prepaid percentage first.</strong></div>
-
-      <!-- v6 tryout A/B · original fs-row trio (52 / 11 / 3, invoice grain). Restore to switch back.
-      <p class="chart-sub">Whole-number failure rates across 12.9M recharges.</p>
-      <div class="trio">
-        <div class="fs-row"><span class="fs-num">57%</span><b class="fs-lbl">Prepaid cards</b><div class="region-bar"><i style="--c:#545D6E; --w:100%"></i></div><p>More than 1 in 2 prepaid recharges fails on the first attempt, and recovery is the lowest of the three (54%).</p></div>
-        <div class="fs-row"><span class="fs-num">12%</span><b class="fs-lbl">Debit cards</b><div class="region-bar"><i style="--c:#C4C9D4; --w:21%"></i></div><p>The most failures by volume, but retries recover 65% of them: the most saveable failures.</p></div>
-        <div class="fs-row"><span class="fs-num">4%</span><b class="fs-lbl">Credit cards</b><div class="region-bar"><i style="--c:var(--brand); --w:6%"></i></div><p>The most reliable card type on the platform. Prepaid fails 15× more often.</p></div>
-      </div>
-      -->
+      <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span><strong>Debit cards fail about 3× as often as credit cards</strong> on the first attempt, and prepaid cards fail far more still. But credit’s edge has a cost: its failures recover slightly less often, and it carries higher processing fees.</div>
     </article>
 
       <article class="chart-card reveal">
-        <!-- v6 tryout · promo reframe: title names the cause (aggressive promos), rows go
-             RELATIVE (baseline vs +~55%). Decision knob #4: absolute rates (7.9% / 12.2%)
-             are the alternative — swap the lb-val labels back to turn them on. -->
+        <!-- v7 law #6 · NEW chart form: the law's dot-and-interval plot rebuilt in house
+             grammar (grey ramp — the elevated dot is the loss end; blue would read "good").
+             All visible labels verbatim from the law's SVG. -->
         <div class="chart-head">
           <h3 class="chart-title">Aggressive promotions create a <span class="hl">payment cliff</span></h3>
-          <span class="chart-note">Relative first-attempt failure rate · both cohorts paid their previous invoice</span>
         </div>
-        <p class="chart-sub">A sign-up promotion eventually reverts to full price. That first invoice at the new, higher price (41,724 members) fails far more often than the next invoice with no price change (10.9M recharges), even though both groups were in good standing.</p>
-        <div class="pc-rows">
-          <div class="lb-row neg">
-            <span class="lb-st">No price change</span>
-            <div class="lb-bar"><i style="--w:53%"></i></div>
-            <span class="lb-val">baseline</span>
-          </div>
-          <div class="lb-row pc-hi">
-            <span class="lb-st">First invoice at a new price</span>
-            <div class="lb-bar"><i style="--w:81%"></i></div>
-            <span class="lb-val">+55%</span>
-          </div>
-        </div>
+        <p class="chart-sub">Relative first payment attempt failure rate. First invoice at new price is the failure rate when a membership reverts from a discounted price to full price.</p>
+        <svg class="pc-plot" viewBox="0 0 560 150" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Dot plot: first-attempt failure rate is about 55 percent higher on the first invoice at a new price than the no-price-change baseline">
+          <line x1="60" y1="96" x2="520" y2="96" stroke="#181D27" stroke-opacity=".07" stroke-width="1"/>
+          <line x1="200" y1="72" x2="400" y2="72" stroke="#545D6E" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="200" cy="72" r="8" fill="#C4C9D4" stroke="#FDFDFD" stroke-width="2.5"><title>Baseline: no price change</title></circle>
+          <circle cx="400" cy="72" r="9" fill="#545D6E" stroke="#FDFDFD" stroke-width="2.5"><title>First invoice at new price: significantly higher failure rate</title></circle>
+          <rect x="266" y="26" width="68" height="24" rx="12" fill="#545D6E"/>
+          <text x="300" y="42" text-anchor="middle" font-size="12" fill="#fff" font-weight="800">~55%</text>
+          <line x1="300" y1="50" x2="300" y2="64" stroke="#545D6E" stroke-width="1.2"/>
+          <text x="200" y="121" text-anchor="middle" font-size="11" fill="#717680" font-weight="600">Baseline failure rate</text>
+          <text x="200" y="135" text-anchor="middle" font-size="10" fill="#A4A7AE">(no price change)</text>
+          <text x="400" y="121" text-anchor="middle" font-size="11" fill="#181D27" font-weight="700">First invoice at new price</text>
+          <text x="400" y="135" text-anchor="middle" font-size="10" fill="#717680">(~55% higher)</text>
+        </svg>
+        <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>Sign-up promotions are a common way of attracting new members; while they drive higher sales, they can lead to higher churn — both voluntary and through failed payments. This is because the higher the recharge amount, the higher the chance of payment failure, all else equal.</div>
       </article>
     </div>
-      <aside class="insight-card wide reveal" data-collapse>
-        <span class="insight-tag"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>AMP Insight</span>
-        <div class="aside-stat">
-          <span class="as-num" data-count="55" data-decimals="0" data-prefix="+" data-suffix="%">+55%</span>
-          <span class="as-cap">higher failure on the first invoice at a new price</span>
-        </div>
-        <p>Both cohorts paid their previous invoice without issue, so this isn’t members already in payment trouble. The higher the recharge amount, the higher the chance of failure, so promotions that drive sales can also drive churn. <strong>Have payment recovery live before any price change or promo normalization.</strong></p>
-      </aside>
 
-    <!-- ————— ACT 4 "THE PRESCRIPTION": two recovery layers, one short window (CSV 06).
-         First product mention on the page — by design, after the diagnosis. The heading
-         names the layers plainly; "dunning" is defined at first use (client meeting:
-         readers must get what the text layer is at heading level). ————— -->
+    <!-- v7 law #7 · Part 2 section break. This heading REPLACES "Two Layers of Recovery:
+         Retries, Then Texts" (the law chose the other heading — flagged at review). The
+         two-layers explainer chip/popover and the src-row are gone (kill list). House
+         Title Case on the h2 (knob 2); sub-intro verbatim. -->
     <div class="sec-head">
       <div>
-        <!-- v6 tryout · sec-head. Decision knob #5: keep "Two Layers of Recovery: Retries,
-             Then Texts" (client meeting liked the layers heading) OR v6's broader "Failed
-             Payment Recovery Strategies". Dunning is defined at first use as email + text. -->
-        <h2>Two Layers of Recovery: Retries, Then Texts</h2>
-        <p>Automatic retries fix the failures that fix themselves. The rest need the member to act, and that takes a message: dunning, an email and text with a one-tap pay link.</p>
-        <!-- Nathan 2026-07-17: the two-layers explainer chip lives HERE, under the heading
-             that names the layers (it read as disjointed on the curve card). -->
-        <span class="q-wrap tl-tip">
-          <button class="protip-chip" id="twoLayersBtn" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1.1 2h5a3.5 3.5 0 0 1 1.1-2A6 6 0 0 0 12 3z"/></svg>How they work together</button>
-          <div class="q-pop wide" id="twoLayersPop" role="tooltip">
-            <b>How the two layers work together</b>
-            <p><strong>Stripe retries</strong> run automatically for every operator: the charge is re-attempted on days 1, 3, 5, and 7, which works when the card simply needs a few days. <strong>80% of all recoveries happen inside the first 7 days.</strong></p>
-            <p><strong>AMP dunning texts</strong> add the direct channel: a message on days 0, 3, and 7 with a one-tap pay link. They reach the members whose card is permanently declined, who don’t know there’s a problem until someone tells them. <strong>31% of members reached by the first text go on to recover.</strong></p>
-            <p>After day 14, same-invoice recovery is essentially zero: winning the member back means a new membership, not a retry. <strong>That’s the gap dunning closes in the first 7 days.</strong></p>
-          </div>
-        </span>
-        <div class="src-row"><span class="lbl">Data</span><b>AMP Platform</b><span class="pw"><i></i><b>12.9M recharges · 26 operators</b></span></div>
+        <h2>Failed Payment Recovery Strategies</h2>
+        <p>Failed payments can be recovered through multiple strategies. <strong>Email and text dunning</strong> alert the member that their payment failed and provide an easy process of updating their card. <strong>Retries</strong> re-attempt the charge on a schedule, typically over 14 days.</p>
       </div>
     </div>
 
-    <!-- v6 tryout · lifecycle strip PLACEMENT B (decision knob #7): the same strip as a
-         slim card here, opening Act 4. To try it: uncomment this block and remove the
-         Act-1 strip card (search "lifecycle" above). Same est. rules apply.
-    <article class="chart-card reveal">
-      <div class="lifecycle">
-        <div class="lc-stage"><b class="lc-name">Prevent</b><span class="lc-fig">~1 in 3<i class="est">est.</i></span><small>Current cards, smart acceptance</small></div>
-        <div class="lc-sep" aria-hidden="true">›</div>
-        <div class="lc-stage"><b class="lc-name">Payment fails</b><span class="lc-fig on">1 in 11</span><small>Reaches the recovery path</small></div>
-        <div class="lc-sep" aria-hidden="true">›</div>
-        <div class="lc-stage"><b class="lc-name">Retries</b><span class="lc-fig">~half<i class="est">est.</i></span><small>Re-charged on a schedule</small></div>
-        <div class="lc-sep" aria-hidden="true">›</div>
-        <div class="lc-stage"><b class="lc-name">Dunning</b><span class="lc-fig">~1 in 5<i class="est">est.</i></span><small>Email and text to update the card</small></div>
-        <div class="lc-sep" aria-hidden="true">›</div>
-        <div class="lc-stage"><b class="lc-name">Win-back</b><span class="lc-fig soft">later</span><small>Invited to reactivate</small></div>
-      </div>
-    </article>
-    -->
-
-    <!-- design round 2026-07-17 (later): the two-layers blurb moved INTO a pro-tip-style
-         popover on the recovery-curve card (Nathan: bundle it into a button). Card
-         version kept commented for swap-back:
-    <article class="chart-card reveal">
+    <!-- v7 law #8 · recovery curve: same normalized data (15/49/80/100, day 14 = 100%)
+         the IIFE already renders. DAY 0/3/7 dunning pills, the dunning legend, and the
+         in-card insight are GONE (knob 4: law supersedes the content-pack requirement);
+         the "~80% by Day 7" annotation is the law's own. Sub verbatim. -->
+    <article id="recovery" class="chart-card reveal">
       <div class="chart-head">
-        <h3 class="chart-title">How the two layers <span class="hl">work together</span></h3>
+        <h3 class="chart-title">Most recovery happens in the <span class="hl">first 7 days</span></h3>
       </div>
-      <div class="duo">
-        <p><strong>Stripe retries</strong> run automatically for every operator: the charge is re-attempted on days 1, 3, 5, and 7, which works when the card simply needs a few days. <strong>80% of all recoveries happen inside the first 7 days.</strong></p>
-        <p><strong>AMP dunning texts</strong> add the direct channel: a message on days 0, 3, and 7 with a one-tap pay link. They reach the members whose card is permanently declined, who don't know there's a problem until someone tells them. <strong>31% of members reached by the first text go on to recover.</strong></p>
+      <p class="chart-sub">Cumulative share of all recoveries by days since first failure (Day 14 = 100%)</p>
+      <div class="chart-wrap">
+        <div class="tip" id="tipCurve"></div>
+        <svg id="recoveryChart" viewBox="0 0 640 260" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Cumulative share of all recoveries, normalized to day 14 = 100%: 15% by day 1, 49% by day 3, 80% by day 7, 100% by day 14."></svg>
       </div>
-      <p class="duo-close">After day 14, same-invoice recovery is essentially zero: winning the member back means a new membership, not a retry. Failed-payment cancels return at the highest rate of any cancellation reason, but 5 out of 6 don't make it back on their own. <strong>That's the gap dunning closes in the first 7 days.</strong></p>
     </article>
-    -->
 
-      <!-- v6 tryout · recovery curve NORMALIZED to day 14 = 100% of recoveries
-           (0/15/49/80/100). No flat tail, so the green "window closed" marker/annotation
-           is gone with it. DAY 0/3/7 navy pills kept (content-pack requirement). -->
-      <article id="recovery" class="chart-card reveal">
+    <!-- v7 law #9 · the retry-schedule insight, standalone: aside grammar with the law's
+         insight-head in the stat slot's weight, no stat, still collapsible. -->
+    <aside class="insight-card wide no-stat reveal" data-collapse>
+      <span class="insight-tag"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>AMP Insight</span>
+      <p class="ai-head">Optimize your retry schedule to maximize results</p>
+      <p>Retrying at the same time each day leaves recovery on the table. Smarter schedules vary the timing and dates by card type and failure reason, hitting each payment when it’s most likely to clear, to <strong>increase retry success</strong> while <strong>optimizing retry costs</strong>.</p>
+    </aside>
+
+    <!-- v7 law #10 · Part 3 section break: win-back. NEW sec-head (house Title Case on
+         the h2, knob 2); sub-intro verbatim. The come-back and cancelation-reason cards
+         MOVED here from the old Act 2 position per the law's order. The act-break
+         ("Still, 5 out of 6…") and the 31% stat-close are gone (kill list). -->
+    <div class="sec-head">
+      <div>
+        <h2>Win-Back: The Boomerang Effect</h2>
+        <p>When retries and dunning fail and a member cancels, the story isn’t over. Members lost to a failed payment <strong>come back at nearly twice the rate</strong> of members who chose to leave, most within the first few weeks.</p>
+      </div>
+    </div>
+
+    <!-- v7 law #11 + #12 · adjacent law neighbors, paired. "Voluntary cancels" replaces
+         "chose to cancel" everywhere; the 307,047 · 20-operators cohort notes are gone
+         (kill list). Bar geometry stays ours (proportional to the measured rates —
+         honest under the relative labels). Insights verbatim inside their cards. -->
+    <div class="card-pair">
+      <article class="chart-card reveal">
         <div class="chart-head">
-          <h3 class="chart-title">Most recovery happens in the <span class="hl">first 7 days</span></h3>
-          <span class="chart-note">Cumulative share of all recoveries · day 14 = 100%</span>
+          <h3 class="chart-title">Failed-payment cancels come back <span class="hl">more often, and fast</span></h3>
         </div>
-        <p class="chart-sub">The first 7 days do the heavy lifting: 80% of all recoveries happen inside them, and by day 14 the invoice is effectively closed. Navy markers show the three dunning texts: day 0, day 3, and day 7.</p>
-        <div class="chart-wrap">
-          <div class="tip" id="tipCurve"></div>
-          <svg id="recoveryChart" viewBox="0 0 640 260" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Cumulative share of all recoveries, normalized to day 14 = 100%: 15% by day 1, 49% by day 3, 80% by day 7, 100% by day 14. Dunning texts send on days 0, 3, and 7."></svg>
+        <p class="chart-sub">Relative return rate: members who start a new membership after canceling</p>
+        <div class="tcb">
+          <div class="lb-label">Within 30 days</div>
+          <div class="lb-row">
+            <span class="lb-st">Failed payments</span>
+            <div class="lb-bar"><i style="--w:51%"></i></div>
+            <span class="lb-val">~2×</span>
+          </div>
+          <div class="lb-row neg">
+            <span class="lb-st">Voluntary cancels</span>
+            <div class="lb-bar"><i style="--w:26%"></i></div>
+            <span class="lb-val">baseline</span>
+          </div>
+          <div class="lb-label">Within 60 days</div>
+          <div class="lb-row">
+            <span class="lb-st">Failed payments</span>
+            <div class="lb-bar"><i style="--w:81%"></i></div>
+            <span class="lb-val">~1.8×</span>
+          </div>
+          <div class="lb-row neg">
+            <span class="lb-st">Voluntary cancels</span>
+            <div class="lb-bar"><i style="--w:45%"></i></div>
+            <span class="lb-val">baseline</span>
+          </div>
+          <div class="lb-label">Within 90 days</div>
+          <div class="lb-row">
+            <span class="lb-st">Failed payments</span>
+            <div class="lb-bar"><i style="--w:100%"></i></div>
+            <span class="lb-val">~1.7×</span>
+          </div>
+          <div class="lb-row neg">
+            <span class="lb-st">Voluntary cancels</span>
+            <div class="lb-bar"><i style="--w:58%"></i></div>
+            <span class="lb-val">baseline</span>
+          </div>
         </div>
         <div class="legend">
-          <span><i style="background:#0B75E1"></i>Cumulative recovery</span>
-          <span><i style="background:#003264"></i>AMP dunning text sends</span>
+          <span><i class="sq" style="background:var(--brand)"></i>Failed payments</span>
+          <span><i class="sq" style="background:#C4C9D4"></i>Voluntary cancels</span>
         </div>
-        <!-- v6 tryout · second angle from v6: the retry-schedule insight, house-toned. -->
-        <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>With only <strong>14 days</strong> before the invoice closes, retrying at the same time every day leaves recovery on the table. <strong>Vary retry timing by card type and failure reason</strong> so each attempt lands when the charge is most likely to clear.</div>
+        <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>Members lost to a declined card didn’t mean to leave, and it shows: they return at <strong>nearly double the rate of voluntary cancels</strong>, with <strong>the largest opportunity for win-back in the first 30 days</strong>.</div>
       </article>
 
-      <!-- Nathan 2026-07-17: the 31% closes Act 4 as a TITLE-SECTION text block — no
-           box, no AMP Insight tag, not collapsible. Boxed aside kept for swap-back:
-      <aside class="insight-card wide reveal" data-collapse>
-        <span class="insight-tag">(spark svg)AMP Insight</span>
-        <div class="aside-stat">(31% stat)</div>
-        <p>(paragraph)</p>
-        <div class="insight-chips"><button type="button" id="openData">View the data</button></div>
-      </aside>
-      -->
-      <section class="sec-head stat-close reveal" aria-label="First recovery text results">
-        <div>
-          <!-- Nathan 2026-07-17: full width, sentence grammar — data never tucked in a corner -->
-          <div class="sentence">
-            <p class="big"><b data-count="31" data-decimals="0" data-suffix="%">31%</b> of members reached by the first recovery text <b>go on to recover.</b></p>
+      <article class="chart-card reveal">
+        <div class="chart-head">
+          <h3 class="chart-title">Win-back rate is highly dependent on <span class="hl">cancelation reason</span></h3>
+        </div>
+        <p class="chart-sub">Relative return rate within 90 days, by cancelation reason</p>
+        <div class="bmg qual">
+          <div class="lb-row">
+            <span class="lb-st">Failed payments</span>
+            <div class="lb-bar"><i style="--w:100%"></i></div>
+            <span class="lb-val">Highest</span>
           </div>
-          <p>Those are saves retries alone never make: the members whose card needs replacing, not retrying. <strong>Whatever recovery you run must act inside 14 days. After that, the invoice is dead.</strong></p>
-          <div class="insight-chips">
-            <button type="button" id="openData">View the data</button>
+          <div class="lb-row neg">
+            <span class="lb-st">No car / car sold</span>
+            <div class="lb-bar"><i style="--w:91%"></i></div>
+            <span class="lb-val">High</span>
+          </div>
+          <div class="lb-row neg">
+            <span class="lb-st">Price / budget</span>
+            <div class="lb-bar"><i style="--w:86%"></i></div>
+            <span class="lb-val">High</span>
+          </div>
+          <div class="lb-row neg">
+            <span class="lb-st">Not using it enough</span>
+            <div class="lb-bar"><i style="--w:55%"></i></div>
+            <span class="lb-val">Moderate</span>
+          </div>
+          <div class="lb-row neg">
+            <span class="lb-st">Bad experience</span>
+            <div class="lb-bar"><i style="--w:46%"></i></div>
+            <span class="lb-val">Low</span>
+          </div>
+          <div class="lb-row neg">
+            <span class="lb-st">Went to competitor</span>
+            <div class="lb-bar"><i style="--w:15%"></i></div>
+            <span class="lb-val">Lowest</span>
           </div>
         </div>
-      </section>
+        <div class="legend">
+          <span><i class="sq" style="background:var(--brand)"></i>Failed payments</span>
+          <span><i class="sq" style="background:#C4C9D4"></i>Voluntary cancels</span>
+        </div>
+        <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span><strong>Circumstantial exits</strong> (a failed card, a sold car, a tight budget) return at the highest rates; <strong>deliberate exits</strong> (a competitor, a bad experience) rarely do. Differentiating your win-back strategy by cancelation reason can ensure the right message is received at the right time.</div>
+      </article>
+    </div>
 
-    <!-- ————— ACT 5 "ROI & ACTION": calculator, operator mandate ————— -->
-    <!-- v6 tryout: waterfall removed (v6 deleted it). The "15 operators" stat rode with it
-         (also de-AMP'd out of v6 — flag to Nathan). Trivially restorable: uncomment below.
-    <article class="chart-card reveal">
-      <div class="chart-head">
-        <h3 class="chart-title">What happens to <span class="hl">100 failed recharges</span></h3>
-        <span class="chart-note">Portfolio averages · dunning = true-incremental estimate at 3 early adopters</span>
-      </div>
-      <div class="flow-figure">
-        <div class="flow-bar" id="flowBar">
-          <div class="flow-seg retries" data-key="retries" style="flex-grow:59"><span>59</span></div>
-          <div class="flow-seg dunning" data-key="dunning" style="flex-grow:4; min-width:30px;"><span>4</span></div>
-          <div class="flow-seg lost" data-key="lost" style="flex-grow:37"><span>37</span></div>
-        </div>
-        <div class="flow-labels" id="flowLabels">
-          <div class="flow-label" data-key="retries" style="flex-grow:59; flex-basis:0;">
-            <b><i style="background:#A9CCF3"></i>Recovered by retries</b>
-            <small>Automatic re-attempts over the first 7 days. Works when the card just needs a payday</small>
-          </div>
-          <div class="flow-label amp" data-key="dunning" style="flex-grow:22; flex-basis:0;">
-            <b><i style="background:var(--brand)"></i>+ AMP texts</b>
-            <small>Est. +4 more per 100. Limited by reachability, not results</small>
-          </div>
-          <div class="flow-label deemph" data-key="lost" style="flex-grow:37; flex-basis:0;">
-            <b><i style="background:#D3D7DF"></i>Lost · involuntary churn</b>
-            <small>Never collected. After day 14, winning them back means a brand-new membership</small>
-          </div>
-        </div>
-        <div class="card-insight"><span class="k">Insight</span>Retries save 59 of every 100; dunning texts add ~4 more, capped by reachability, and 37 stay lost. 15 operators have dunning configured but not turned on: activation is one setting.</div>
-        <a class="calc-link" href="#calculator">See what this costs you →</a>
-      </div>
-    </article>
-    -->
-
-    <!-- ————— EXPOSURE CALCULATOR ————— -->
+    <!-- v7 law #13 · calculator sec-head: sub-intro verbatim, h2 already house Title
+         Case. Scrollspy id survives (knob 9). -->
     <div class="sec-head" id="calculator">
       <div>
         <h2>What’s Your Exposure?</h2>
-        <p>Set your numbers, then flip the switch. Watch what dunning texts pull back.</p>
+        <p>Estimate your monthly revenue at risk from failed payments, and what mitigation can recover.</p>
       </div>
     </div>
 
-    <section class="calc-card reveal" aria-label="Failed payment exposure calculator">
+    <!-- v7 law #13 · calculator rebuilt to the law's model: monthly at-risk = plans ×
+         price × rate, recoverable = ~70% (resolves Andrew's 70% question — ships WITH
+         the illustrative note, verbatim). Sliders 300–10,000 / $15–$60 / 5–15% step .5,
+         defaults 2,000 / $30 / ~9.0% (knob 10: 9.0, not our 9.3 portfolio average).
+         Measured 59/63 mechanics, dunning toggle, dot grid, presets, yearly framing,
+         and the calculator CTA are all GONE (kill list). Slider grammar/motion is ours. -->
+    <section class="calc-card reveal" aria-label="Revenue impact calculator">
+      <div class="calc-title-row">
+        <h3 class="calc-title">Revenue impact calculator</h3>
+        <p class="calc-sub">Slide to your numbers to see monthly revenue at risk and what mitigation can recover</p>
+      </div>
       <div class="calc-inputs">
         <div class="calc-field">
-          <div class="row"><label class="name" for="csMembers">Active members</label><span class="val" id="cvMembers">5,000</span></div>
-          <input type="range" class="cslider" id="csMembers" min="500" max="30000" step="250" value="5000" aria-label="Active members">
-          <div class="minmax"><span>500</span><span>30,000</span></div>
+          <div class="row"><label class="name" for="csMembers">Active plans per site</label><span class="val" id="cvMembers">2,000</span></div>
+          <input type="range" class="cslider" id="csMembers" min="300" max="10000" step="100" value="2000" aria-label="Active plans per site">
+          <div class="minmax"><span>300</span><span>10,000</span></div>
         </div>
         <div class="calc-field">
           <div class="row"><label class="name" for="csPrice">Average plan price</label><span class="val" id="cvPrice">$30</span></div>
           <input type="range" class="cslider" id="csPrice" min="15" max="60" step="1" value="30" aria-label="Average plan price in dollars">
           <div class="minmax"><span>$15</span><span>$60</span></div>
         </div>
-        <!-- v6 tryout · failure default moved to the verified 9.3% (new grain). The
-             recovery mechanism (59% retries / ~63% with dunning) is held on the MEASURED
-             numbers pending Andrew's call on the v6 calculator's 70% mitigation assumption
-             (§2 Q3). Full v6 rebuild — 70% assumption, ranges 300–10k / $15–60 / 5–15% —
-             waits on that answer. -->
-        <div class="calc-field calc-field-fail">
-          <div class="row"><label class="name" for="csFail">Monthly failure rate</label><span class="val" id="cvFail">9.3%</span></div>
-          <input type="range" class="cslider" id="csFail" min="3" max="20" step="0.1" value="9.3" aria-label="Monthly payment failure rate percent">
-          <div class="minmax"><span>3%</span><span>20%</span></div>
-          <div class="calc-presets" role="group" aria-label="Failure rate presets">
-            <button data-fail="3">Credit-heavy · 3%</button>
-            <button class="active" data-fail="9.3">Portfolio average · 9.3%</button>
-            <button data-fail="20">Prepaid-heavy · 20%</button>
-          </div>
+        <div class="calc-field">
+          <div class="row"><label class="name" for="csFail">Initial recharge failure rate</label><span class="val" id="cvFail">~9.0%</span></div>
+          <input type="range" class="cslider" id="csFail" min="5" max="15" step="0.5" value="9" aria-label="Initial recharge failure rate percent">
+          <div class="minmax"><span>5%</span><span>15%</span></div>
         </div>
-        <p class="calc-note-sm"><span class="note-full">Illustrative only, based on portfolio-average recovery rates (59% retries alone, ~63% with dunning: a true-incremental estimate measured at 3 early-adopter operators). Actual outcomes vary with card mix and plan structure.</span><span class="note-short">Illustrative. Portfolio-average recovery rates; actual results vary.</span></p>
       </div>
-
       <div class="calc-result">
-        <span class="r-label">Estimated revenue lost per year</span>
-        <div class="r-big" id="crLost">$61,254</div>
-        <p class="r-equiv">That’s <strong id="crEquiv">170 members</strong> paying dues for a year and washing none of it back.</p>
-        <span class="calc-saved" id="crSaved">↑ $5,976/yr recovered by dunning texts</span>
-
-        <div class="calc-toggle-row">
-          <div class="t-copy">
-            <b><svg class="amp-logo-s" viewBox="0 0 1200 333.33" fill="currentColor" role="img" aria-label="AMP"><polygon points="762.27 15.12 648.78 162.9 534.55 15.26 470.91 15.12 470.91 315.92 540.84 315.92 540.84 117.76 624.46 240.29 624.94 240.98 664.8 240.98 756.72 117.41 756.72 315.92 826.65 315.92 826.65 15.13 764.75 15.13 762.27 15.12"/><path d="M1155.32,104.3c-.01-48.29-44.39-87.57-98.94-87.57h-180.11v299.83h69.93l.2-97.26h110.59c54.35,0,98.57-39.15,98.57-87.29l-.23-27.72ZM1087.97,129.64c-2.58,14.31-17.59,25.1-34.95,25.1h-106.62l-.22-76.51h106.6c16.77,0,31.34,9.96,34.65,23.68.46,1.9.69,3.86.69,5.81v1.14c.05,16.31-.08,20.03-.16,20.77Z"/><polygon points="44.44 315.02 144.99 314.82 348.11 118.07 348.11 315.28 421.29 315.28 421.29 17.69 349.88 17.69 44.44 315.02"/><polygon points="302.26 16.73 98.5 16.73 98.5 89.92 228.22 89.92 302.26 16.73"/></svg>SMS dunning</b>
-            <small>One setting. Texts every failed payment a one-tap pay link.</small>
+        <span class="r-label">Estimated revenue at risk per month from failed payments</span>
+        <div class="r-big" id="crLost">$5,400</div>
+        <!-- v7 round 4 (Nathan): the toggle lives INSIDE the recoverable box — flip
+             "Apply savings" and the big number drops to the residual at-risk (30%)
+             while the box lights. Standalone toggle row + saved chip removed. -->
+        <div class="calc-recover" id="crBox">
+          <div class="cr-copy">
+            <b class="amt" id="crSave">+$3,780 / mo</b>
+            <span class="lbl">potentially recoverable with comprehensive involuntary churn mitigation (assumes ~70%+ reduction)</span>
           </div>
-          <label class="switch">
-            <input type="checkbox" id="cDunning" aria-label="Toggle AMP SMS dunning">
-            <span class="knob"></span>
-          </label>
-        </div>
-
-        <div class="calc-grid100">
-          <div class="g-label">Where your failed recharges go</div>
-          <div class="g" id="cGrid" aria-hidden="true"></div>
-          <div class="g-legend">
-            <span><i style="background:rgba(169,204,243,.75)"></i>59% recovered by retries</span>
-            <span id="cLegendDun"><i style="background:rgba(255,255,255,.42)"></i>4% recoverable · dunning off</span>
-            <span><i style="background:rgba(255,255,255,.16)"></i>37% lost either way</span>
+          <div class="cr-action">
+            <label class="switch">
+              <input type="checkbox" id="cMitigation" aria-label="Apply estimated savings to the at-risk number">
+              <span class="knob"></span>
+            </label>
+            <span class="cr-lbl">Apply savings</span>
           </div>
         </div>
+        <!-- v7 round 2 (Nathan): CTA in the old dot-grid space — contact AMP to start a
+             comprehensive mitigation plan. Draft copy, Nathan to bless; UTM stays in the
+             sanctioned q2-2026-calculator set. -->
+        <div class="calc-go">
+          <p>Ready to claw it back? <strong>Comprehensive involuntary churn mitigation</strong> is built into AMP.</p>
+          <!-- TODO: swap for AMP's real contact/get-started link before launch -->
+          <a href="https://ampmemberships.com/?utm_source=washintel&utm_medium=report&utm_campaign=q2-2026-calculator" target="_blank" rel="noopener">Contact AMP to get started →</a>
+        </div>
       </div>
-
-      <div class="calc-cta">
-        <p>Ready to stop the leak? Dunning is <strong>one setting</strong> in your AMP dashboard.</p>
-        <!-- TODO: swap for AMP's real demo/deep link (e.g. dashboard dunning setting) before launch -->
-        <a href="https://ampmemberships.com/?utm_source=washintel&utm_medium=report&utm_campaign=q2-2026-calculator" target="_blank" rel="noopener">Start with dunning today →</a>
-      </div>
+      <p class="calc-note-lg"><strong>Illustrative only.</strong> At-risk revenue = active plans × average plan price × failure rate. Comprehensive mitigation (preventing false declines, smart retries, email and text dunning, and win-back) is assumed to recover ~70% or more. Recoverable amounts reflect the first month only — recovered memberships keep recharging, so much of that value carries into future months as retained revenue. Actual results vary by card mix, demographics, plan structure and pricing, and other factors.</p>
     </section>
 
     <!-- ————— OPERATOR MANDATE: the close of the AMP act, ahead of the product finale ————— -->
@@ -2451,46 +2324,6 @@ input[type=range].cslider::-moz-range-thumb {
     <button class="primary" id="shareCopy">Copy link</button>
     <a class="ghost" id="shareEmail" href="mailto:?subject=AMP%20Wash%20Intel%3A%20Q2%202026%20industry%20report">Email it</a>
     <button class="ghost" id="shareNative" hidden>Share…</button>
-  </div>
-</div>
-
-<!-- data appendix modal -->
-<div class="modal-scrim" id="dataModal" role="dialog" aria-modal="true" aria-labelledby="dataModalTitle">
-  <div class="modal-card">
-    <div class="modal-head">
-      <h3 id="dataModalTitle">The data behind recovery</h3>
-      <button class="modal-close" id="closeData" aria-label="Close data appendix">✕</button>
-    </div>
-    <p class="m-sub">12.9 million first-attempt recharges · 26 operators · July 2025 – June 2026 · monthly plans.</p>
-
-    <h4>Cumulative share of all recoveries, by days since first failure</h4>
-    <table class="data-table">
-      <tr><th>Window</th><th class="num">Share of all recoveries</th></tr>
-      <tr><td>Day 1</td><td class="num">15%</td></tr>
-      <tr><td>Day 3</td><td class="num">49%</td></tr>
-      <tr><td>Day 7</td><td class="num">80%</td></tr>
-      <tr><td>Day 14</td><td class="num">100%</td></tr>
-    </table>
-
-    <h4>Why payments fail, and which recover</h4>
-    <table class="data-table">
-      <tr><th>Reason</th><th class="num">Share of failures</th><th class="num">Recovery rate</th></tr>
-      <tr><td>Insufficient funds</td><td class="num">62%</td><td class="num">71%</td></tr>
-      <tr><td>Generic decline</td><td class="num">16%</td><td class="num">44%</td></tr>
-      <tr><td>Card can’t support (mostly prepaid)</td><td class="num">10%</td><td class="num">42%</td></tr>
-      <tr><td>Invalid account</td><td class="num">7%</td><td class="num">38%</td></tr>
-      <tr><td>Expired / wrong number</td><td class="num">5%</td><td class="num">40%</td></tr>
-    </table>
-
-    <h4>First-attempt failure by card type <span style="font-weight:600; color:var(--ink-faint)">(first charge attempt per payment)</span></h4>
-    <table class="data-table">
-      <tr><th>Card type</th><th class="num">Share of volume</th><th class="num">First-attempt failure</th><th class="num">Recovery rate</th></tr>
-      <tr><td>Prepaid</td><td class="num">2.2%</td><td class="num">56.6%</td><td class="num">53.9%</td></tr>
-      <tr><td>Debit</td><td class="num">54.0%</td><td class="num">11.9%</td><td class="num">65.0%</td></tr>
-      <tr><td>Credit</td><td class="num">43.7%</td><td class="num">3.7%</td><td class="num">61.6%</td></tr>
-    </table>
-
-    <p class="m-note">Failure = the first charge attempt on the invoice failed; 9.3% of recharges. Recovery = the invoice itself ultimately reached paid status; 62.9% of failures. Dunning performance measured at 3 early-adopter operators; the combined ~63% in the calculator is a true-incremental estimate, limited by reachability. All findings are observational.</p>
   </div>
 </div>
 
@@ -2660,10 +2493,7 @@ const TILES = {
   wireModal(document.getElementById('regionModal'), document.getElementById('openRegions'), document.getElementById('closeRegions'));
 })();
 
-/* ————— data appendix modal ————— */
-(function dataModal() {
-  wireModal(document.getElementById('dataModal'), document.getElementById('openData'), document.getElementById('closeData'));
-})();
+/* v7 law: the data-appendix modal left with the 31% receipts layer (kill list) */
 
 /* ————— share prompt: dock button + timed first-visit nudge ————— */
 (function sharePrompt() {
@@ -2736,7 +2566,7 @@ const TILES = {
 })();
 
 /* ————— "?" helper + pro-tip popovers ————— */
-[['benchHelp', 'benchPop'], ['stateHelp', 'statePop'], ['trendTipBtn', 'trendTipPop'], ['stateTipBtn', 'stateTipPop'], ['lifecycleTipBtn', 'lifecycleTipPop'], ['twoLayersBtn', 'twoLayersPop']].forEach(([btnId, popId]) => {
+[['benchHelp', 'benchPop'], ['stateHelp', 'statePop'], ['trendTipBtn', 'trendTipPop'], ['stateTipBtn', 'stateTipPop']].forEach(([btnId, popId]) => {
   const btn = document.getElementById(btnId);
   const pop = document.getElementById(popId);
   if (!btn || !pop) return;
@@ -3446,17 +3276,19 @@ function columnHover(svgId, tipId, pts, onChange) {
   const svg = document.getElementById('recoveryChart');
   /* v6 tryout · normalized to day 14 = 100% of recoveries (workbook Recovery Curve tab) */
   const DATA = [['Day 0', 0], ['Day 1', 15], ['Day 3', 49], ['Day 7', 80], ['Day 14', 100]];
-  const TIP = ['0% · first failed charge', '15%', '49%', '80% of all recoveries', '100% · window closed'];
-  const DUN = [0, 2, 3]; /* dunning texts send on day 0, 3, 7 → DATA indices 0, 2, 3 */
+  const TIP = ['0%', '15%', '49%', '~80% of all recoveries complete', '100%']; /* day-7 phrasing = the law's own point title */
   const PHONE = matchMedia('(max-width: 640px)');
   let seen = reduce; /* reduced motion: skip the draw-in entirely */
 
   function render() {
     const m = PHONE.matches;
-    const W = m ? 380 : 640, H = m ? 236 : 260;
+    /* v7 round 3 (Nathan): desktop viewBox width tracks the measured card width, so the
+       drawing fills the box edge to edge while the type renders at ~true size */
+    const avail = Math.round((svg.closest('.chart-wrap') || svg.parentElement).getBoundingClientRect().width) || 640;
+    const W = m ? 380 : Math.min(1280, Math.max(640, avail)), H = m ? 236 : 260;
     const base = m ? 188 : 208, topPct = m ? 56 : 52;    /* y of 0% and 100% */
     const yFor = v => base - v * ((base - topPct) / 100);
-    const x0 = m ? 46 : 76, x1 = m ? 366 : 604;
+    const x0 = m ? 46 : 76, x1 = m ? 366 : W - 40;
     const xs = DATA.map((_, i) => x0 + i * (x1 - x0) / (DATA.length - 1));
     /* phone type runs ~0.88× (380-unit viewBox in a ~335px card) — sizes bumped so nothing lands under ~9px rendered */
     const fAxis = m ? 11 : 10, fDay = m ? 10.5 : 10, padL = m ? 38 : 54;
@@ -3469,15 +3301,7 @@ function columnHover(svgId, tipId, pts, onChange) {
     g += `</g><g font-size="${fAxis}" fill="#A4A7AE" font-weight="600" text-anchor="end">`;
     for (const v of [0, 25, 50, 75, 100]) g += `<text x="${padL}" y="${yFor(v) + 3.5}">${v}%</text>`;
     g += `</g>`;
-    /* dunning markers — day-labeled (the unlabeled TEXT 1/2/3 pills failed the
-       content spec: readers must see WHEN the texts send without hunting) */
-    const DUN_DAYS = ['DAY 0', 'DAY 3', 'DAY 7'];
-    DUN.forEach((di, n) => {
-      const x = xs[di], pw = m ? 46 : 44, ph = m ? 16 : 17, fy = m ? 14 : 24;
-      g += `<line x1="${x}" y1="${fy + ph - 1}" x2="${x}" y2="${base}" stroke="#003264" stroke-opacity=".18" stroke-width="1.5"/>`;
-      g += `<rect x="${x - pw / 2}" y="${fy}" width="${pw}" height="${ph}" rx="${ph / 2}" fill="#003264"/>`;
-      g += `<text x="${x}" y="${fy + ph - (m ? 4.5 : 5)}" text-anchor="middle" font-size="${m ? 9.5 : 8}" fill="#fff" font-weight="800">${DUN_DAYS[n]}</text>`;
-    });
+    /* v7 law: DAY 0/3/7 dunning pills removed (knob 4 — the law supersedes the content pack) */
     /* area + line */
     const linePts = DATA.map(([, v], i) => `${xs[i]},${yFor(v)}`).join(' ');
     g += `<path id="area" d="M${linePts.split(' ').join(' L')} L${xs[xs.length - 1]},${base} L${xs[0]},${base} Z" fill="url(#fadeArea)"/>`;
@@ -3489,13 +3313,11 @@ function columnHover(svgId, tipId, pts, onChange) {
       g += `<circle cx="${xs[i]}" cy="${yFor(v)}" r="${i === 3 ? 6 : 5}"/>`;
     });
     g += `</g>`;
-    g += `<g font-size="${m ? 11 : 10.5}" font-weight="700">
-      <text x="${xs[3]}" y="${yFor(80) - 13}" text-anchor="middle" fill="#0A5FBA">80%</text>
-      <text x="${xs[4]}" y="${yFor(100) - 13}" text-anchor="middle" fill="#0A5FBA">100%</text></g>`;
+    /* the law's own annotation at the day-7 point */
+    g += `<text x="${xs[3]}" y="${yFor(80) - 13}" text-anchor="middle" font-size="${m ? 11 : 10.5}" font-weight="700" fill="#0A5FBA">~80% by Day 7</text>`;
     g += `<g font-size="${fDay}" fill="#717680" font-weight="600" text-anchor="middle">`;
     DATA.forEach(([lbl], i) => { g += `<text x="${xs[i]}" y="${base + (m ? 18 : 22)}">${m ? lbl.replace('Day ', 'D') : lbl}</text>`; });
     g += `</g>`;
-    if (!m) g += `<text x="${W / 2}" y="${H - 8}" text-anchor="middle" font-size="9.5" fill="#A4A7AE" font-weight="600">Days since first failed charge</text>`;
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     svg.innerHTML = g;
 
@@ -3523,6 +3345,9 @@ function columnHover(svgId, tipId, pts, onChange) {
   }
   render();
   PHONE.addEventListener('change', render);
+  /* re-fit on resize (debounced; draw-in only plays the first time, so re-renders are static) */
+  let rsz = null;
+  addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(render, 120); });
 })();
 
 /* ————— flow bar hover: segment grows, its label takes focus ————— */
@@ -3547,25 +3372,16 @@ function columnHover(svgId, tipId, pts, onChange) {
   });
 })();
 
-/* ————— exposure calculator ————— */
+/* ————— revenue impact calculator (v7 law model) ————— */
 (function calculator() {
-  /* v4 constants: 59% Stripe retries alone; 63% with dunning (true incremental: 41 × 63.3% reach × 15.9% action ≈ +4pp) */
-  const REC_BASE = 0.59, REC_DUN = 0.63;
+  /* law: at-risk = active plans × average plan price × failure rate, MONTHLY;
+     comprehensive mitigation is assumed to recover ~70% (the law's labeled estimate,
+     shipped WITH the verbatim illustrative note) */
+  const RECOVERY = 0.70;
   const sM = document.getElementById('csMembers'), sP = document.getElementById('csPrice'), sF = document.getElementById('csFail');
   const vM = document.getElementById('cvMembers'), vP = document.getElementById('cvPrice'), vF = document.getElementById('cvFail');
-  const rLost = document.getElementById('crLost'), rEquiv = document.getElementById('crEquiv'), rSaved = document.getElementById('crSaved');
-  const dun = document.getElementById('cDunning');
-  const grid = document.getElementById('cGrid'), legendDun = document.getElementById('cLegendDun');
-
-  /* build the 100-invoice grid: 59 retries / 4 dunning-swing / 37 lost */
-  const swing = [];
-  for (let i = 0; i < 100; i++) {
-    const d = document.createElement('i');
-    if (i < 59) d.className = 'ok';
-    else if (i < 63) { d.className = 'dun'; swing.push(d); }
-    else d.className = 'lost';
-    grid.appendChild(d);
-  }
+  const rLost = document.getElementById('crLost'), rSave = document.getElementById('crSave');
+  const mit = document.getElementById('cMitigation'), rBox = document.getElementById('crBox');
 
   /* slider fill % */
   function paint(s) {
@@ -3580,7 +3396,7 @@ function columnHover(svgId, tipId, pts, onChange) {
   let lostAnnounceT = null;
   const announceLost = (v) => {
     clearTimeout(lostAnnounceT);
-    lostAnnounceT = setTimeout(() => announce('Estimated revenue lost per year: ' + money(v)), 700);
+    lostAnnounceT = setTimeout(() => announce('Estimated revenue at risk per month: ' + money(v)), 700);
   };
 
   function tweenLost(target) {
@@ -3601,63 +3417,24 @@ function columnHover(svgId, tipId, pts, onChange) {
     const m = +sM.value, p = +sP.value, f = +sF.value / 100;
     vM.textContent = m.toLocaleString('en-US');
     vP.textContent = '$' + p;
-    vF.textContent = (+sF.value).toFixed(1) + '%';
+    vF.textContent = '~' + (+sF.value).toFixed(1) + '%';
     [sM, sP, sF].forEach(paint);
-
-    const failures = m * f;
-    const rec = dun.checked ? REC_DUN : REC_BASE;
-    const lost = failures * (1 - rec) * p * 12;
-    const saved = failures * (REC_DUN - REC_BASE) * p * 12;
-    const equivMembers = Math.round(failures * (1 - rec));
-
-    tweenLost(lost);
-    rLost.classList.toggle('saving', dun.checked);
-    rEquiv.textContent = equivMembers.toLocaleString('en-US') + ' members';
-    rSaved.textContent = '↑ ' + money(saved) + '/yr recovered by dunning texts';
-    rSaved.classList.toggle('show', dun.checked);
-    if (fromToggle && dun.checked) {
+    const atRisk = m * p * f;
+    const saved = atRisk * RECOVERY;
+    /* toggle ON: the big number is the residual at-risk (30%); the box lights, the chip blooms */
+    tweenLost(mit.checked ? atRisk - saved : atRisk);
+    rSave.textContent = '+' + money(saved) + ' / mo';
+    rLost.classList.toggle('saving', mit.checked);
+    rBox.classList.toggle('on', mit.checked);
+    if (fromToggle && mit.checked) {
       rLost.classList.remove('pop');
       void rLost.offsetWidth; /* restart the bloom animation */
       rLost.classList.add('pop');
     }
-
-    if (fromToggle) {
-      swing.forEach((d, i) => {
-        setTimeout(() => d.classList.toggle('saved', dun.checked), reduce ? 0 : i * 55);
-      });
-      legendDun.innerHTML = dun.checked
-        ? '<i style="background:#3FC6FF;box-shadow:0 0 6px rgba(63,198,255,1)"></i>4% recovered by dunning texts'
-        : '<i style="background:rgba(255,255,255,.42)"></i>4% recoverable · dunning off';
-    }
-
-    /* preset chip state */
-    document.querySelectorAll('.calc-presets button').forEach(b =>
-      b.classList.toggle('active', Math.abs(parseFloat(b.dataset.fail) - +sF.value) < 0.05));
   }
 
   [sM, sP, sF].forEach(s => s.addEventListener('input', () => update(false)));
-  dun.addEventListener('change', () => update(true));
-
-  /* presets glide the slider into place instead of teleporting it */
-  let slideRaf = null;
-  function slideTo(target) {
-    cancelAnimationFrame(slideRaf);
-    const from = +sF.value;
-    if (reduce || document.hidden || Math.abs(target - from) < 0.05) { sF.value = target; update(false); return; }
-    const t0 = performance.now(), dur = 560;
-    const tick = (t) => {
-      const p = Math.min(1, (t - t0) / dur);
-      /* heavy quintic ease-in-out: leans in, rushes the middle, settles long */
-      const e = p < 0.5 ? 16 * Math.pow(p, 5) : 1 - Math.pow(-2 * p + 2, 5) / 2;
-      sF.value = (from + (target - from) * e).toFixed(2);
-      update(false);
-      if (p < 1) slideRaf = requestAnimationFrame(tick);
-      else { sF.value = target; update(false); }
-    };
-    slideRaf = requestAnimationFrame(tick);
-  }
-  document.querySelectorAll('.calc-presets button').forEach(b =>
-    b.addEventListener('click', () => slideTo(+b.dataset.fail)));
+  mit.addEventListener('change', () => update(true));
   update(false);
 })();
 
