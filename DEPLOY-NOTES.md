@@ -1,6 +1,16 @@
 # AMP Wash Intel · Q2 2026 — Deploy Notes
 
-For the developer taking this live on Vercel. Prepared 2026-07-15 by Beze Creative. **Package v6** (2026-07-20): if you already deployed v1–v5, redeploy with this index.html; nothing else in the bundle changed (images/team-tablet.jpg is no longer referenced by the page but stays in the bundle for repo parity).
+For the developer taking this live on Vercel. Prepared 2026-07-15 by MOX. **Package v7** (2026-07-21): if you already deployed v1–v6, redeploy with this index.html; nothing else in the bundle changed (images/team-tablet.jpg and images/kiosk-attendant.jpg are no longer referenced by the page but stay in the bundle for repo parity).
+
+## What changed in v7 (client markup round + motion covers + feedback, 2026-07-21)
+
+1. **Client review comments applied (app.markup.io round, client-authored copy):** hero sub now says "millions of member recharges" (Matt); the AMP cover intro is Patrick's broader-audience rewrite ("Some member cancellations were never a choice..."); the why-fail insight is Laura's clearer retry-programs rewrite; the calculator section head is Laura's "How Much of My Revenue Is at Risk?"; the last "AMP Insight" tag reads "Insight"; the Wash Intel hero lockup and the methodology foot split are per client notes. If review notes flag copy that differs from package v6, these client edits are why; do not revert.
+2. **Layout notes from the same round:** long section intros and chart descriptions now span the full column (width caps removed site-wide); the why-fail chart shows values to the LEFT of its bars with share bars normalized to the chart's own scale; a "New - AMP MCP" capability callout sits in the finale between the stats and the CTAs.
+3. **The AMP act cover is redesigned ("the rite"):** the kiosk photo cover is gone; it is now a centered near-black plaque with a scroll-driven sunrise glow (reversible, reduced-motion gets the resting state). This removed the page's use of kiosk-attendant.jpg.
+4. **The payment-lifecycle strip is scroll-driven ("the scrub"):** the chevrons are replaced by one continuous rail whose stages wake as you scroll (complete by screen center); on hover devices the payment dot can be scrubbed with the pointer. Phone gets a fully lit stack; no-JS and reduced-motion get the full lit rail.
+5. **The trends card:** slimmer region lines with right-gutter labels (labels can no longer collide with lines), and the per-view Pro tip now lives inside the insight aside instead of a separate chip.
+6. **NEW: report-feedback row ("the last beat")** at the bottom of the finale plaque: a 1-5 "how useful was this report?" chip scale; the tap records the rating, an optional note field opens after. **The rating currently stores ONLY in the reader's localStorage (`washintel-fb-q2-2026`) — there is no endpoint. Nothing is collected until one exists** (see TODOs); one submission per browser, returning readers see a thank-you row. Feedback copy is pending a final client pass.
+7. **The finale demo CTA now has its real destination** (ampmemberships.com/get-started with UTMs); its placeholder TODO is retired. TODO count is 8 lines: 4 placeholder-destination markers (3 launch items, the feedback endpoint carries 2 markers) + 4 marking the server-side-gating placeholder.
 
 ## What changed in v6 (client-verbatim payment act rewrap, 2026-07-20)
 
@@ -64,11 +74,11 @@ fonts/Manrope-latin-var.woff2    variable font, weights 400-800 (preloaded)
 
 ## REQUIRED before real launch (fine to skip for the client-review deploy)
 
-Grep `TODO` in index.html; there are exactly three placeholder destinations:
+Grep `TODO` in index.html; there are exactly three launch items (the finale demo link got its real destination in v7 and is no longer on this list):
 
 1. `og:url` and `og:image` in the head: swap the host for the final production URL.
 2. Calculator CTA "Contact AMP to get started →": real contact / get-started link (keep the UTM params).
-3. Finale "Schedule a free demo →": real demo-scheduling link (keep UTMs).
+3. **Feedback endpoint** for the finale's rating row (two TODO markers, one in the HTML and one in the `lastBeat` script): POST the rating at the chip tap and the note at Send. Until this exists the ratings live only in each reader's localStorage and nothing reaches AMP. Decide with Nathan whether submissions attach the gate email or stay anonymous.
 
 ## The gate (read this before the client asks)
 

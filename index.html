@@ -259,7 +259,7 @@ body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 /* ————— section header ————— */
 .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; padding: 26px 10px 10px; flex-wrap: wrap; }
 .sec-head h2 { font-size: clamp(1.35rem, 2.4vw, 1.8rem); font-weight: 700; letter-spacing: -.015em; line-height: 1.2; }
-.sec-head p { font-size: .85rem; color: var(--ink-secondary); max-width: 58ch; margin-top: 6px; }
+.sec-head p { font-size: .85rem; color: var(--ink-secondary); max-width: none; margin-top: 6px; } /* client round 2026-07-21 (#42-46): was 58ch — descriptions span the page */
 .sec-head p strong { color: var(--ink); font-weight: 700; }
 
 /* segmented toggle */
@@ -375,7 +375,7 @@ body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 .chart-title { font-size: 1.08rem; font-weight: 700; letter-spacing: -.01em; }
 .chart-title .hl { color: var(--brand-body); }
 .chart-note { font-size: .72rem; color: var(--ink-faint); font-weight: 600; }
-.chart-sub { font-size: .82rem; color: var(--ink-secondary); max-width: 66ch; margin-top: 2px; }
+.chart-sub { font-size: .82rem; color: var(--ink-secondary); max-width: none; margin-top: 2px; } /* client round 2026-07-21 (#42-46): was 66ch */
 .chart-wrap { position: relative; margin-top: 18px; }
 svg text { font-family: 'Manrope', sans-serif; }
 .mpt, #pts circle {
@@ -588,61 +588,86 @@ svg text { font-family: 'Manrope', sans-serif; }
 
 /* AMP spotlight: the handoff is a chapter cover — the hero's full-bleed photo language,
    shorter, opening the AMP act. A photo card can't be mistaken for another bento box. */
+/* ————— the payment health cover · "THE RITE" (spot-lab C4, integrated 2026-07-21) —————
+   The report's only centered moment: a near-black plaque and a scroll-driven sunrise.
+   --sp swells the card in (same physics as before); --dp OVERLAPS the swell (wakes at
+   ~60% grown, set in spotGrow) and raises the dawn until the lower plaque floods —
+   ~90% lit, the top ~68px keeps its black. Reversible, continuous, never jacked.
+   Reduced motion: full-size card, resting dawn (CSS defaults --sp:1, --dp:0).
+   The cover PHOTO retired with this design (kiosk-attendant.jpg stays in the bundle;
+   spot-lab C3 "The Ember" is the photo-keeping alternative if it's ever missed). */
 .spot {
   --sp: 1; /* scroll-grow progress; JS drives 0→1 as the cover enters view */
-  position: relative; border-radius: var(--r-hero); color: #fff;
-  padding: clamp(26px, 3.6vw, 44px);
-  overflow: hidden; box-shadow: var(--shadow-card);
-  background: linear-gradient(155deg, #003264 0%, #002246 62%, #001B38 100%);
-  min-height: min(86vh, 720px); display: flex; flex-direction: column; justify-content: flex-end;
+  position: relative; z-index: 0; border-radius: var(--r-hero); color: #fff;
+  padding: clamp(36px, 5vw, 72px);
+  overflow: hidden;
+  box-shadow: var(--shadow-card), 0 24px 90px rgba(11,117,225,.22);
+  background: linear-gradient(180deg, #06070A 0%, #0C0F14 52%, #14181F 100%);
+  min-height: min(86vh, 700px);
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center;
   transform: scale(calc(.8 + .2 * var(--sp)));
-  transform-origin: 50% 50%; /* symmetric swell — equal breathing above and below */
+  transform-origin: 50% 50%;
   will-change: transform;
-  /* the callout lands late in the swell: invisible until ~55% grown, settled by ~85% */
+  /* the callout lands late in the swell; the wordmark stamps one beat after */
   --pp: clamp(0, calc((var(--sp) - .55) / .3), 1);
-  /* the wordmark stamps in one beat after the pill: ~65% → 95% of the swell */
   --wp: clamp(0, calc((var(--sp) - .65) / .3), 1);
 }
-.spot-photo {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; object-position: 50% 24%;
-  /* zoom + slide so the attendant lands in the clear right side, out from under the gradient
-     (the left seam this opens hides under the near-opaque end of the scrim) */
-  transform: translateX(12%) scale(1.62); transform-origin: 0 30%;
+/* the sunrise: a wide flat ellipse anchored below the floor. Center sits 150px under
+   the card bottom; visible band = 380×scale − 150. Nathan 2026-07-21: the growth reads
+   BIGGER — rest starts smaller and dimmer (~59px ember at .7 alpha) and rises to the
+   same flood (~572px, full alpha), so the journey is ~10× in size plus brightness. */
+.spot .dawn {
+  position: absolute; bottom: -530px; left: 50%; margin-left: -850px;
+  z-index: 0; pointer-events: none;
+  width: 1700px; height: 760px; border-radius: 50%;
+  background: radial-gradient(50% 50% at 50% 50%,
+    rgba(94,180,255,.48) 0%, rgba(11,117,225,.38) 22%,
+    rgba(11,117,225,.16) 45%, rgba(11,117,225,.06) 62%, transparent 78%);
+  opacity: calc(.7 + var(--dp, 0) * .3);
+  transform: scale(calc(.55 + var(--dp, 0) * 1.35));
+  will-change: transform, opacity;
 }
-.spot-scrim {
-  position: absolute; inset: 0;
-  background:
-    /* solid to 13%: the zoom+slide opens a 12% dead strip at the left edge — the scrim
-       must be fully opaque over it at every width, or the card background reads through */
-    linear-gradient(95deg, rgb(2,10,20) 0%, rgb(2,10,20) 13%, rgba(2,14,28,.82) 30%, rgba(2,14,28,.62) 46%, rgba(2,14,28,.05) 72%),
-    linear-gradient(0deg, rgba(2,10,20,.5) 0%, rgba(2,10,20,0) 45%);
+/* the hot core: a bright horizon heart hugging the very bottom edge, swelling upward */
+.spot .dawn-core {
+  position: absolute; bottom: -60px; left: 50%; margin-left: -45%;
+  width: 90%; height: 220px; z-index: 0; pointer-events: none;
+  background: radial-gradient(50% 100% at 50% 100%,
+    rgba(178,219,255,.6) 0%, rgba(94,180,255,.34) 40%,
+    rgba(11,117,225,.12) 65%, transparent 82%);
+  opacity: calc(.45 + var(--dp, 0) * .55);
+  transform: scale(calc(.85 + var(--dp, 0) * .65));
+  transform-origin: 50% 100%;
+  will-change: transform, opacity;
 }
-.spot > *:not(.spot-photo):not(.spot-scrim):not(.hero-pill) { position: relative; z-index: 1; }
+.spot > *:not(.dawn):not(.dawn-core) { position: relative; z-index: 1; }
 .spot > .hero-pill {
-  position: relative; z-index: 1; align-self: flex-start; margin-bottom: clamp(20px, 3vw, 32px);
+  align-self: center;
   opacity: var(--pp);
   transform: translateY(calc((1 - var(--pp)) * 12px));
 }
 .spot .hero-pill svg { width: 12.5px; height: 10px; }
-/* the wordmark signs the NCS→AMP handoff — same unboxed grammar as the finale, quieter scale */
+/* the wordmark signs the NCS→AMP handoff — same unboxed grammar as the finale */
 .spot > .spot-logo {
-  align-self: flex-start; height: clamp(22px, 2.6vw, 30px); width: auto; color: #fff;
-  margin-bottom: clamp(14px, 2vw, 22px);
+  align-self: center; height: clamp(24px, 2.8vw, 32px); width: auto; color: #fff;
+  margin: clamp(22px, 3.4vh, 36px) 0 14px;
   filter: drop-shadow(0 2px 14px rgba(0,27,56,.5));
   opacity: var(--wp);
   transform: translateY(calc((1 - var(--wp)) * 12px));
 }
 .spot h2 {
-  font-size: clamp(1.8rem, 3.4vw, 2.7rem); font-weight: 700; letter-spacing: -.02em;
-  line-height: 1.12; max-width: 18ch; text-shadow: 0 2px 24px rgba(0,27,56,.4);
+  font-size: clamp(2rem, 4.4vw, 3.9rem); font-weight: 700; letter-spacing: -.02em;
+  line-height: 1.08; max-width: 20ch; text-shadow: 0 2px 24px rgba(0,27,56,.4);
 }
-/* client meeting 2026-07-16: the cover copy is the act's introduction — nothing below
-   makes sense without it. Larger and brighter than the hero-sub grammar on purpose. */
-.spot p { margin-top: 14px; max-width: 54ch; font-size: clamp(.95rem, 1.35vw, 1.06rem); color: rgba(255,255,255,.88); }
+.spot p { margin-top: 18px; max-width: 70ch; font-size: clamp(.95rem, 1.35vw, 1.06rem); color: rgba(255,255,255,.78); }
 .spot p strong { color: #fff; font-weight: 600; }
-/* v7 law · the cover kicker: the law's "why" line, a quiet lead-in between headline and intro */
-.spot p.spot-kick { margin-top: 12px; font-size: .92rem; font-weight: 600; color: rgba(255,255,255,.72); max-width: 54ch; }
+/* the kicker: the law's "why" line, a quiet lead-in between headline and intro */
+.spot p.spot-kick { margin-top: 16px; font-size: .92rem; font-weight: 600; color: rgba(255,255,255,.72); }
+/* Nathan 2026-07-21: the cover radiates onto the CANVAS, not onto the act — the first
+   card lifts above the cover's glow shadow so the spill only shows in the 12px gap
+   (the cover's will-change stacking context otherwise paints over plain siblings) */
+.spot + .chart-card { position: relative; z-index: 1; }
+
 .src-row.light { padding-top: 20px; }
 .src-row.light > .lbl { color: rgba(255,255,255,.42); }
 .src-row.light b { color: rgba(255,255,255,.82); }
@@ -652,7 +677,7 @@ svg text { font-family: 'Manrope', sans-serif; }
 .trend-fade { transition: opacity .24s ease, transform .24s var(--ease-out); }
 .trend-fade.out { opacity: 0; transform: translateY(-4px); }
 .trend-fade.enter { opacity: 0; transform: translateY(7px); transition: none; }
-#trendNum, #trendCap, #trendInsight { transition: opacity .25s ease; }
+#trendNum, #trendCap, #trendInsight, #trendProtip { transition: opacity .25s ease; }
 .dimmed { opacity: 0 !important; }
 
 /* aside stat: the one number a view is about */
@@ -709,9 +734,13 @@ svg text { font-family: 'Manrope', sans-serif; }
 .hero-powered .amp-logo { height: 15px; width: 54px; color: rgba(255,255,255,.94); display: block; flex-shrink: 0; }
 .hero-powered .ncs-logo { height: 13px; width: 42px; color: rgba(255,255,255,.94); display: block; flex-shrink: 0; margin-right: -3px; }
 .hero-powered b { font-size: .88rem; font-weight: 800; color: rgba(255,255,255,.94); letter-spacing: .01em; white-space: nowrap; }
+/* client round 2026-07-21 (#39): "Wash Intel" sized to the NCS logotype's cap height
+   so the pair reads as one aligned lockup on a single line */
+.hero-powered .pw b.wi { font-size: 1.1rem; letter-spacing: 0; }
 .hero-powered i { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,.4); }
 @media (max-width: 640px) {
   .hero-powered b { font-size: .8rem; }
+  .hero-powered .pw b.wi { font-size: .98rem; }
 }
 
 /* state performance tile map */
@@ -1097,9 +1126,11 @@ input[type=range].cslider::-moz-range-thumb {
   font-size: clamp(2.6rem, 5.4vw, 4.4rem); font-weight: 700; letter-spacing: -.02em;
   line-height: 1.08; max-width: 14ch; text-shadow: 0 2px 24px rgba(0,27,56,.4);
 }
-.finale > p { margin-top: 16px; max-width: 56ch; font-size: clamp(.92rem, 1.3vw, 1rem); color: rgba(255,255,255,.78); }
+.finale > p { margin-top: 16px; max-width: 62ch; font-size: clamp(.92rem, 1.3vw, 1rem); color: rgba(255,255,255,.78); }
 .finale > p strong { color: #fff; font-weight: 600; }
-.finale-stats { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; margin-top: clamp(24px, 3.4vw, 40px); }
+/* Nathan 2026-07-21: the closing act spreads across the plaque — stat columns share
+   the full row instead of clumping left */
+.finale-stats { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: clamp(24px, 3.4vw, 40px); }
 .finale-stat { padding: 0 clamp(26px, 3.4vw, 48px); border-left: 1px solid rgba(255,255,255,.14); }
 .finale-stat:first-child { padding-left: 0; border-left: 0; }
 .finale-stat b {
@@ -1109,6 +1140,25 @@ input[type=range].cslider::-moz-range-thumb {
 }
 .finale-stat span { display: block; font-size: .78rem; color: rgba(255,255,255,.62); font-weight: 600; margin-top: 4px; max-width: 22ch; line-height: 1.45; }
 .finale-note { margin-top: 20px; font-size: .62rem; color: rgba(255,255,255,.38); font-style: italic; max-width: 66ch; }
+/* client round 2026-07-21 (#50): the MCP capability row — light-blue accent sets it
+   apart from the results stats above */
+.finale-mcp {
+  margin-top: clamp(24px, 3.4vw, 38px); padding: 18px 22px;
+  border: 1px solid rgba(94,180,255,.45); border-radius: var(--r-inner);
+  background: rgba(94,180,255,.07);
+  /* Nathan 2026-07-21: full row, two columns — badge + headline left, body right */
+  display: grid; grid-template-columns: minmax(240px, .9fr) 1.6fr;
+  gap: 0 clamp(28px, 4vw, 56px); align-items: center;
+}
+.finale-mcp .mcp-badge { justify-self: start; }
+.finale-mcp p { grid-column: 2; grid-row: 1 / 3; }
+.finale-mcp .mcp-badge {
+  display: inline-flex; padding: 4px 11px; border-radius: 999px;
+  border: 1px solid rgba(94,180,255,.5); color: #5EB4FF;
+  font-size: .6rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+}
+.finale-mcp b { display: block; margin-top: 10px; font-size: .98rem; font-weight: 700; color: #fff; }
+.finale-mcp p { margin-top: 4px; font-size: .85rem; color: rgba(255,255,255,.75); max-width: 68ch; }
 .cta-actions { display: flex; gap: 10px; margin-top: clamp(26px, 3.6vw, 40px); flex-wrap: wrap; }
 
 /* finale approach (D movement, winner from finale-lab round 1): the CARD is
@@ -1134,15 +1184,19 @@ input[type=range].cslider::-moz-range-thumb {
   .js .finale:not(.lit) h2,
   .js .finale:not(.lit) > p,
   .js .finale:not(.lit) .finale-stats,
+  .js .finale:not(.lit) .finale-mcp,
   .js .finale:not(.lit) .cta-actions,
+  .js .finale:not(.lit) .lastbeat,
   .js .finale:not(.lit) .finale-note { opacity: 0; }
   .finale.lit > .finale-logo { animation: finStamp .7s var(--ease-out) .05s both; }
   .finale.lit h2 { animation: finUp .8s var(--ease-out) .2s both; }
   .finale.lit > p { animation: finUp .8s var(--ease-out) .4s both; }
   .finale.lit .finale-stats { animation: finUp .8s var(--ease-out) .6s both; }
+  .finale.lit .finale-mcp { animation: finUp .8s var(--ease-out) .74s both; }
   .finale.lit .finale-stat b { animation: statBloom 1.3s ease-out .95s both; }
   .finale.lit .cta-actions { animation: finUp .8s var(--ease-out) .85s both; }
   .finale.lit .cta-actions .primary { animation: finUp .8s var(--ease-out) .85s both, ctaRing 1.5s ease-out 1.7s 2; }
+  .finale.lit .lastbeat { animation: finUp .8s var(--ease-out) .95s both; }
   .finale.lit .finale-note { animation: finUp .8s ease 1.05s both; }
 }
 /* the light shows up only when the mouse does (--lamp via .lamp-on, set by the
@@ -1190,7 +1244,54 @@ input[type=range].cslider::-moz-range-thumb {
 }
 .cta-actions .ghost:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.6); }
 
-.foot { text-align: center; font-size: .7rem; color: var(--ink-faint); font-weight: 500; padding: 20px 0 8px; max-width: 112ch; margin: 0 auto; } /* v6 tryout: was 72ch; the methodology block stacked too tall */
+/* the last beat (fb-lab winner B, 2026-07-21): the feedback ask is the plaque's final
+   hairline row, after the CTAs, before the fine print — the report's actual last word.
+   One tap records the rating; the note only appears after. Copy is SCRATCH pending a
+   client pass. fb- prefix throughout: .reveal/.scale are taken by the page systems. */
+.lastbeat {
+  margin-top: clamp(26px, 3.6vw, 40px); padding-top: clamp(20px, 2.8vw, 30px);
+  border-top: 1px solid rgba(255,255,255,.14);
+  display: grid; grid-template-columns: minmax(240px, .9fr) 1.6fr;
+  gap: 14px clamp(28px, 4vw, 56px); align-items: center;
+}
+.lastbeat.done { grid-template-columns: 1fr; }
+.lastbeat.done .fb-lead { display: none; }
+.lastbeat b { font-size: .98rem; font-weight: 700; }
+.lastbeat .fb-sub { display: block; font-size: .78rem; font-weight: 600; color: rgba(255,255,255,.55); margin-top: 4px; }
+.fb-scale { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.fb-scale .end { font-size: .68rem; font-weight: 700; color: rgba(255,255,255,.38); }
+.fb-scale button {
+  min-width: 46px; height: 42px; padding: 0 8px; border-radius: 12px; cursor: pointer;
+  border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.07);
+  font: inherit; font-weight: 800; font-size: .88rem; color: rgba(255,255,255,.75);
+  font-variant-numeric: tabular-nums;
+  transition: background .2s, border-color .2s, color .2s, transform .2s var(--ease-out);
+}
+.fb-scale button:hover { background: rgba(94,180,255,.16); border-color: #5EB4FF; color: #fff; transform: translateY(-1px); }
+.fb-scale button:focus-visible { outline: 2px solid #5EB4FF; outline-offset: 2px; }
+.fb-scale button[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; transform: none; }
+.fb-fold { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .5s var(--ease-out); }
+.fb-fold > div { overflow: hidden; }
+.fb-fold.open { grid-template-rows: 1fr; }
+.fb-fold .fb-pad { padding-top: 14px; }
+.fb-text {
+  width: 100%; border: 1px solid rgba(255,255,255,.22); border-radius: 12px;
+  background: rgba(255,255,255,.08); color: #fff;
+  padding: 12px 14px; font: inherit; font-size: .85rem; resize: vertical; min-height: 72px;
+}
+.fb-text::placeholder { color: rgba(255,255,255,.42); }
+.fb-text:focus-visible { outline: 2px solid #5EB4FF; outline-offset: 2px; }
+.fb-send {
+  margin-top: 10px; background: #fff; color: #06070A; font: inherit; font-weight: 700; font-size: .85rem;
+  border: 0; border-radius: 999px; padding: 11px 26px; cursor: pointer;
+  transition: transform .25s var(--ease-out), box-shadow .25s;
+}
+.fb-send:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.35); }
+.fb-thanks { font-size: .88rem; font-weight: 700; color: #5EB4FF; }
+.fb-thanks small { display: block; font-weight: 600; font-size: .76rem; color: rgba(255,255,255,.55); margin-top: 3px; }
+
+.foot { text-align: center; font-size: .7rem; color: var(--ink-faint); font-weight: 500; padding: 20px 0 8px; max-width: 112ch; margin: 0 auto; }
+.foot.foot-mid { padding: 2px 0 0; } /* client round 2026-07-21 (#38): the NCS line below the states band */ /* v6 tryout: was 72ch; the methodology block stacked too tall */
 
 /* chart tooltip */
 .tip {
@@ -1259,12 +1360,10 @@ input[type=range].cslider::-moz-range-thumb {
   /* phones: chapter cover sized to its content — photo band on top, headline right
      below it on solid navy (no dead space; full-screen wasn't worth the emptiness).
      Stays a rounded card inside the shell; starts smaller so the swell is legible */
-  .spot { min-height: 0; padding: 260px 20px 30px; transform: scale(calc(.78 + .22 * var(--sp))); }
-  .spot-photo { inset: 0 0 auto 0; height: 242px; object-position: 70% 28%; transform: none; }
-  .spot-scrim { inset: 0 0 auto 0; height: 244px; background: linear-gradient(180deg, rgba(0,20,40,.15) 0%, rgba(0,42,84,0) 45%, #002A54 100%); }
-  .spot .hero-pill { position: absolute; top: 16px; left: 16px; margin: 0; }
-  .spot > .spot-logo { height: 20px; margin-bottom: 12px; }
-  .spot h2 { font-size: 1.7rem; max-width: none; }
+  /* the rite at phone: same centered plaque, tighter */
+  .spot { min-height: 0; padding: 44px 18px 54px; }
+  .spot > .spot-logo { height: 20px; }
+  .spot h2 { font-size: 1.75rem; }
   .spot p { font-size: .92rem; }
 
   /* finale on phones: the monolith is content-sized on solid navy; touch gets
@@ -1342,6 +1441,9 @@ input[type=range].cslider::-moz-range-thumb {
   .calc-card { grid-template-columns: 1fr; }
   .finale-stats { grid-template-columns: 1fr; gap: 16px; }
   .finale-stat { padding: 0; border-left: 0; }
+  .finale-mcp { grid-template-columns: 1fr; gap: 0; }
+  .finale-mcp p { grid-column: auto; grid-row: auto; margin-top: 8px; }
+  .lastbeat { grid-template-columns: 1fr; }
   .flow-story { grid-template-columns: 1fr; padding-top: 0; }
   .fs-row {
     display: grid; grid-template-columns: 148px 1fr; gap: 16px; align-items: baseline;
@@ -1398,13 +1500,16 @@ input[type=range].cslider::-moz-range-thumb {
 /* Act 3 · why-payments-fail: dual bars per reason. Grey = share of failures (loss),
    blue = share retries win back (good) — the page's one color sentence, twice per row */
 .wf { margin-top: 18px; }
-.wf-head, .wf-row { display: grid; grid-template-columns: minmax(140px, 200px) 1.1fr 44px 0.9fr 44px; gap: 10px; align-items: center; }
+/* client round 2026-07-21 (#49): values sit LEFT of their bars so each % reads with its
+   column; share bars normalized to the law's own scale (62% draws at ~89%, not full) */
+.wf-head, .wf-row { display: grid; grid-template-columns: 156px 44px 1.1fr 44px 0.9fr; gap: 10px; align-items: center; } /* Nathan 2026-07-21: label column tightened to the longest title (was 200px) so the percentages and bars sit right after the titles. Fixed px, NOT max-content: each row is its own grid, so content-sized columns would misalign across rows */
+.wf-head .wh { grid-column: span 2; padding-left: 17px; } /* Nathan 2026-07-21: headers start at the BACK of the two-digit values (62%/71%), not the column edge — values are right-aligned in their 44px track */
 .wf-head { padding-bottom: 6px; }
 .wf-head span { font-size: .62rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-faint); }
 .wf-row { padding: 6px 0; }
-.wf .lb-bar i.share { background: #C4C9D4; }
+.wf .lb-bar i.share { background: #545D6E; } /* Nathan 2026-07-21: was #C4C9D4 — the light grey fill was hard to read against the rail */
 @media (max-width: 640px) {
-  .wf-head, .wf-row { grid-template-columns: 92px 1fr 40px 1fr 40px; gap: 6px; }
+  .wf-head, .wf-row { grid-template-columns: 92px 40px 1fr 40px 1fr; gap: 6px; }
   .wf-head span { font-size: .56rem; letter-spacing: .06em; }
 }
 
@@ -1447,7 +1552,31 @@ input[type=range].cslider::-moz-range-thumb {
    NO numbered circles (v6's step-num badges are off-system). The verified
    "1 in 11 fail" reads brand; the prevent/retries/dunning figures are LABELED
    ESTIMATES (workbook marks them illustrative), each carrying a visible est. tag. */
-.lifecycle { margin-top: 16px; display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr auto 1fr; align-items: stretch; gap: 4px; }
+/* flow-lab H "The Scrub" integrated 2026-07-21: the chevrons are GONE — one rail with
+   nodes and a payment dot. Scroll-driven and reversible (same continuous grammar as the
+   dawn), COMPLETE by the time the card's center reaches the screen's center so the strip
+   is whole before it's read; on hover-capable screens the pointer can take the dot and
+   scrub the pipeline (lifecycleRail()). No-JS: rail full, stages lit. */
+.lifecycle { margin-top: 16px; display: grid; grid-template-columns: repeat(5, 1fr); align-items: stretch; gap: 18px; position: relative; padding-top: 26px; }
+.lc-rail { position: absolute; top: 8px; left: 4px; right: 4px; height: 2px; background: rgba(24,29,39,.1); }
+.lc-rail i { position: absolute; inset: 0; background: var(--brand); transform: scaleX(var(--tp, 0)); transform-origin: left center; }
+html:not(.js) .lc-rail i { transform: scaleX(1); }
+.lc-node { position: absolute; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--surface); border: 2px solid rgba(24,29,39,.18); transition: border-color .3s, background .3s; }
+.lc-node.lit { border-color: var(--brand); background: var(--ice-1); }
+.lc-dot {
+  position: absolute; top: 2px; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 0 4px rgba(11,117,225,.15), 0 0 12px rgba(11,117,225,.5);
+  left: calc(4px + var(--tp, 0) * (100% - 22px));
+}
+.js .lc-stage { opacity: .35; transform: translateY(6px); transition: opacity .4s ease, transform .4s var(--ease-out); }
+.js .lc-stage.lit { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .js .lc-stage { opacity: 1; transform: none; }
+  .lc-rail i { transform: scaleX(1); }
+  .lc-dot { display: none; }
+  .lc-node { border-color: var(--brand); background: var(--ice-1); }
+}
 .lc-stage { text-align: left; padding: 6px 8px; display: flex; flex-direction: column; gap: 6px; }
 .lc-name { font-size: .82rem; font-weight: 700; color: var(--ink); }
 .lc-fig { font-size: 1.15rem; font-weight: 800; color: var(--ink-secondary); font-variant-numeric: tabular-nums; line-height: 1.05; }
@@ -1458,7 +1587,9 @@ input[type=range].cslider::-moz-range-thumb {
 .lc-stage small strong { color: var(--brand-body); font-weight: 800; font-variant-numeric: tabular-nums; }
 .lc-sep { display: flex; align-items: center; justify-content: center; color: var(--ink-faint); font-size: 1.05rem; font-weight: 700; }
 @media (max-width: 760px) {
-  .lifecycle { grid-template-columns: 1fr 1fr; gap: 12px 8px; }
+  .lifecycle { grid-template-columns: 1fr 1fr; gap: 12px 8px; padding-top: 0; }
+  .lc-rail, .lc-node, .lc-dot { display: none; }
+  .js .lc-stage { opacity: 1; transform: none; }
   .lc-sep { display: none; }
   .lc-stage { border-bottom: 1px solid var(--hairline); padding-bottom: 10px; }
   .lc-stage:nth-last-child(-n+2) { border-bottom: 0; }
@@ -1486,6 +1617,9 @@ input[type=range].cslider::-moz-range-thumb {
 .insight-card.wide .insight-tag { grid-column: 1 / -1; margin-bottom: 0; }
 .insight-card.wide .aside-stat { margin: 0; }
 .insight-card.wide .insight-chips { grid-column: 1 / -1; padding-top: 8px; margin-top: 0; }
+/* client round 2026-07-21 (#40): a relocated pro-tip line spans the full aside — in the
+   auto/1fr grid it would otherwise balloon the stat column and crush the insight text */
+.insight-card.wide .pro-line { grid-column: 1 / -1; }
 /* v7 law · no-stat aside (the retry-schedule insight): the law's insight-head takes
    the stat slot's weight and every child runs full width */
 .insight-card.wide.no-stat > p { grid-column: 1 / -1; }
@@ -1680,11 +1814,14 @@ input[type=range].cslider::-moz-range-thumb {
       </div>
       <!-- client note 2026-07-17: a competitor publishes a "Pulse Report"; renamed from "The Quarterly Pulse of…" -->
       <h1>The Quarterly State of the Wash Industry.</h1>
-      <p class="hero-sub">National wash-count benchmarks from <strong>75% of U.S. tunnel wash sites</strong>. Plus this quarter’s spotlight: the <strong>12.9 million recharges</strong> that reveal where membership revenue silently leaks, and how much of it is recoverable.</p>
+      <!-- client round 2026-07-21 (#37, Matt): "12.9 million recharges" → "millions of
+           member recharges" (also settles the old hero-vs-law 12.9M knob; the methodology
+           foot keeps the precise count). -->
+      <p class="hero-sub">National wash-count benchmarks from <strong>75% of U.S. tunnel wash sites</strong>. Plus this quarter’s spotlight: the <strong>millions of member recharges</strong> that reveal where membership revenue silently leaks, and how much of it is recoverable.</p>
       <div class="hero-powered">
         <span>Powered by</span>
         <svg class="amp-logo" viewBox="0 0 1200 333.33" fill="currentColor" role="img" aria-label="AMP"><polygon points="762.27 15.12 648.78 162.9 534.55 15.26 470.91 15.12 470.91 315.92 540.84 315.92 540.84 117.76 624.46 240.29 624.94 240.98 664.8 240.98 756.72 117.41 756.72 315.92 826.65 315.92 826.65 15.13 764.75 15.13 762.27 15.12"/><path d="M1155.32,104.3c-.01-48.29-44.39-87.57-98.94-87.57h-180.11v299.83h69.93l.2-97.26h110.59c54.35,0,98.57-39.15,98.57-87.29l-.23-27.72ZM1087.97,129.64c-2.58,14.31-17.59,25.1-34.95,25.1h-106.62l-.22-76.51h106.6c16.77,0,31.34,9.96,34.65,23.68.46,1.9.69,3.86.69,5.81v1.14c.05,16.31-.08,20.03-.16,20.77Z"/><polygon points="44.44 315.02 144.99 314.82 348.11 118.07 348.11 315.28 421.29 315.28 421.29 17.69 349.88 17.69 44.44 315.02"/><polygon points="302.26 16.73 98.5 16.73 98.5 89.92 228.22 89.92 302.26 16.73"/></svg>
-        <span class="pw"><i></i><svg class="ncs-logo" viewBox="0 0 203.73 62.89" fill="currentColor" role="img" aria-label="NCS"><path d="M.23,60.53L19.14,2.36c.57-1.57,1.59-2.36,3.05-2.36h13.8c1.22,0,2.05.52,2.48,1.57l12.07,29c.02.23.08.35.2.35.17,0,.28-.17.31-.52L60.19,2.36c.57-1.57,1.59-2.36,3.05-2.36h13.71c1.63,0,2.16.79,1.58,2.36l-18.9,58.17c-.57,1.57-1.62,2.36-3.13,2.36h-13.71c-1.22,0-2.05-.52-2.48-1.57l-11.99-29.09c-.08-.23-.17-.35-.29-.35-.06,0-.16.17-.31.52l-9.13,28.12c-.57,1.57-1.59,2.36-3.05,2.36H1.73c-1.57,0-2.07-.79-1.5-2.36Z"/><path d="M123.84,46.38c1.51,0,2.04.76,1.58,2.27l-3.87,11.88c-.57,1.57-1.59,2.36-3.05,2.36h-35.02c-4.14,0-7.17-1.43-9.12-4.28-1.94-2.85-2.23-6.35-.87-10.48l10.91-33.36c1.78-5.47,4.11-9.3,7-11.49,2.88-2.18,7.06-3.28,12.54-3.28h35.02c1.45,0,1.95.79,1.5,2.36l-3.87,11.88c-.46,1.51-1.45,2.27-2.97,2.27h-29.43c-.52,0-.91.32-1.15.96l-9.14,28.04c-.13.58.07.87.59.87h29.35Z"/><path d="M152.74,42.97c1.05,0,1.38.5.99,1.48l-.62,2.1c-.29.76-.06,1.14.7,1.14h20.88c.81,0,1.34-.38,1.57-1.14l2.24-6.99c.29-.76.03-1.14-.79-1.14h-24.81c-4.02,0-6.95-1.38-8.8-4.15-1.85-2.76-2.15-6.16-.89-10.18l3.25-9.78c1.69-5.18,3.97-8.87,6.86-11.05,2.88-2.18,6.92-3.28,12.1-3.28h27.86c4.02,0,6.95,1.38,8.8,4.15,1.85,2.77,2.15,6.16.89,10.18l-1.34,4.11c-.39.99-1.05,1.48-1.98,1.48h-14.15c-1.05,0-1.38-.49-.99-1.48l.62-2.1c.29-.76.05-1.14-.7-1.14h-20c-.82,0-1.34.38-1.57,1.14l-2.24,6.99c-.29.76-.03,1.14.79,1.14h24.81c4.02,0,6.95,1.38,8.8,4.15,1.85,2.77,2.15,6.16.89,10.18l-3.25,9.78c-1.75,5.18-4.06,8.87-6.95,11.05-2.88,2.18-6.89,3.28-12.01,3.28h-28.74c-4.02,0-6.97-1.38-8.84-4.15-1.88-2.77-2.16-6.16-.85-10.18l1.34-4.11c.39-.99,1.05-1.48,1.98-1.48h14.15Z"/></svg><b>Wash Intel</b></span>
+        <span class="pw"><i></i><svg class="ncs-logo" viewBox="0 0 203.73 62.89" fill="currentColor" role="img" aria-label="NCS"><path d="M.23,60.53L19.14,2.36c.57-1.57,1.59-2.36,3.05-2.36h13.8c1.22,0,2.05.52,2.48,1.57l12.07,29c.02.23.08.35.2.35.17,0,.28-.17.31-.52L60.19,2.36c.57-1.57,1.59-2.36,3.05-2.36h13.71c1.63,0,2.16.79,1.58,2.36l-18.9,58.17c-.57,1.57-1.62,2.36-3.13,2.36h-13.71c-1.22,0-2.05-.52-2.48-1.57l-11.99-29.09c-.08-.23-.17-.35-.29-.35-.06,0-.16.17-.31.52l-9.13,28.12c-.57,1.57-1.59,2.36-3.05,2.36H1.73c-1.57,0-2.07-.79-1.5-2.36Z"/><path d="M123.84,46.38c1.51,0,2.04.76,1.58,2.27l-3.87,11.88c-.57,1.57-1.59,2.36-3.05,2.36h-35.02c-4.14,0-7.17-1.43-9.12-4.28-1.94-2.85-2.23-6.35-.87-10.48l10.91-33.36c1.78-5.47,4.11-9.3,7-11.49,2.88-2.18,7.06-3.28,12.54-3.28h35.02c1.45,0,1.95.79,1.5,2.36l-3.87,11.88c-.46,1.51-1.45,2.27-2.97,2.27h-29.43c-.52,0-.91.32-1.15.96l-9.14,28.04c-.13.58.07.87.59.87h29.35Z"/><path d="M152.74,42.97c1.05,0,1.38.5.99,1.48l-.62,2.1c-.29.76-.06,1.14.7,1.14h20.88c.81,0,1.34-.38,1.57-1.14l2.24-6.99c.29-.76.03-1.14-.79-1.14h-24.81c-4.02,0-6.95-1.38-8.8-4.15-1.85-2.76-2.15-6.16-.89-10.18l3.25-9.78c1.69-5.18,3.97-8.87,6.86-11.05,2.88-2.18,6.92-3.28,12.1-3.28h27.86c4.02,0,6.95,1.38,8.8,4.15,1.85,2.77,2.15,6.16.89,10.18l-1.34,4.11c-.39.99-1.05,1.48-1.98,1.48h-14.15c-1.05,0-1.38-.49-.99-1.48l.62-2.1c.29-.76.05-1.14-.7-1.14h-20c-.82,0-1.34.38-1.57,1.14l-2.24,6.99c-.29.76-.03,1.14.79,1.14h24.81c4.02,0,6.95,1.38,8.8,4.15,1.85,2.77,2.15,6.16.89,10.18l-3.25,9.78c-1.75,5.18-4.06,8.87-6.95,11.05-2.88,2.18-6.89,3.28-12.01,3.28h-28.74c-4.02,0-6.97-1.38-8.84-4.15-1.88-2.77-2.16-6.16-.85-10.18l1.34-4.11c.39-.99,1.05-1.48,1.98-1.48h14.15Z"/></svg><b class="wi">Wash Intel</b></span>
         <span class="pw"><i></i><b>Rubicon Analytics</b></span>
       </div>
       <!-- client note 2026-07-17: recharge-count meta removed from the hero; it described the AMP act,
@@ -1795,13 +1932,9 @@ input[type=range].cslider::-moz-range-thumb {
         <div class="chart-head">
           <h3 class="chart-title">Same-site volume, <span class="hl" id="trendScope">month by month</span></h3>
           <div class="chart-tools">
-            <span class="q-wrap">
-              <button class="protip-chip" id="trendTipBtn" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1.1 2h5a3.5 3.5 0 0 1 1.1-2A6 6 0 0 0 12 3z"/></svg>Pro tip</button>
-              <div class="q-pop" id="trendTipPop" role="tooltip">
-                <b>Pro tip</b>
-                <p class="tip-p" id="trendProtip"></p>
-              </div>
-            </span>
+            <!-- client round 2026-07-21 (#40 applied here): the Pro tip chip/popover is
+                 gone — its per-view text now lives INSIDE the insight aside below,
+                 always visible. #trendProtip moved with it; render() wiring unchanged. -->
             <div class="seg mini" role="group" aria-label="Trend view">
               <button class="active" data-mode="month" aria-pressed="true">By month</button>
               <button data-mode="quarter" aria-pressed="false">By quarter</button>
@@ -1824,6 +1957,7 @@ input[type=range].cslider::-moz-range-thumb {
           <span class="as-cap" id="trendCap"></span>
         </div>
         <p id="trendInsight"></p>
+        <p class="pro-line"><strong>Pro tip:</strong> <span id="trendProtip"></span></p>
       </aside>
 
     <!-- ————— STATE PERFORMANCE ————— -->
@@ -1887,12 +2021,18 @@ input[type=range].cslider::-moz-range-thumb {
       </aside>
     </section>
 
+    <!-- client round 2026-07-21 (#38): the Wash Intel methodology line moved up from the
+         combined foot — it closes the NCS data set here, dividing it from the AMP act. -->
+    <p class="foot foot-mid">Wash-count benchmarks: NCS Wash Intel &amp; Rubicon Analytics, TTM through June 2026, sites with 12+ months of data for same-site views.</p>
+
     <!-- ————— AMP SPOTLIGHT · ACT 1 "THE BLEED": chapter cover + KPI flow (CSV 01).
          Five-act order per the 2026-07 design brief: bleed → pivot → diagnosis →
          prescription → ROI. No product feature is named before act 4. ————— -->
     <section class="spot" id="payment">
-      <img class="spot-photo" src="images/kiosk-attendant.jpg?v=2" width="1600" height="1066" decoding="async" alt="An attendant helping a member pay at a wash kiosk">
-      <div class="spot-scrim"></div>
+      <!-- spot-lab C4 "The Rite" integrated 2026-07-21: the photo cover retired — the
+           plaque opens the act; the dawn layers are scroll-driven (--dp in spotGrow). -->
+      <div class="dawn" aria-hidden="true"></div>
+      <div class="dawn-core" aria-hidden="true"></div>
       <span class="hero-pill"><svg class="amp-ic" viewBox="0 0 875 700" fill="currentColor" aria-hidden="true"><polygon points="37.18 666.59 250.8 666.17 682.33 248.15 682.33 667.15 837.82 667.15 837.82 34.89 686.1 34.89 37.18 666.59"/><polygon points="584.94 32.85 152.03 32.85 152.03 188.34 427.62 188.34 584.94 32.85"/></svg>Payment Health</span>
       <svg class="spot-logo" viewBox="0 0 1200 333.33" fill="currentColor" role="img" aria-label="AMP"><polygon points="762.27 15.12 648.78 162.9 534.55 15.26 470.91 15.12 470.91 315.92 540.84 315.92 540.84 117.76 624.46 240.29 624.94 240.98 664.8 240.98 756.72 117.41 756.72 315.92 826.65 315.92 826.65 15.13 764.75 15.13 762.27 15.12"/><path d="M1155.32,104.3c-.01-48.29-44.39-87.57-98.94-87.57h-180.11v299.83h69.93l.2-97.26h110.59c54.35,0,98.57-39.15,98.57-87.29l-.23-27.72ZM1087.97,129.64c-2.58,14.31-17.59,25.1-34.95,25.1h-106.62l-.22-76.51h106.6c16.77,0,31.34,9.96,34.65,23.68.46,1.9.69,3.86.69,5.81v1.14c.05,16.31-.08,20.03-.16,20.77Z"/><polygon points="44.44 315.02 144.99 314.82 348.11 118.07 348.11 315.28 421.29 315.28 421.29 17.69 349.88 17.69 44.44 315.02"/><polygon points="302.26 16.73 98.5 16.73 98.5 89.92 228.22 89.92 302.26 16.73"/></svg>
       <h2>The Members Who Didn’t Choose to Leave.</h2>
@@ -1902,7 +2042,11 @@ input[type=range].cslider::-moz-range-thumb {
            (knob 1), "millions of membership recharges" replaces 12.9M. Cover src-row
            removed: the law carries no source lines (knob 5, flag at review). -->
       <p class="spot-kick">Why we focused on payment health this quarter</p>
-      <p>Some of your member cancelations were never a choice: a recharge payment quietly failed and the member churned without ever knowing. The good news — <strong>most of these payment failures are preventable or recoverable</strong> through a variety of tactics. Drawing on millions of membership recharges across the AMP portfolio, here’s where the money actually leaks, and how you can claw it back.</p>
+      <!-- client round 2026-07-21 (#47, Patrick): his broader-audience rewrite of the law
+           intro ("Some member cancellations…", passive "how it can be clawed back"), per
+           Nathan with two exceptions: em dash → comma, spelling normalized. This amends
+           the law file's own copy. -->
+      <p>Some member cancellations were never a choice: a recharge payment quietly failed and the member churned without ever knowing. The good news, <strong>most of these payment failures are preventable or recoverable</strong> through a variety of tactics. Drawing on millions of membership recharges across the AMP portfolio, here’s where the money actually leaks, and how it can be clawed back.</p>
     </section>
 
     <!-- v7 law #3 · the flow: five steps VERBATIM, figures stated plainly with no est.
@@ -1914,26 +2058,29 @@ input[type=range].cslider::-moz-range-thumb {
         <h3 class="chart-title">How payment failure <span class="hl">and recovery works</span></h3>
       </div>
       <div class="lifecycle">
+        <div class="lc-rail" aria-hidden="true"><i></i></div>
+        <span class="lc-dot" aria-hidden="true"></span>
+        <span class="lc-node" aria-hidden="true" style="left: calc(0% + 4px)"></span>
+        <span class="lc-node" aria-hidden="true" style="left: calc(20% + 8px)"></span>
+        <span class="lc-node" aria-hidden="true" style="left: calc(40% + 8px)"></span>
+        <span class="lc-node" aria-hidden="true" style="left: calc(60% + 8px)"></span>
+        <span class="lc-node" aria-hidden="true" style="left: calc(80% + 8px)"></span>
         <div class="lc-stage">
           <b class="lc-name">Prevent failures</b>
           <small>Up-to-date card credentials and smart acceptance logic prevent approximately <strong>1 out of 3</strong> potential payment failures</small>
         </div>
-        <div class="lc-sep" aria-hidden="true">›</div>
         <div class="lc-stage">
           <b class="lc-name">Payment fails</b>
           <small>Ultimately, about <strong>1 out of 11</strong> initial recharge payments fail and move into recovery</small>
         </div>
-        <div class="lc-sep" aria-hidden="true">›</div>
         <div class="lc-stage">
           <b class="lc-name">Retries</b>
           <small>Roughly <strong>half</strong> of failed payments are recovered through a payment retry schedule</small>
         </div>
-        <div class="lc-sep" aria-hidden="true">›</div>
         <div class="lc-stage">
           <b class="lc-name">Dunning</b>
           <small>The member is nudged by email and text to update their payment method, recovering about <strong>1 of 5</strong> failed payments</small>
         </div>
-        <div class="lc-sep" aria-hidden="true">›</div>
         <div class="lc-stage">
           <b class="lc-name">Win-back</b>
           <small>If nothing works, the member is invited to reactivate later</small>
@@ -1951,34 +2098,34 @@ input[type=range].cslider::-moz-range-thumb {
       </div>
       <p class="chart-sub">Most payment failures are due to insufficient funds, but they recover at the highest rate</p>
       <div class="wf">
-        <div class="wf-head"><span></span><span>Share of failures</span><span></span><span>% that recover</span><span></span></div>
+        <div class="wf-head"><span></span><span class="wh">Share of failures</span><span class="wh">% that recover</span></div>
         <div class="wf-row">
           <span class="lb-st">Insufficient funds</span>
-          <div class="lb-bar"><i class="share" style="--w:100%"></i></div><span class="lb-val">62%</span>
-          <div class="lb-bar"><i style="--w:71%"></i></div><span class="lb-val">71%</span>
+          <span class="lb-val">62%</span><div class="lb-bar"><i class="share" style="--w:89%"></i></div>
+          <span class="lb-val">71%</span><div class="lb-bar"><i style="--w:71%"></i></div>
         </div>
         <div class="wf-row">
           <span class="lb-st">Generic decline</span>
-          <div class="lb-bar"><i class="share" style="--w:26%"></i></div><span class="lb-val">16%</span>
-          <div class="lb-bar"><i style="--w:44%"></i></div><span class="lb-val">44%</span>
+          <span class="lb-val">16%</span><div class="lb-bar"><i class="share" style="--w:23%"></i></div>
+          <span class="lb-val">44%</span><div class="lb-bar"><i style="--w:44%"></i></div>
         </div>
         <div class="wf-row">
           <span class="lb-st">Card can’t support</span>
-          <div class="lb-bar"><i class="share" style="--w:16%"></i></div><span class="lb-val">10%</span>
-          <div class="lb-bar"><i style="--w:42%"></i></div><span class="lb-val">42%</span>
+          <span class="lb-val">10%</span><div class="lb-bar"><i class="share" style="--w:14%"></i></div>
+          <span class="lb-val">42%</span><div class="lb-bar"><i style="--w:42%"></i></div>
         </div>
         <div class="wf-row">
           <span class="lb-st">Invalid account</span>
-          <div class="lb-bar"><i class="share" style="--w:11%"></i></div><span class="lb-val">7%</span>
-          <div class="lb-bar"><i style="--w:38%"></i></div><span class="lb-val">38%</span>
+          <span class="lb-val">7%</span><div class="lb-bar"><i class="share" style="--w:10%"></i></div>
+          <span class="lb-val">38%</span><div class="lb-bar"><i style="--w:38%"></i></div>
         </div>
         <div class="wf-row">
           <span class="lb-st">Expired / wrong number</span>
-          <div class="lb-bar"><i class="share" style="--w:8%"></i></div><span class="lb-val">5%</span>
-          <div class="lb-bar"><i style="--w:40%"></i></div><span class="lb-val">40%</span>
+          <span class="lb-val">5%</span><div class="lb-bar"><i class="share" style="--w:7%"></i></div>
+          <span class="lb-val">40%</span><div class="lb-bar"><i style="--w:40%"></i></div>
         </div>
       </div>
-      <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>Smart retry programs are able to recover a high portion of declines due to insufficient funds by retrying payments on an optimized schedule that maximizes success rates. Other declines, such as expired / wrong number are best handled through decline prevention tactics or dunning.</div>
+      <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>Smart retry programs can recover many insufficient-funds declines. They retry payments on an optimized schedule to improve success rates. Other declines, such as expired cards or incorrect numbers, are better handled through prevention or dunning.</div><!-- client round 2026-07-21 (#51, Laura): her clearer rewrite of the law insight — amends law copy -->
     </article>
 
     <!-- v7 law #5 + #6 · adjacent law neighbors, paired side by side (pairing is layout,
@@ -2061,7 +2208,7 @@ input[type=range].cslider::-moz-range-thumb {
     <!-- v7 law #9 · the retry-schedule insight, standalone: aside grammar with the law's
          insight-head in the stat slot's weight, no stat, still collapsible. -->
     <aside class="insight-card wide no-stat reveal" data-collapse>
-      <span class="insight-tag"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>AMP Insight</span>
+      <span class="insight-tag"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>
       <p class="ai-head">Optimize your retry schedule to maximize results</p>
       <p>Retrying at the same time each day leaves recovery on the table. Smarter schedules vary the timing and dates by card type and failure reason, hitting each payment when it’s most likely to clear, to <strong>increase retry success</strong> while <strong>optimizing retry costs</strong>.</p>
     </aside>
@@ -2178,8 +2325,10 @@ input[type=range].cslider::-moz-range-thumb {
          Case. Scrollspy id survives (knob 9). -->
     <div class="sec-head" id="calculator">
       <div>
-        <h2>What’s Your Exposure?</h2>
-        <p>Estimate your monthly revenue at risk from failed payments, and what mitigation can recover.</p>
+        <!-- client round 2026-07-21 (#52, Laura): engagement-forward title + sub (amends
+             the law's "What's your exposure?" head); her em dash → comma per the #47 rule. -->
+        <h2>How Much of My Revenue Is at Risk?</h2>
+        <p>Enter your numbers to estimate the monthly revenue at risk from failed payments, and how much could be recovered.</p>
       </div>
     </div>
 
@@ -2298,15 +2447,52 @@ input[type=range].cslider::-moz-range-thumb {
           <span>more reactivations with automatic win-back campaigns</span>
         </div>
       </div>
+      <!-- client round 2026-07-21 (#50, Andrew): AMP MCP callout — a product-capability
+           row set apart from the results stats by the light-blue accent. Copy is Andrew's
+           verbatim (em dash included); the "NEW" eyebrow rides as a house pill badge. -->
+      <div class="finale-mcp">
+        <span class="mcp-badge">New · AMP MCP</span>
+        <b>Ask this data your own questions.</b>
+        <p>Every number in this report lives in AMP’s data platform. AMP MCP securely connects that data to AI tools like Claude — so you can ask “which locations underperformed last week?” and get answers grounded in your own washes.</p>
+      </div>
       <div class="cta-actions">
-        <!-- TODO: swap for AMP's real demo-scheduling link before launch -->
-        <a class="primary" href="https://ampmemberships.com/?utm_source=washintel&utm_medium=report&utm_campaign=q2-2026-why-amp-demo" target="_blank" rel="noopener">Schedule a free demo →</a>
+        <!-- real destination per Nathan 2026-07-21 (placeholder retired) -->
+        <a class="primary" href="https://ampmemberships.com/get-started/?utm_source=washintel&utm_medium=report&utm_campaign=q2-2026-why-amp-demo" target="_blank" rel="noopener">Schedule a free demo →</a>
         <a class="ghost" href="https://ampmemberships.com/?utm_source=washintel&utm_medium=report&utm_campaign=q2-2026-why-amp-platform" target="_blank" rel="noopener">Explore the AMP platform</a>
+      </div>
+      <!-- fb round 2026-07-21 (Nathan picked fb-lab concept B "The Last Beat"): the
+           feedback ask closes the plaque. SCRATCH COPY pending a client pass; the send
+           is a stub (TODO: real endpoint at launch — static deploy has none); one
+           submission per browser (localStorage), returning readers see the thanks. -->
+      <div class="lastbeat" id="lastbeat">
+        <div class="fb-lead">
+          <b id="fbQ">Before you go, how useful was this report?</b>
+          <span class="fb-sub">One tap helps decide what Q3 covers.</span>
+        </div>
+        <div>
+          <div class="fb-scale" role="group" aria-labelledby="fbQ" id="fbScale">
+            <span class="end">Not useful</span>
+            <button type="button" aria-pressed="false">1</button>
+            <button type="button" aria-pressed="false">2</button>
+            <button type="button" aria-pressed="false">3</button>
+            <button type="button" aria-pressed="false">4</button>
+            <button type="button" aria-pressed="false">5</button>
+            <span class="end">Extremely useful</span>
+          </div>
+          <div class="fb-fold" id="fbFold">
+            <div><div class="fb-pad">
+              <label class="sr-only" for="fbText">Optional feedback note</label>
+              <textarea class="fb-text" id="fbText" placeholder="Optional: one thing we should change for Q3"></textarea>
+              <button class="fb-send" type="button" id="fbSend">Send</button>
+            </div></div>
+          </div>
+          <p class="fb-thanks" id="fbThanks" hidden>Noted. See you in Q3.<small>Feedback is read while planning the Q3 report.</small></p>
+        </div>
       </div>
       <p class="finale-note">+30% memberships and +125% reactivations are operator-reported results (ampmemberships.com) · 4× attendant gap from AMP’s Q1 2026 Industry Insights · results vary by site.</p>
     </section>
 
-    <p class="foot">Wash-count benchmarks: NCS Wash Intel &amp; Rubicon Analytics, TTM through June 2026, sites with 12+ months of data for same-site views. Payment analysis: 12.9 million first-attempt recharges across 26 operators (≥1,000 invoices each), July 2025 – June 2026 · Failure = the first charge attempt on the invoice failed · Recovery = the invoice itself ultimately reached paid status · Insufficient-funds failures recover best because they are timing problems · After day 14, same-invoice recovery is essentially zero; winning the member back means a new membership · Dunning: measured at 3 early-adopter operators; texts send days 0, 3, and 7; about 25% of failed-payment members have no phone on file and 23% hit the daily send cap, roughly 44% net reachability, so the ~4-per-100 incremental is a true-incremental estimate · Return-after-cancel: 307,047 canceled memberships across 20 operators, matched by email, day 8–90 after plan end; reasons recorded by staff or members at cancellation, 40+ raw codes grouped into 8 buckets, “other / no reason given” shown for completeness, not interpreted · All findings are observational.</p>
+    <p class="foot">Payment analysis: 12.9 million first-attempt recharges across 26 operators (≥1,000 invoices each), July 2025 – June 2026 · Failure = the first charge attempt on the invoice failed · Recovery = the invoice itself ultimately reached paid status · Insufficient-funds failures recover best because they are timing problems · After day 14, same-invoice recovery is essentially zero; winning the member back means a new membership · Dunning: measured at 3 early-adopter operators; texts send days 0, 3, and 7; about 25% of failed-payment members have no phone on file and 23% hit the daily send cap, roughly 44% net reachability, so the ~4-per-100 incremental is a true-incremental estimate · Return-after-cancel: 307,047 canceled memberships across 20 operators, matched by email, day 8–90 after plan end; reasons recorded by staff or members at cancellation, 40+ raw codes grouped into 8 buckets, “other / no reason given” shown for completeness, not interpreted · All findings are observational.</p>
       </div>
       <div class="h-frost" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
       <div class="h-veil"></div>
@@ -2566,7 +2752,7 @@ const TILES = {
 })();
 
 /* ————— "?" helper + pro-tip popovers ————— */
-[['benchHelp', 'benchPop'], ['stateHelp', 'statePop'], ['trendTipBtn', 'trendTipPop'], ['stateTipBtn', 'stateTipPop']].forEach(([btnId, popId]) => {
+[['benchHelp', 'benchPop'], ['stateHelp', 'statePop'], ['stateTipBtn', 'stateTipPop']].forEach(([btnId, popId]) => {
   const btn = document.getElementById(btnId);
   const pop = document.getElementById(popId);
   if (!btn || !pop) return;
@@ -2639,6 +2825,49 @@ document.querySelectorAll('.protip-chip').forEach(b =>
   });
 })();
 
+/* ————— lifecycle rail (flow-lab H "The Scrub"): line, nodes, and payment dot ride
+   the scroll — whole by the time the card's center reaches the screen's center — and
+   on hover-capable screens the pointer takes the dot and scrubs the pipeline.
+   Reversible, continuous; reduced motion = everything lit, no dot. ————— */
+(function lifecycleRail() {
+  const strip = document.querySelector('.lifecycle');
+  if (!strip) return;
+  const wrap = strip.closest('.chart-card');
+  const stages = [...strip.querySelectorAll('.lc-stage')];
+  const nodes = [...strip.querySelectorAll('.lc-node')];
+  const TH = [0.03, 0.22, 0.42, 0.62, 0.82]; /* node positions along the rail */
+  const apply = (tp) => {
+    strip.style.setProperty('--tp', tp.toFixed(3));
+    stages.forEach((s, i) => s.classList.toggle('lit', tp >= TH[i]));
+    nodes.forEach((n, i) => n.classList.toggle('lit', tp >= TH[i]));
+  };
+  if (reduce) { apply(1); return; }
+  let scrubbing = false, ticking = false;
+  const update = () => {
+    ticking = false;
+    if (scrubbing) return;
+    const r = wrap.getBoundingClientRect();
+    const vh = innerHeight;
+    if (r.top > vh + 80 || r.bottom < -80) return;
+    /* 0 as the card enters at the fold → 1 when its center reaches the screen's center */
+    apply(Math.min(1, Math.max(0, (vh - r.top) / (vh / 2 + r.height / 2))));
+  };
+  const schedule = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+  addEventListener('scroll', schedule, { passive: true });
+  addEventListener('resize', schedule);
+  update();
+  if (matchMedia('(hover: hover)').matches) {
+    const rail = strip.querySelector('.lc-rail');
+    strip.addEventListener('pointermove', (e) => {
+      if (!rail.offsetWidth) return; /* rail hidden at phone widths */
+      const rr = rail.getBoundingClientRect();
+      scrubbing = true;
+      apply(Math.min(1, Math.max(0, (e.clientX - rr.left) / rr.width)));
+    });
+    strip.addEventListener('pointerleave', () => { scrubbing = false; schedule(); });
+  }
+})();
+
 /* ————— AMP Spotlight scroll-grow: the cover swells to full size as it enters view.
    Continuous mapping to scroll position — no jacking, scrolling never stalls. ————— */
 (function spotGrow() {
@@ -2653,6 +2882,9 @@ document.querySelectorAll('.protip-chip').forEach(b =>
     /* 0 when the cover's top touches the viewport bottom → 1 by the time it has risen 3/4 of the screen */
     const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * 0.75)));
     spot.style.setProperty('--sp', p.toFixed(3));
+    /* the dawn OVERLAPS the swell: wakes at ~60% grown (top .55vh), floods just past the fold */
+    const dp = Math.min(1, Math.max(0, ((vh * 0.55) - r.top) / (vh * 0.6)));
+    spot.style.setProperty('--dp', dp.toFixed(3));
   };
   const schedule = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
   addEventListener('scroll', schedule, { passive: true });
@@ -2684,6 +2916,43 @@ document.querySelectorAll('.protip-chip').forEach(b =>
   addEventListener('resize', schedule);
   f.style.setProperty('--fp', '0');
   update();
+})();
+
+/* ————— the last beat: one-tap report rating in the finale (fb-lab winner B).
+   The TAP is the submission — the rating stores immediately; the note fold opens
+   after as an optional add-on. One submission per browser: the localStorage key
+   holds {r, note}, and a returning reader (or a reload after rating) gets the
+   settled thank-you row, never a fresh ask. TODO at launch: POST rating + note
+   to a real endpoint at both save points (the static deploy has none today). ————— */
+(function lastBeat() {
+  const KEY = 'washintel-fb-q2-2026';
+  const beat = document.getElementById('lastbeat');
+  if (!beat) return;
+  const scale = document.getElementById('fbScale');
+  const fold = document.getElementById('fbFold');
+  const thanks = document.getElementById('fbThanks');
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(KEY)); } catch (e) { /* corrupt value = fresh ask */ }
+  const settle = () => {
+    beat.classList.add('done');
+    scale.style.display = 'none';
+    fold.classList.remove('open');
+    thanks.hidden = false;
+  };
+  if (saved && saved.r) { settle(); return; }
+  let rating = 0;
+  scale.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    rating = Number(btn.textContent);
+    scale.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    try { localStorage.setItem(KEY, JSON.stringify({ r: rating, note: false })); } catch (e) {}
+    fold.classList.add('open');
+  });
+  document.getElementById('fbSend').addEventListener('click', () => {
+    try { localStorage.setItem(KEY, JSON.stringify({ r: rating, note: true })); } catch (e) {}
+    settle();
+  });
 })();
 
 /* ————— finale light: one proximity-driven lamp (D2 monolith, from finale-lab-2).
@@ -2876,7 +3145,13 @@ const monthChart = (function () {
 
   function renderRegions(animate) {
     const n = QUARTERS.length;
+    const m = PHONE.matches;
     const d = geo(n, 40, 28);
+    /* Nathan 2026-07-21: the region names live in a RIGHT GUTTER, outside the plot —
+       they can never cross a line again. The plot narrows to make honest room. */
+    d.padR = m ? 54 : 72;
+    d.span = (d.W - d.padL - d.padR) / n;
+    d.xMid = i => d.padL + d.span * i + d.span / 2;
     const { xMid, yFor } = d;
     svg.setAttribute('viewBox', `0 0 ${d.W} ${d.H}`);
     let g = frame(d, QUARTERS.map(([l]) => l));
@@ -2886,22 +3161,28 @@ const monthChart = (function () {
       const stroke = off ? '#C4C9D4' : color;
       const alpha = off ? ' opacity=".45"' : '';
       const pts = vals.map((v, i) => `${xMid(i)},${yFor(v)}`).join(' ');
-      g += `<polyline class="qline" data-ri="${ri}" points="${pts}" fill="none" stroke="${stroke}"${alpha} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+      /* Nathan 2026-07-21: slimmer stroke + smaller points — the sleek weight the
+         rest of the site runs at */
+      g += `<polyline class="qline" data-ri="${ri}" points="${pts}" fill="none" stroke="${stroke}"${alpha} stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>`;
       vals.forEach((v, i) => {
-        g += `<circle class="mpt" cx="${xMid(i)}" cy="${yFor(v)}" r="3.5" fill="${stroke}"${alpha} stroke="#FDFDFD" stroke-width="2"/>`;
+        g += `<circle class="mpt" cx="${xMid(i)}" cy="${yFor(v)}" r="3" fill="${stroke}"${alpha} stroke="#FDFDFD" stroke-width="1.5"/>`;
       });
     });
-    /* direct line-end labels: sight-read which line is which; greyed with their
-       line when toggled off. A tiny collision pass keeps stacked labels apart. */
+    /* direct line-end labels, gutter edition: anchored START just past the last
+       point, vertically centered on the line's endpoint; a collision pass keeps
+       neighbors 12px apart and the stack clamps inside the plot. */
     const lbls = QREGIONS.map(([name, color, vals], ri) => ({
       name,
       off: regionOff.has(ri),
       fill: regionOff.has(ri) ? '#C4C9D4' : color,
-      y: yFor(vals[n - 1]) - 7
+      y: yFor(vals[n - 1]) + 3.5
     })).sort((a, b) => a.y - b.y);
-    for (let i = 1; i < lbls.length; i++) if (lbls[i].y - lbls[i - 1].y < 13) lbls[i].y = lbls[i - 1].y + 13;
+    for (let i = 1; i < lbls.length; i++) if (lbls[i].y - lbls[i - 1].y < 12) lbls[i].y = lbls[i - 1].y + 12;
+    const maxY = d.H - d.bottom - 4;
+    const over = lbls[lbls.length - 1].y - maxY;
+    if (over > 0) lbls.forEach(L => { L.y -= over; });
     lbls.forEach(L => {
-      g += `<text class="qlabel" x="${xMid(n - 1) + 4}" y="${L.y}" text-anchor="end" font-size="10.5" font-weight="800" fill="${L.fill}"${L.off ? ' opacity=".55"' : ''}>${L.name}</text>`;
+      g += `<text class="qlabel" x="${xMid(n - 1) + 12}" y="${L.y}" text-anchor="start" font-size="${m ? 10 : 10.5}" font-weight="800" fill="${L.fill}"${L.off ? ' opacity=".55"' : ''}>${L.name}</text>`;
     });
     svg.innerHTML = g;
     /* legend entries read as CHECKBOXES: filled with the region color when on,
@@ -2932,6 +3213,9 @@ const monthChart = (function () {
 
   function render(newMode, animate) {
     mode = newMode;
+    /* a view switch under a stationary pointer left the OLD view's tooltip pinned
+       (seen 2026-07-21: an "Oct" month tip floating on the region view) — clear it */
+    document.getElementById('tipBars')?.classList.remove('show');
     const view = TREND_VIEWS[mode];
     scopeEl.textContent = view.scope;
     insightEl.innerHTML = view.insight;
@@ -2985,7 +3269,7 @@ const monthChart = (function () {
      in from below; the aside stat dims and returns like the region-card swap. The
      entrance choreography stays reserved for first reveal. */
   const chartGrp = [svg, legend];
-  const asideGrp = [numEl, capEl, insightEl];
+  const asideGrp = [numEl, capEl, insightEl, protipEl]; /* the relocated pro tip fades with the aside */
   chartGrp.forEach(el => el.classList.add('trend-fade'));
   document.querySelectorAll('.seg.mini[aria-label="Trend view"] button').forEach(btn => {
     btn.addEventListener('click', () => {
