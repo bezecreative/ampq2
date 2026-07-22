@@ -356,7 +356,9 @@ body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   background: var(--canvas); color: var(--ink-secondary);
   font-size: 1rem; font-weight: 700; line-height: 1;
   transition: background .2s, color .2s;
+  position: relative; /* v8 a11y audit: anchor the expanded hit area below */
 }
+.modal-close::after { content: ''; position: absolute; inset: -8px; border-radius: 50%; } /* 50px hit target, same trick as the share close */
 .modal-close:hover { background: var(--ink); color: #fff; }
 .modal-card .m-sub { font-size: .82rem; color: var(--ink-secondary); margin-bottom: 18px; }
 .modal-card svg { width: 100%; }
@@ -1464,7 +1466,47 @@ input[type=range].cslider::-moz-range-thumb {
 .pc-rows .lb-row, .tcb .lb-row { grid-template-columns: minmax(120px, 190px) 1fr 56px; }
 .lb-row.pc-hi .lb-bar i { background: #545D6E; } /* elevated failure: the darker end of the grey ramp */
 /* v7 law · promo dot-and-interval plot (replaces the two lb-rows) */
-.pc-plot { display: block; max-width: 640px; margin: 14px auto 0; }
+/* v8 round (2026-07-22, Nathan + stakeholder → cliff-lab K3): the law's dot plot is
+   replaced by the cliff-over-receipts hybrid. The step encodes PRICE to a $0 baseline
+   ($10:$30 drawn at exactly 1:3 — honesty bar); the ~55% claim is PROSE above the line,
+   never geometry. Scrub: a reading line rides the pointer, the receipt under it lifts,
+   crossing "promo ends" flares the prose brand (hover screens; receipts are buttons for
+   touch/keyboard). Phone ≤760: svg-scaled text goes sub-legible, so the annotation and
+   axis label hand off to an HTML caption (.pc-ann-m). All selectors scoped under .pc-hyb. */
+.pc-hyb { margin-top: 16px; }
+.pc-hyb .plotwrap { position: relative; }
+.pc-hyb svg { display: block; width: 100%; height: auto; }
+.pc-hyb .parea { fill: rgba(24,29,39,.045); }
+.pc-hyb .seg { stroke: var(--ink); stroke-width: 3; fill: none; }
+.pc-hyb .pdash { stroke: var(--ink-faint); stroke-width: 1.5; stroke-dasharray: 4 5; }
+.pc-hyb .plab { font-size: 13px; font-weight: 800; fill: var(--ink-secondary); }
+.pc-hyb .prose text { font-size: 14px; font-weight: 700; fill: var(--ink-secondary); transition: fill .25s; }
+.pc-hyb .prose .strong { font-weight: 800; fill: var(--ink); }
+.pc-hyb .prose.flare text, .pc-hyb .prose.flare .strong { fill: var(--brand-body); }
+.pc-hyb .read { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--brand); opacity: 0; pointer-events: none; transition: opacity .2s; }
+.pc-hyb .read.on { opacity: 1; }
+.pc-hyb .strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px; }
+.pc-hyb .rcpt {
+  border: 1px solid var(--hairline); border-radius: var(--r-inner); background: var(--surface-raised);
+  padding: 12px 10px; text-align: center; font-family: inherit; font-size: inherit; cursor: pointer;
+  transition: transform .25s var(--ease-out), box-shadow .25s;
+}
+.pc-hyb .rcpt b { display: block; font-size: .7rem; font-weight: 700; color: var(--ink-faint); }
+.pc-hyb .rcpt .amt { display: block; font-size: 1.15rem; font-weight: 800; margin-top: 2px; font-variant-numeric: tabular-nums; color: var(--ink); }
+.pc-hyb .rcpt .chip { display: inline-block; margin-top: 8px; font-size: .66rem; font-weight: 800; color: var(--brand-body); background: var(--ice-2); border: 1px solid rgba(11,117,225,.25); border-radius: 999px; padding: 3px 12px; }
+.pc-hyb .rcpt.cliff { border: 1.5px solid var(--brand); background: var(--ice-2); }
+.pc-hyb .rcpt.cliff .chip { color: #fff; background: var(--brand); border-color: var(--brand); }
+.pc-hyb .rcpt.lift { transform: translateY(-3px); box-shadow: var(--shadow-card); }
+.pc-hyb .rcpt:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.pc-ann-m { display: none; font-size: .82rem; font-weight: 700; color: var(--ink); margin-top: 10px; }
+@media (max-width: 760px) {
+  .pc-hyb .prose, .pc-hyb .plab { display: none; }
+  .pc-ann-m { display: block; }
+  .pc-hyb .strip { gap: 8px; }
+  .pc-hyb .rcpt { padding: 9px 4px; }
+  .pc-hyb .rcpt .amt { font-size: .98rem; }
+  .pc-hyb .rcpt .chip { font-size: .6rem; padding: 3px 8px; }
+}
 .tcb { margin-top: 4px; }
 .tcb .lb-label { margin: 16px 0 5px; }
 @media (max-width: 640px) {
@@ -1501,7 +1543,8 @@ input[type=range].cslider::-moz-range-thumb {
    blue = share retries win back (good) — the page's one color sentence, twice per row */
 .wf { margin-top: 18px; }
 /* client round 2026-07-21 (#49): values sit LEFT of their bars so each % reads with its
-   column; share bars normalized to the law's own scale (62% draws at ~89%, not full) */
+   column. Nathan 2026-07-22: share bars draw at their TRUE percentages (the #49 round had
+   normalized them to the law's visual scale, 62% drew at ~89% — reverted: fill = value) */
 .wf-head, .wf-row { display: grid; grid-template-columns: 156px 44px 1.1fr 44px 0.9fr; gap: 10px; align-items: center; } /* Nathan 2026-07-21: label column tightened to the longest title (was 200px) so the percentages and bars sit right after the titles. Fixed px, NOT max-content: each row is its own grid, so content-sized columns would misalign across rows */
 .wf-head .wh { grid-column: span 2; padding-left: 17px; } /* Nathan 2026-07-21: headers start at the BACK of the two-digit values (62%/71%), not the column edge — values are right-aligned in their 44px track */
 .wf-head { padding-bottom: 6px; }
@@ -1510,7 +1553,7 @@ input[type=range].cslider::-moz-range-thumb {
 .wf .lb-bar i.share { background: #545D6E; } /* Nathan 2026-07-21: was #C4C9D4 — the light grey fill was hard to read against the rail */
 @media (max-width: 640px) {
   .wf-head, .wf-row { grid-template-columns: 92px 40px 1fr 40px 1fr; gap: 6px; }
-  .wf-head span { font-size: .56rem; letter-spacing: .06em; }
+  .wf-head span { font-size: .6rem; letter-spacing: .06em; } /* v8 a11y audit: .56rem rendered 9.8px at the 17.5px phone root — below the 10px floor */
 }
 
 /* Act 3 · card-type trio: fs-row columns with a rate bar each */
@@ -1587,12 +1630,24 @@ html:not(.js) .lc-rail i { transform: scaleX(1); }
 .lc-stage small strong { color: var(--brand-body); font-weight: 800; font-variant-numeric: tabular-nums; }
 .lc-sep { display: flex; align-items: center; justify-content: center; color: var(--ink-faint); font-size: 1.05rem; font-weight: 700; }
 @media (max-width: 760px) {
-  .lifecycle { grid-template-columns: 1fr 1fr; gap: 12px 8px; padding-top: 0; }
+  /* v8 (Nathan 2026-07-22): the old 2-col stack lost the ORDER the rail carries on
+     desktop. The rail comes back VERTICAL: one column, a spine down the left edge,
+     a lit node per stage — the same continuous-line grammar rotated 90°, no numbered
+     circles (killed in the law rebuild, stays killed). Stages stay fully lit. */
+  .lifecycle { grid-template-columns: 1fr; gap: 14px; padding-top: 0; }
   .lc-rail, .lc-node, .lc-dot { display: none; }
   .js .lc-stage { opacity: 1; transform: none; }
   .lc-sep { display: none; }
-  .lc-stage { border-bottom: 1px solid var(--hairline); padding-bottom: 10px; }
-  .lc-stage:nth-last-child(-n+2) { border-bottom: 0; }
+  .lc-stage { position: relative; padding: 0 0 0 26px; }
+  .lc-stage::before {
+    content: ''; position: absolute; left: 0; top: 3px; width: 10px; height: 10px;
+    border-radius: 50%; background: var(--ice-1); border: 2px solid var(--brand);
+  }
+  .lc-stage::after {
+    content: ''; position: absolute; left: 6px; top: 19px; bottom: -17px; width: 2px;
+    background: rgba(24,29,39,.12);
+  }
+  .lc-stage:last-child::after { display: none; }
 }
 
 /* v6 · card-type rebuild: two lb-rows (credit = reliable/blue, debit = grey ramp)
@@ -1813,7 +1868,8 @@ html:not(.js) .lc-rail i { transform: scaleX(1); }
         <span class="hero-pill">Q2 2026 Industry Insights</span>
       </div>
       <!-- client note 2026-07-17: a competitor publishes a "Pulse Report"; renamed from "The Quarterly Pulse of…" -->
-      <h1>The Quarterly State of the Wash Industry.</h1>
+      <!-- Nathan 2026-07-22: "Wash" → "Carwash" in the header -->
+      <h1>The Quarterly State of the Carwash Industry.</h1>
       <!-- client round 2026-07-21 (#37, Matt): "12.9 million recharges" → "millions of
            member recharges" (also settles the old hero-vs-law 12.9M knob; the methodology
            foot keeps the precise count). -->
@@ -2101,37 +2157,37 @@ html:not(.js) .lc-rail i { transform: scaleX(1); }
         <div class="wf-head"><span></span><span class="wh">Share of failures</span><span class="wh">% that recover</span></div>
         <div class="wf-row">
           <span class="lb-st">Insufficient funds</span>
-          <span class="lb-val">62%</span><div class="lb-bar"><i class="share" style="--w:89%"></i></div>
+          <span class="lb-val">62%</span><div class="lb-bar"><i class="share" style="--w:62%"></i></div>
           <span class="lb-val">71%</span><div class="lb-bar"><i style="--w:71%"></i></div>
         </div>
         <div class="wf-row">
           <span class="lb-st">Generic decline</span>
-          <span class="lb-val">16%</span><div class="lb-bar"><i class="share" style="--w:23%"></i></div>
+          <span class="lb-val">16%</span><div class="lb-bar"><i class="share" style="--w:16%"></i></div>
           <span class="lb-val">44%</span><div class="lb-bar"><i style="--w:44%"></i></div>
         </div>
         <div class="wf-row">
           <span class="lb-st">Card can’t support</span>
-          <span class="lb-val">10%</span><div class="lb-bar"><i class="share" style="--w:14%"></i></div>
+          <span class="lb-val">10%</span><div class="lb-bar"><i class="share" style="--w:10%"></i></div>
           <span class="lb-val">42%</span><div class="lb-bar"><i style="--w:42%"></i></div>
         </div>
         <div class="wf-row">
           <span class="lb-st">Invalid account</span>
-          <span class="lb-val">7%</span><div class="lb-bar"><i class="share" style="--w:10%"></i></div>
+          <span class="lb-val">7%</span><div class="lb-bar"><i class="share" style="--w:7%"></i></div>
           <span class="lb-val">38%</span><div class="lb-bar"><i style="--w:38%"></i></div>
         </div>
         <div class="wf-row">
           <span class="lb-st">Expired / wrong number</span>
-          <span class="lb-val">5%</span><div class="lb-bar"><i class="share" style="--w:7%"></i></div>
+          <span class="lb-val">5%</span><div class="lb-bar"><i class="share" style="--w:5%"></i></div>
           <span class="lb-val">40%</span><div class="lb-bar"><i style="--w:40%"></i></div>
         </div>
       </div>
       <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>Smart retry programs can recover many insufficient-funds declines. They retry payments on an optimized schedule to improve success rates. Other declines, such as expired cards or incorrect numbers, are better handled through prevention or dunning.</div><!-- client round 2026-07-21 (#51, Laura): her clearer rewrite of the law insight — amends law copy -->
     </article>
 
-    <!-- v7 law #5 + #6 · adjacent law neighbors, paired side by side (pairing is layout,
-         not order — legal carryover). Both insights ship verbatim inside their cards;
+    <!-- v7 law #5 + #6 · adjacent law neighbors. UN-PAIRED 2026-07-22: the K3 cliff
+         hybrid needs the full column (receipts + legible svg prose — full-width rule),
+         so both cards now stack full width in law order. Both insights ship verbatim;
          the old spanning +55% aside and the prepaid-15× insight are gone (kill list). -->
-    <div class="card-pair">
     <article class="chart-card reveal">
       <div class="chart-head">
         <h3 class="chart-title">Card type is the <span class="hl">strongest predictor</span> of failure</h3>
@@ -2155,29 +2211,43 @@ html:not(.js) .lc-rail i { transform: scaleX(1); }
     </article>
 
       <article class="chart-card reveal">
-        <!-- v7 law #6 · NEW chart form: the law's dot-and-interval plot rebuilt in house
-             grammar (grey ramp — the elevated dot is the loss end; blue would read "good").
-             All visible labels verbatim from the law's SVG. -->
+        <!-- v8 (2026-07-22) · law #6 chart form replaced AGAIN: stakeholder hybrid mock →
+             cliff-lab round-6 K3 "The Spoken Caption" (Nathan's pick). The dot plot and
+             its verbatim labels are retired; the sub is REPLACED with the lab line.
+             ⚠️ CLIENT-THREAD KNOBS (scratch copy on a law card): the new sub, "about"
+             replacing the law's "~", the $10/$30 prices are ILLUSTRATIVE (need a label
+             or client blessing), "promo ends" is an added axis word, chip copy. Title +
+             the law insight below are untouched. -->
         <div class="chart-head">
           <h3 class="chart-title">Aggressive promotions create a <span class="hl">payment cliff</span></h3>
         </div>
-        <p class="chart-sub">Relative first payment attempt failure rate. First invoice at new price is the failure rate when a membership reverts from a discounted price to full price.</p>
-        <svg class="pc-plot" viewBox="0 0 560 150" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Dot plot: first-attempt failure rate is about 55 percent higher on the first invoice at a new price than the no-price-change baseline">
-          <line x1="60" y1="96" x2="520" y2="96" stroke="#181D27" stroke-opacity=".07" stroke-width="1"/>
-          <line x1="200" y1="72" x2="400" y2="72" stroke="#545D6E" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="200" cy="72" r="8" fill="#C4C9D4" stroke="#FDFDFD" stroke-width="2.5"><title>Baseline: no price change</title></circle>
-          <circle cx="400" cy="72" r="9" fill="#545D6E" stroke="#FDFDFD" stroke-width="2.5"><title>First invoice at new price: significantly higher failure rate</title></circle>
-          <rect x="266" y="26" width="68" height="24" rx="12" fill="#545D6E"/>
-          <text x="300" y="42" text-anchor="middle" font-size="12" fill="#fff" font-weight="800">~55%</text>
-          <line x1="300" y1="50" x2="300" y2="64" stroke="#545D6E" stroke-width="1.2"/>
-          <text x="200" y="121" text-anchor="middle" font-size="11" fill="#717680" font-weight="600">Baseline failure rate</text>
-          <text x="200" y="135" text-anchor="middle" font-size="10" fill="#A4A7AE">(no price change)</text>
-          <text x="400" y="121" text-anchor="middle" font-size="11" fill="#181D27" font-weight="700">First invoice at new price</text>
-          <text x="400" y="135" text-anchor="middle" font-size="10" fill="#717680">(~55% higher)</text>
-        </svg>
+        <p class="chart-sub">The first full-price charge after a promo fails about 55% more often.</p>
+        <div class="pc-hyb" id="pcHyb">
+          <div class="plotwrap">
+            <svg viewBox="0 0 1000 200" role="img" aria-label="Price per month: $10 in January through March, stepping up to $30 in April when the promo ends. The first $30 charge fails about 55% more often.">
+              <path class="parea" d="M0,150 L750,150 L750,70 L1000,70 L1000,190 L0,190 Z"/>
+              <line class="pdash" x1="750" y1="34" x2="750" y2="190"/>
+              <text class="plab" x="738" y="24" text-anchor="end">promo ends</text>
+              <line class="seg" x1="0" y1="150" x2="750" y2="150"/>
+              <line class="seg seg-rise" x1="750" y1="150" x2="750" y2="70"/>
+              <line class="seg" x1="750" y1="70" x2="1000" y2="70"/>
+              <g class="prose">
+                <text x="764" y="34">The first $30 charge</text>
+                <text x="764" y="54"><tspan class="strong">fails about 55% more often.</tspan></text>
+              </g>
+            </svg>
+            <div class="read"></div>
+          </div>
+          <p class="pc-ann-m">The first $30 charge fails about 55% more often.</p>
+          <div class="strip">
+            <button type="button" class="rcpt" data-m="0"><b>Jan</b><span class="amt">$10</span><span class="chip">paid</span></button>
+            <button type="button" class="rcpt" data-m="1"><b>Feb</b><span class="amt">$10</span><span class="chip">paid</span></button>
+            <button type="button" class="rcpt" data-m="2"><b>Mar</b><span class="amt">$10</span><span class="chip">paid</span></button>
+            <button type="button" class="rcpt cliff" data-m="3"><b>Apr</b><span class="amt">$30</span><span class="chip">fails more</span></button>
+          </div>
+        </div>
         <div class="card-insight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span>Sign-up promotions are a common way of attracting new members; while they drive higher sales, they can lead to higher churn — both voluntary and through failed payments. This is because the higher the recharge amount, the higher the chance of payment failure, all else equal.</div>
       </article>
-    </div>
 
     <!-- v7 law #7 · Part 2 section break. This heading REPLACES "Two Layers of Recovery:
          Retries, Then Texts" (the law chose the other heading — flagged at review). The
@@ -2380,12 +2450,13 @@ html:not(.js) .lc-rail i { transform: scaleX(1); }
           </div>
         </div>
         <!-- v7 round 2 (Nathan): CTA in the old dot-grid space — contact AMP to start a
-             comprehensive mitigation plan. Draft copy, Nathan to bless; UTM stays in the
-             sanctioned q2-2026-calculator set. -->
+             comprehensive mitigation plan. Draft copy, Nathan to bless. Real destination
+             per Nathan 2026-07-22: same /get-started/ page as the finale demo button;
+             keeps its own q2-2026-calculator campaign UTM so the two placements stay
+             separable in analytics (placeholder retired). -->
         <div class="calc-go">
           <p>Ready to claw it back? <strong>Comprehensive involuntary churn mitigation</strong> is built into AMP.</p>
-          <!-- TODO: swap for AMP's real contact/get-started link before launch -->
-          <a href="https://ampmemberships.com/?utm_source=washintel&utm_medium=report&utm_campaign=q2-2026-calculator" target="_blank" rel="noopener">Contact AMP to get started →</a>
+          <a href="https://ampmemberships.com/get-started/?utm_source=washintel&utm_medium=report&utm_campaign=q2-2026-calculator" target="_blank" rel="noopener">Contact AMP to get started →</a>
         </div>
       </div>
       <p class="calc-note-lg"><strong>Illustrative only.</strong> At-risk revenue = active plans × average plan price × failure rate. Comprehensive mitigation (preventing false declines, smart retries, email and text dunning, and win-back) is assumed to recover ~70% or more. Recoverable amounts reflect the first month only — recovered memberships keep recharging, so much of that value carries into future months as retained revenue. Actual results vary by card mix, demographics, plan structure and pricing, and other factors.</p>
@@ -2560,15 +2631,28 @@ const io = new IntersectionObserver((es) => {
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
 /* ————— rail scrollspy ————— */
-const secs = ['benchmarks', 'states', 'payment', 'calculator'].map(id => document.getElementById(id));
+/* v8 fix (Nathan 2026-07-22): the old spy OBSERVED the section headers through a
+   30–45%-of-viewport band. Two failure modes: a dock jump pins the target header at
+   the top (scroll-margin 14px, ABOVE the band) so arrival never fired; and deep in a
+   long section no header sits in the band at all — either way the dock kept the stale
+   icon. Now the current section is COMPUTED from scroll position: the last header
+   above the 35%-viewport reading line wins. rAF-throttled, same as the other spies. */
+const secs = ['benchmarks', 'states', 'payment', 'calculator'].map(id => document.getElementById(id)).filter(Boolean);
 const railLinks = [...document.querySelectorAll('.rail a')];
-const spy = new IntersectionObserver((es) => {
-  for (const e of es) {
-    if (!e.isIntersecting) continue;
-    railLinks.forEach(a => a.classList.toggle('active', a.dataset.sec === e.target.id));
+let spyTick = false;
+const spyUpdate = () => {
+  spyTick = false;
+  const line = scrollY + innerHeight * 0.35;
+  let cur = null;
+  for (const s of secs) {
+    if (s.getBoundingClientRect().top + scrollY <= line) cur = s.id;
   }
-}, { rootMargin: '-30% 0px -55% 0px' });
-secs.forEach(s => s && spy.observe(s));
+  railLinks.forEach(a => a.classList.toggle('active', a.dataset.sec === cur));
+};
+const spySchedule = () => { if (!spyTick) { spyTick = true; requestAnimationFrame(spyUpdate); } };
+addEventListener('scroll', spySchedule, { passive: true });
+addEventListener('resize', spySchedule);
+spyUpdate();
 
 /* ————— benchmark toggle ————— */
 /* YTD Jan–Jun 2026 YoY, NCS Wash Intel Q2 pack. Bar width = |value| / 4% scale. */
@@ -2918,6 +3002,47 @@ document.querySelectorAll('.protip-chip').forEach(b =>
   update();
 })();
 
+/* ————— promo cliff scrub (cliff-lab K3, 2026-07-22): a brand reading line rides the
+   pointer across the plot; the receipt for the month under it lifts; crossing the
+   promo-ends rule flares the prose annotation brand. Hover-capable screens only —
+   touch and keyboard drive the same states through the receipt buttons (focus/click
+   lights, blur clears). No loops, no autonomous motion; reduced motion needs no path
+   of its own (everything here is pointer-driven and settles to the static chart). ————— */
+(function pcScrub() {
+  const card = document.getElementById('pcHyb');
+  if (!card) return;
+  const plot = card.querySelector('.plotwrap');
+  const read = card.querySelector('.read');
+  const prose = card.querySelector('.prose');
+  const receipts = [...card.querySelectorAll('.rcpt')];
+  const light = m => {
+    receipts.forEach((r, i) => r.classList.toggle('lift', i === m));
+    prose.classList.toggle('flare', m === 3);
+  };
+  const clear = () => { read.classList.remove('on'); receipts.forEach(r => r.classList.remove('lift')); prose.classList.remove('flare'); };
+  if (matchMedia('(hover: hover)').matches) {
+    plot.addEventListener('pointermove', e => {
+      const r = plot.getBoundingClientRect();
+      const x = Math.min(Math.max(e.clientX - r.left, 0), r.width);
+      read.style.left = x + 'px';
+      read.classList.add('on');
+      light(Math.min(3, Math.floor(x / r.width * 4)));
+    });
+    plot.addEventListener('pointerleave', clear);
+  }
+  receipts.forEach((r, m) => {
+    const on = () => {
+      light(m);
+      const pr = plot.getBoundingClientRect();
+      read.style.left = (pr.width * (m + 0.5) / 4) + 'px';
+      read.classList.add('on');
+    };
+    r.addEventListener('focus', on);
+    r.addEventListener('click', on);
+    r.addEventListener('blur', clear);
+  });
+})();
+
 /* ————— the last beat: one-tap report rating in the finale (fb-lab winner B).
    The TAP is the submission — the rating stores immediately; the note fold opens
    after as an optional add-on. One submission per browser: the localStorage key
@@ -3050,7 +3175,7 @@ const TREND_VIEWS = {
     num: '+0.2%', cap: 'East, the only region positive in Q2',
     aria: 'Quarterly same-site year-over-year change by region, Q3 2024 through Q2 2026. In Q2 2026: East +0.2%, West −4.8%, Central −6.7%.',
     insight: 'Regional same-site results were mixed in Q2 2026: <strong>East essentially flat</strong>, while Central (−6.7%) and West (−4.8%) were softer. Same-site pressure isn’t uniform: some regions are holding share better than others despite a more competitive backdrop.',
-    protip: 'The quarterly view split into three big geographic neighborhoods: Central, East, and West. It shows whether a slow stretch is happening everywhere, or just in one part of the country.'
+    protip: 'The quarterly view split into three big geographic regions: Central, East, and West. It shows whether a slow stretch is happening everywhere, or just in one part of the country.'
   }
 };
 

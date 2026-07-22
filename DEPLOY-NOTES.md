@@ -1,6 +1,15 @@
 # AMP Wash Intel · Q2 2026 — Deploy Notes
 
-For the developer taking this live on Vercel. Prepared 2026-07-15 by MOX. **Package v7** (2026-07-21): if you already deployed v1–v6, redeploy with this index.html; nothing else in the bundle changed (images/team-tablet.jpg and images/kiosk-attendant.jpg are no longer referenced by the page but stay in the bundle for repo parity).
+For the developer taking this live on Vercel. Prepared 2026-07-15 by MOX. **Package v8** (2026-07-22, launch-candidate): if you already deployed v1–v7, redeploy with this index.html; nothing else in the bundle changed (images/team-tablet.jpg and images/kiosk-attendant.jpg are no longer referenced by the page but stay in the bundle for repo parity).
+
+## What changed in v8 (payment-cliff redesign + pre-launch audit, 2026-07-22)
+
+1. **The promo payment-cliff chart is redesigned** (stakeholder-directed): the dot plot is replaced by a price step chart over four receipt cards (Jan–Mar $10 paid, Apr $30 "fails more"), with a prose annotation above the line ("The first $30 charge fails about 55% more often."). On hover screens a reading line follows the pointer and highlights the month beneath it; receipts are buttons for touch/keyboard. On phones the annotation moves to an HTML caption below the chart. The step encodes PRICE to a $0 baseline ($10:$30 drawn at exactly 1:3); the 55% figure is stated, never drawn. The card also left its side-by-side pairing and now runs full width. NOTE: the $10/$30 prices are illustrative examples and this card's sub copy is pending a final client pass — flag any client notes on it to Nathan, do not edit.
+2. **Dock scrollspy fixed**: jumping via a dock icon (or sitting deep in a long section) no longer leaves the wrong icon lit — the active section is now computed from scroll position.
+3. **Copy notes from client review**: hero h1 now reads "The Quarterly State of the Carwash Industry."; the trends region pro-tip says "geographic regions"; the why-fail chart's share bars now fill to their TRUE percentages (62% fills 62% of the rail — a previous round had normalized them).
+4. **The calculator CTA has its real destination**: same /get-started/ page as the finale demo button, with its own q2-2026-calculator campaign UTM. Its placeholder TODO is retired.
+5. **Mobile**: the payment-lifecycle strip now stacks in ONE column with a vertical spine and node per stage (the sequence was unreadable as a 2-col grid); modal close buttons gained 50px hit areas; the why-fail column headers were bumped above the 10px floor.
+6. **Pre-launch audit run (2026-07-22)**: full interaction sweep, breakpoints 375/536/613/824/1280/1440 overflow-clean, gate cycle, calculator math, per-pageview transfer is 3 same-origin requests (~520KB: HTML 64KB gzipped + font 24KB + hero 431KB), no third-party requests, links/UTMs/anchors verified, aria/focus/reduced-motion checks pass. Optional (Nathan's call, not blocking): hero.jpg could re-encode to roughly half its 431KB.
 
 ## What changed in v7 (client markup round + motion covers + feedback, 2026-07-21)
 
@@ -74,11 +83,10 @@ fonts/Manrope-latin-var.woff2    variable font, weights 400-800 (preloaded)
 
 ## REQUIRED before real launch (fine to skip for the client-review deploy)
 
-Grep `TODO` in index.html; there are exactly three launch items (the finale demo link got its real destination in v7 and is no longer on this list):
+Grep `TODO` in index.html; there are exactly two launch items (the finale demo link and the calculator CTA got their real destinations in v7/v8 and are no longer on this list):
 
 1. `og:url` and `og:image` in the head: swap the host for the final production URL.
-2. Calculator CTA "Contact AMP to get started →": real contact / get-started link (keep the UTM params).
-3. **Feedback endpoint** for the finale's rating row (two TODO markers, one in the HTML and one in the `lastBeat` script): POST the rating at the chip tap and the note at Send. Until this exists the ratings live only in each reader's localStorage and nothing reaches AMP. Decide with Nathan whether submissions attach the gate email or stay anonymous.
+2. **Feedback endpoint** for the finale's rating row (two TODO markers, one in the HTML and one in the `lastBeat` script): POST the rating at the chip tap and the note at Send. Until this exists the ratings live only in each reader's localStorage and nothing reaches AMP. Decide with Nathan whether submissions attach the gate email or stay anonymous.
 
 ## The gate (read this before the client asks)
 
