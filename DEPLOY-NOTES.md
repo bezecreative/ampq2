@@ -1,8 +1,17 @@
 # AMP Wash Intel · Q2 2026 — Deploy Notes
 
-For the developer taking this live on Vercel. Prepared 2026-07-15 by MOX. **Package v9** (2026-07-23, launch-candidate): if you already deployed v1–v8, redeploy with this index.html; nothing else in the bundle changed (images/team-tablet.jpg and images/kiosk-attendant.jpg are no longer referenced by the page but stay in the bundle for repo parity).
+For the developer taking this live on Vercel. Prepared 2026-07-15 by MOX. **Package v10** (2026-07-23): v9's launch-candidate page + gate lead capture wired (new `api/lead.js`, small addition inside the gate submit handler, new `.vercelignore`). If you already deployed v1–v9, redeploy the whole directory; env vars must be set in Vercel before leads flow (see v10 notes below). (images/team-tablet.jpg and images/kiosk-attendant.jpg are no longer referenced by the page but stay in the bundle for repo parity.)
 
 > **YOUR FIRST TASK after this deploy: wire the two forms (access gate + report feedback) to AMP's internal system. The full spec is in `FORMS-INTEGRATION.md` in this bundle.** And if any AI system touches this codebase, `AI-GUARDRAILS.md` is binding — read it before making any change. These two docs are new in this bundle (11 files total now; they're docs, not deploy assets — exclude them from the public web root if your setup serves .md files).
+
+## What changed in v10 (gate lead capture wired, 2026-07-23)
+
+1. **The access-gate form now captures leads** (Form 1 of FORMS-INTEGRATION.md). On valid submit the page fires a non-blocking, same-origin POST to `/api/lead` (`fetch` with `keepalive`) carrying `{name, email, company, when, report: "q2-2026"}`. The unlock animation never waits on the network; a failed POST still unlocks the report. The email is still NOT persisted in localStorage. Zero DOM/CSS changes; the fulfilled `TODO: fake destination` comment in the gate submit handler was retired (the server-side-gating and og-host TODOs remain, as specced).
+2. **New `api/lead.js`** — a Vercel serverless function (zero npm dependencies, no package.json needed) that fans the lead out to (a) a Google Sheet via service-account append and (b) ActiveCampaign via contact sync + tag `AMP_Report_Q2_26`. Credentials live in Vercel env vars: `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `GOOGLE_SHEET_ID`, `GOOGLE_SHEET_TAB` (optional), `AC_API_URL`, `AC_API_KEY`, `AC_COMPANY_FIELD_ID` (optional), `AC_TAG` (optional override). See the header comment in `api/lead.js` for setup.
+3. **New `.vercelignore`** keeps the three .md docs out of the public web root (they stay in the GitHub repo).
+4. Page asset profile unchanged: still 3 same-origin requests per pageview; the gate's lead POST to `/api/lead` is same-origin and is the sanctioned addition per AI-GUARDRAILS §6.
+5. **Form 2 (report feedback) is wired too** — new `api/feedback.js` appends to a separate tab of the SAME Google Sheet (`GOOGLE_FEEDBACK_TAB` env var, default `Feedback` — create that tab). Both spec'd save points POST fire-and-forget: the chip tap sends the rating immediately, Send re-sends with the note. Rows are `when | id | rating | note | stage | report`; the two rows per reader share a per-browser submission id — keep the latest row per id when reading. Submissions are ANONYMOUS per the spec's open identity decision (no email attached until Nathan + AMP decide otherwise). Shared Google auth lives in `api/_google.js` (underscore = not a public endpoint). Feedback TODO markers retired.
+6. NOTE (from FORMS-INTEGRATION §Form 1.4): leads now feed marketing automation (ActiveCampaign) — confirm the gate's privacy line satisfies AMP/legal before go-live.
 
 ## What changed in v9 (client review round 2, 2026-07-23)
 
@@ -96,10 +105,9 @@ fonts/Manrope-latin-var.woff2    variable font, weights 400-800 (preloaded)
 
 ## REQUIRED before real launch (fine to skip for the client-review deploy)
 
-Grep `TODO` in index.html; there are exactly two launch items (the finale demo link and the calculator CTA got their real destinations in v7/v8 and are no longer on this list):
+Grep `TODO` in index.html; as of v10 there is exactly one launch item (the feedback endpoint was wired in v10 and is no longer on this list):
 
 1. `og:url` and `og:image` in the head: swap the host for the final production URL.
-2. **Feedback endpoint** for the finale's rating row (two TODO markers, one in the HTML and one in the `lastBeat` script): POST the rating at the chip tap and the note at Send. Until this exists the ratings live only in each reader's localStorage and nothing reaches AMP. Decide with Nathan whether submissions attach the gate email or stay anonymous.
 
 ## The gate (read this before the client asks)
 

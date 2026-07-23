@@ -2537,7 +2537,7 @@ html:not(.js) .lc-rail i { transform: scaleX(1); }
       </div>
       <!-- fb round 2026-07-21 (Nathan picked fb-lab concept B "The Last Beat"): the
            feedback ask closes the plaque. SCRATCH COPY pending a client pass; the send
-           is a stub (TODO: real endpoint at launch — static deploy has none); one
+           POSTs to same-origin /api/feedback (anonymous, Google Sheet server-side); one
            submission per browser (localStorage), returning readers see the thanks. -->
       <div class="lastbeat" id="lastbeat">
         <div class="fb-lead">
@@ -3061,8 +3061,11 @@ document.querySelectorAll('.protip-chip').forEach(b =>
    The TAP is the submission — the rating stores immediately; the note fold opens
    after as an optional add-on. One submission per browser: the localStorage key
    holds {r, note}, and a returning reader (or a reload after rating) gets the
-   settled thank-you row, never a fresh ask. TODO at launch: POST rating + note
-   to a real endpoint at both save points (the static deploy has none today). ————— */
+   settled thank-you row, never a fresh ask. Both save points POST to the
+   same-origin /api/feedback (Google Sheet server-side), fire-and-forget:
+   the chip tap sends the rating immediately, Send re-sends with the note.
+   ANONYMOUS per the open identity decision (Nathan + AMP) — no email attached.
+   The shared per-browser id lets the sheet keep the latest row per reader. ————— */
 (function lastBeat() {
   const KEY = 'washintel-fb-q2-2026';
   const beat = document.getElementById('lastbeat');
@@ -3070,6 +3073,17 @@ document.querySelectorAll('.protip-chip').forEach(b =>
   const scale = document.getElementById('fbScale');
   const fold = document.getElementById('fbFold');
   const thanks = document.getElementById('fbThanks');
+  const subId = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random().toString(36).slice(2));
+  const post = (r, note) => { /* never blocks the UI; a failed POST costs nothing visible */
+    try {
+      fetch('/api/feedback', {
+        method: 'POST',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: subId, r: r, note: note, when: new Date().toISOString(), report: 'q2-2026' })
+      }).catch(() => {});
+    } catch (err) {}
+  };
   let saved = null;
   try { saved = JSON.parse(localStorage.getItem(KEY)); } catch (e) { /* corrupt value = fresh ask */ }
   const settle = () => {
@@ -3086,10 +3100,12 @@ document.querySelectorAll('.protip-chip').forEach(b =>
     rating = Number(btn.textContent);
     scale.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
     try { localStorage.setItem(KEY, JSON.stringify({ r: rating, note: false })); } catch (e) {}
+    post(rating, ''); /* save point 1: a reader who taps and leaves is a captured rating */
     fold.classList.add('open');
   });
   document.getElementById('fbSend').addEventListener('click', () => {
     try { localStorage.setItem(KEY, JSON.stringify({ r: rating, note: true })); } catch (e) {}
+    post(rating, (document.getElementById('fbText').value || '').trim().slice(0, 2000)); /* save point 2: rating + note */
     settle();
   });
 })();
@@ -3915,7 +3931,7 @@ function columnHover(svgId, tipId, pts, onChange) {
 
   const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
   form.addEventListener('submit', (e) => {
-    e.preventDefault(); /* TODO: fake destination — production POSTs server-side */
+    e.preventDefault(); /* lead POST wired below (same-origin /api/lead); server-side gating stays scoped to the Next.js rebuild */
     const fields = [...form.querySelectorAll('.field')];
     let firstBad = null;
     fields.forEach(f => {
@@ -3933,6 +3949,23 @@ function columnHover(svgId, tipId, pts, onChange) {
       company: form.querySelector('input[name="organization"]').value.trim()
     };
     if (REMEMBER) { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
+    /* lead capture: fire-and-forget to the same-origin endpoint (Google Sheet +
+       ActiveCampaign server-side). Never blocks or delays the unlock; the email
+       rides only in this POST and is deliberately NOT persisted in localStorage. */
+    try {
+      fetch('/api/lead', {
+        method: 'POST',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.name,
+          email: form.querySelector('input[name="email"]').value.trim(),
+          company: data.company,
+          when: data.when,
+          report: 'q2-2026'
+        })
+      }).catch(() => {});
+    } catch (err) {}
     const btn = form.querySelector('.submit');
     const finish = () => {
       gate.classList.remove('reading');
