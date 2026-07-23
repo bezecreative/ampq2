@@ -217,7 +217,7 @@ body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 .hero-photo {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover; object-position: center 35%;
-  transform: scale(1.38);
+  transform: scale(1.38) translateX(-20%); /* pan left 20% so the phone clears the right edge */
   transform-origin: 0% 42%;
 }
 .hero-scrim {
@@ -1862,7 +1862,9 @@ html:not(.js) .lc-rail i { transform: scaleX(1); }
 
     <!-- ————— HERO ————— -->
     <header class="hero reveal">
-      <img class="hero-photo" src="images/hero.jpg?v=3" width="2400" height="1339" fetchpriority="high" alt="A wash member reviewing their vehicles in the AMP app over coffee">
+      <!-- WebP (141KB, was a 422KB JPEG). images/hero.jpg is the same frame as an
+           optimized progressive JPEG (181KB) — swap the src back to revert. -->
+      <img class="hero-photo" src="images/hero.webp?v=3" width="2400" height="1339" fetchpriority="high" alt="A wash member reviewing their vehicles in the AMP app over coffee">
       <div class="hero-scrim"></div>
       <div class="hero-top">
         <span class="hero-pill">Q2 2026 Industry Insights</span>
