@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thanks for rating — AMP Wash Intel</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="images/AMP_Icon_CobaltNavy.svg">
+<link rel="preload" as="font" type="font/woff2" href="fonts/Manrope-latin-var.woff2" crossorigin>
+<style>
+/* Manrope, self-hosted — same variable woff2 the report uses (weights 400–800). */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('fonts/Manrope-latin-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* ————— AMP Wash Intel design tokens (mirrored from the report) ————— */
+:root {
+  --canvas: #F2F3F5;
+  --surface-raised: #FFFFFF;
+  --ink: #181D27;
+  --ink-secondary: #717680;
+  --ink-faint: #A4A7AE;
+  --brand: #0B75E1;
+  --brand-body: #0A5FBA;
+  --brand-deep: #003264;
+  --ice-1: #DCEDFF;
+  --ice-2: #F5FAFF;
+  --hairline: rgba(24, 29, 39, 0.07);
+  --r-card: 20px;
+  --r-inner: 16px;
+  --r-chip: 12px;
+  --shadow-card: 0 1px 2px rgba(24,29,39,.04), 0 10px 28px rgba(24,29,39,.07);
+  --shadow-float: 0 2px 6px rgba(24,29,39,.06), 0 18px 44px rgba(24,29,39,.12);
+  --ease-out: cubic-bezier(.19, 1, .22, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow-x: hidden; }
+a, button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  font-family: 'Manrope', -apple-system, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 40px);
+  padding-top: calc(clamp(16px, 4vw, 40px) + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(clamp(16px, 4vw, 40px) + env(safe-area-inset-bottom, 0px));
+}
+
+/* ————— card ————— */
+.card {
+  width: 100%; max-width: 460px;
+  background: var(--surface-raised);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .card { animation: rise .6s var(--ease-out) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+}
+
+/* header band — the report's navy lockup */
+.head {
+  background:
+    radial-gradient(120% 140% at 20% -10%, rgba(11,117,225,.55) 0%, rgba(11,117,225,0) 55%),
+    linear-gradient(160deg, #04264d 0%, var(--brand-deep) 60%, #062a55 100%);
+  padding: 26px 30px 24px;
+  color: #fff;
+}
+.brand { display: flex; align-items: center; gap: 11px; }
+.brand .mark {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.14);
+  flex: 0 0 auto;
+}
+.brand .mark svg { width: 17px; height: auto; display: block; }
+.brand .wm { display: flex; flex-direction: column; line-height: 1.2; }
+.brand .wm b { font-size: .92rem; font-weight: 800; letter-spacing: -.01em; }
+.brand .wm span { font-size: .68rem; font-weight: 600; color: rgba(255,255,255,.62); letter-spacing: .02em; }
+
+/* body */
+.body { padding: 30px 30px 32px; }
+.kicker {
+  font-size: .62rem; font-weight: 800; letter-spacing: .11em; text-transform: uppercase;
+  color: var(--brand-body); margin-bottom: 12px;
+}
+h1 {
+  font-size: clamp(1.4rem, 5vw, 1.7rem); font-weight: 800;
+  letter-spacing: -.02em; line-height: 1.15; color: var(--ink);
+}
+h1 .score {
+  font-variant-numeric: tabular-nums;
+  color: var(--brand);
+}
+.lede { font-size: .92rem; color: var(--ink-secondary); margin-top: 10px; }
+
+/* the 1–5 scale readout — blue = the one they picked, grey = the rest */
+.scale {
+  display: flex; gap: 8px; margin: 22px 0 6px;
+}
+.scale .pip {
+  flex: 1 1 0; height: 44px; border-radius: var(--r-chip);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .95rem; font-weight: 800; font-variant-numeric: tabular-nums;
+  background: rgba(24,29,39,.05); color: var(--ink-faint);
+  transition: background .45s var(--ease-out), color .45s var(--ease-out), transform .45s var(--ease-out);
+}
+.scale .pip.on {
+  background: var(--brand); color: #fff;
+  box-shadow: 0 6px 16px rgba(11,117,225,.32);
+  transform: translateY(-2px);
+}
+.scale-ends {
+  display: flex; justify-content: space-between;
+  font-size: .64rem; font-weight: 600; color: var(--ink-faint); margin-bottom: 4px;
+}
+
+/* share block — mirrors the report's share card copy + actions */
+.share {
+  margin-top: 26px; padding-top: 22px;
+  border-top: 1px solid var(--hairline);
+}
+.share h2 { font-size: .92rem; font-weight: 800; letter-spacing: -.01em; }
+.share p { font-size: .78rem; color: var(--ink-secondary); margin: 4px 0 14px; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn {
+  font-family: inherit; font-size: .84rem; font-weight: 700; line-height: 1;
+  border-radius: 999px; padding: 12px 18px; cursor: pointer;
+  border: 1px solid transparent; text-decoration: none; white-space: nowrap;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background .2s, color .2s, border-color .2s, transform .1s;
+}
+.btn:active { transform: translateY(1px); }
+.btn.primary { background: var(--brand); color: #fff; }
+.btn.primary:hover { background: var(--brand-body); }
+.btn.ghost { background: var(--surface-raised); color: var(--ink); border-color: var(--hairline); }
+.btn.ghost:hover { border-color: var(--ink-faint); }
+.btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+</style>
+</head>
+<body>
+  <main class="card" role="main">
+    <div class="head">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">
+          <svg viewBox="0 0 875 700" xmlns="http://www.w3.org/2000/svg">
+            <polygon fill="#ffffff" points="37.18 666.59 250.8 666.17 682.33 248.15 682.33 667.15 837.82 667.15 837.82 34.89 686.1 34.89 37.18 666.59"/>
+            <polygon fill="#5EB4FF" points="584.94 32.85 152.03 32.85 152.03 188.34 427.62 188.34 584.94 32.85"/>
+          </svg>
+        </span>
+        <span class="wm">
+          <b>AMP Wash Intel</b>
+          <span>Quarterly industry insights</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="body">
+      <p class="kicker" id="kicker">Rating received</p>
+      <h1 id="headline">Thanks — you rated it <span class="score" id="score">–</span></h1>
+      <p class="lede" id="lede">That helps decide what next quarter covers.</p>
+
+      <!-- 1–5 readout: revealed only when the rating is valid -->
+      <div id="scaleWrap" hidden>
+        <div class="scale" id="scale" role="img" aria-label="Your rating on a 1 to 5 scale">
+          <span class="pip" data-n="1">1</span>
+          <span class="pip" data-n="2">2</span>
+          <span class="pip" data-n="3">3</span>
+          <span class="pip" data-n="4">4</span>
+          <span class="pip" data-n="5">5</span>
+        </div>
+        <div class="scale-ends"><span>Not useful</span><span>Extremely useful</span></div>
+      </div>
+
+      <div class="share">
+        <h2>Share the benchmarks</h2>
+        <p>This quarter’s industry data and AMP’s latest insights.</p>
+        <div class="actions">
+          <button class="btn primary" id="copyBtn" type="button">Copy report link</button>
+          <a class="btn ghost" id="emailBtn" href="#">Forward by email</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <p class="sr-only" role="status" aria-live="polite" id="live"></p>
+
+<script>
+(function () {
+  /* ————— config to fill in ————— */
+  // The report the reader just rated — the Copy/Forward buttons share this.
+  var REPORT_URL = 'https://insights.ampmemberships.com/';
+
+  var params = new URLSearchParams(location.search);
+  var rating = params.get('r');
+  var valid = /^[1-5]$/.test(rating || '');
+
+  var scoreEl = document.getElementById('score');
+  var live = document.getElementById('live');
+
+  if (valid) {
+    /* confirm the rating back to the reader */
+    scoreEl.textContent = rating;
+    var wrap = document.getElementById('scaleWrap');
+    wrap.hidden = false;
+    var pip = document.getElementById('scale').querySelector('.pip[data-n="' + rating + '"]');
+    if (pip) pip.classList.add('on');
+    live.textContent = 'Rating recorded: ' + rating + ' out of 5.';
+
+    /* Log the click — client-side by design (email scanners don't run JS, so
+       they can't fire this). Same-origin POST to our endpoint; fire-and-forget.
+       localStorage guard stops refresh double-writes (a genuine change of mind
+       still writes a new row — the sheet keeps the last per subscriber). */
+    var key = 'amp_rating_' + (params.get('c') || 'x') + '_logged';
+    var alreadyLogged = false;
+    try { alreadyLogged = !!localStorage.getItem(key); } catch (e) {}
+    if (!alreadyLogged) {
+      try {
+        fetch('/api/rating', {
+          method: 'POST',
+          keepalive: true,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            r: Number(rating),
+            sid: params.get('sid') || '',
+            c: params.get('c') || '',
+            ua: navigator.userAgent
+          })
+        }).then(function () { try { localStorage.setItem(key, '1'); } catch (e) {} })
+          .catch(function () {});
+      } catch (e) {}
+    }
+  } else {
+    /* graceful state: no r, or an out-of-range value — generic thanks, no
+       broken interpolation, no console noise */
+    document.getElementById('kicker').textContent = 'Thank you';
+    document.getElementById('headline').textContent = 'Thanks for your feedback';
+    document.getElementById('lede').textContent = 'It helps decide what next quarter covers.';
+    live.textContent = 'Thanks for your feedback.';
+  }
+
+  /* ————— share CTAs (carried from the report) ————— */
+  var subject = 'AMP Wash Intel: Q2 2026 industry report';
+  var body = 'Thought you’d want to see this quarter’s wash industry data. National benchmarks, plus a deep dive on where membership revenue leaks:\n\n' + REPORT_URL;
+  document.getElementById('emailBtn').href =
+    'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+
+  var copyBtn = document.getElementById('copyBtn');
+  copyBtn.addEventListener('click', function () {
+    (navigator.clipboard ? navigator.clipboard.writeText(REPORT_URL) : Promise.reject())
+      .then(function () {
+        copyBtn.textContent = 'Copied ✓';
+        live.textContent = 'Report link copied to clipboard.';
+      })
+      .catch(function () {
+        copyBtn.textContent = REPORT_URL; /* fallback: show it so they can copy by hand */
+        live.textContent = 'Copy failed. The link is shown on the button.';
+      });
+    setTimeout(function () { copyBtn.textContent = 'Copy report link'; }, 2200);
+  });
+})();
+</script>
+</body>
+</html>
