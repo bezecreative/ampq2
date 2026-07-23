@@ -4,6 +4,15 @@ For the developer taking this live on Vercel. Prepared 2026-07-15 by MOX. **Pack
 
 > **YOUR FIRST TASK after this deploy: wire the two forms (access gate + report feedback) to AMP's internal system. The full spec is in `FORMS-INTEGRATION.md` in this bundle.** And if any AI system touches this codebase, `AI-GUARDRAILS.md` is binding — read it before making any change. These two docs are new in this bundle (11 files total now; they're docs, not deploy assets — exclude them from the public web root if your setup serves .md files).
 
+## What changed in v12 (hero photo swap, 2026-07-23)
+
+1. **New hero photo** (client-supplied, `AMP_Report_Header_V2.jpg`): the AMP app in-hand over coffee. Sourced from a Cloudinary URL and **downloaded/self-hosted** — NOT hotlinked, because zero third-party requests is a shipping requirement (AI-GUARDRAILS §6); the page stays at 3 same-origin requests per pageview.
+2. Resized to **2400×1339** — identical to the previous hero, so the `<img width/height>` attributes are unchanged and there is no layout shift. Source was 5504×3072 at the same 1.79 aspect, so no cropping was needed.
+3. **Re-encoded to 298KB (from 422KB, −30%)** at JPEG q60; the phone-screen UI detail was checked at 1:1 and holds up clean. This partly addresses the v8 audit's optional note that hero.jpg could re-encode smaller. Per-pageview transfer drops ~124KB.
+4. Cache-buster bumped `?v=2` → `?v=3` in index.html (per the deploy rule: bump the query string, don't rely on cache purges).
+5. The previous hero is preserved as `images/hero-v1-backup.jpg` — restorable by copying it back over `images/hero.jpg` and bumping the query string again.
+6. Existing alt text still describes the new photo accurately ("A wash member reviewing their vehicles in the AMP app over coffee") and was left unchanged. No copy, layout, data, or motion changes. Verified: console clean, no overflow at 375/824/1440, em-dash count still 3.
+
 ## What changed in v11 (email rating page, 2026-07-23)
 
 1. **New `/rating` page** (`rating.html`, served at `/rating` via cleanUrls) — the thank-you landing for the 1–5 rating links in the ActiveCampaign follow-up email. Reader clicks a number in the email → lands here → the page confirms their rating ("Thanks — you rated it 4", number injected into `#score`, the 1–5 scale shows their pick in brand blue / the rest grey) and carries the report's share CTAs (copy report link, forward by email). Built from the report's own tokens/Manrope/AMP mark so it reads as the same product. Missing/invalid `r` degrades to a generic thank-you with no broken interpolation and no console errors. `noindex`.
