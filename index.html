@@ -1926,8 +1926,9 @@ html:not(.js) .lc-rail i { transform: scaleX(1); }
       <div class="gated" id="gatedContent" inert aria-hidden="true">
     <div class="sec-head" id="benchmarks">
       <div>
-        <h2>Q2 Performance</h2>
-        <p>Year-over-year wash volume growth, January–June 2026. Benchmark your sites against national trends.</p>
+        <!-- client round 2 (#65 + #66, Andrew): heading + sub replaced, verbatim -->
+        <h2>Regional YoY Performance</h2>
+        <p>Jan–Jun 2026 compared to Jan–Jun 2025. Benchmark your sites against regional trends.</p>
         <div class="src-row"><span class="lbl">Data</span><b>NCS Wash Intel</b><span class="pw"><i></i><b>Rubicon Analytics</b></span></div>
       </div>
       <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
@@ -1978,7 +1979,7 @@ html:not(.js) .lc-rail i { transform: scaleX(1); }
       <!-- Nathan 2026-07-17: NCS insights collapse like the AMP ones. Static head +
            a body span the view-toggle JS writes into, so the collapse wiring survives
            every refill. -->
-      <div class="card-insight" id="regionInsight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span><span id="regionInsightBody">Total-market volume remained positive through June, with <strong>East (+1.8%)</strong> and <strong>West (+1.6%)</strong> offsetting a modest Central decline (−0.8%). The market is still expanding overall, with growth concentrated in regions capturing demand most effectively.</span></div>
+      <div class="card-insight" id="regionInsight" data-collapse><span class="k"><span class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>Insight</span><span id="regionInsightBody">Total-market volume stayed positive through June, with <strong>East (+1.8%)</strong> and <strong>West (+1.6%)</strong> outpacing a slight Central dip (−0.8%).</span></div>
     </div>
 
 
@@ -2134,8 +2135,11 @@ html:not(.js) .lc-rail i { transform: scaleX(1); }
           <small>Roughly <strong>half</strong> of failed payments are recovered through a payment retry schedule</small>
         </div>
         <div class="lc-stage">
+          <!-- client round 2 (#67, Andrew): the stage gains its definition. His comment bolds
+               only "Dunning", so the descriptor reads as the body's opening sentence — if he
+               meant a longer TITLE ("Dunning automated payment recovery"), that's a one-line swap. -->
           <b class="lc-name">Dunning</b>
-          <small>The member is nudged by email and text to update their payment method, recovering about <strong>1 of 5</strong> failed payments</small>
+          <small>Automated payment recovery. The member is nudged by email and text to update their payment method, recovering about <strong>1 of 5</strong> failed payments</small>
         </div>
         <div class="lc-stage">
           <b class="lc-name">Win-back</b>
@@ -2563,7 +2567,15 @@ html:not(.js) .lc-rail i { transform: scaleX(1); }
       <p class="finale-note">+30% memberships and +125% reactivations are operator-reported results (ampmemberships.com) · 4× attendant gap from AMP’s Q1 2026 Industry Insights · results vary by site.</p>
     </section>
 
+    <!-- client round 2 (#68, Andrew): the payment-methodology fine print is REMOVED.
+         Andrew is confirming with his team; TO RESTORE EXACTLY AS IT WAS, uncomment the
+         paragraph below (nothing else changed — CSS and placement are intact).
+         Context for the archive: this foot carried the provenance + observational
+         compliance language (a Patrick-era ask) and Nathan had previously kept it
+         deliberately (v7 knob 6). Removed 2026-07-23 at Nathan's direction.
     <p class="foot">Payment analysis: 12.9 million first-attempt recharges across 26 operators (≥1,000 invoices each), July 2025 – June 2026 · Failure = the first charge attempt on the invoice failed · Recovery = the invoice itself ultimately reached paid status · Insufficient-funds failures recover best because they are timing problems · After day 14, same-invoice recovery is essentially zero; winning the member back means a new membership · Dunning: measured at 3 early-adopter operators; texts send days 0, 3, and 7; about 25% of failed-payment members have no phone on file and 23% hit the daily send cap, roughly 44% net reachability, so the ~4-per-100 incremental is a true-incremental estimate · Return-after-cancel: 307,047 canceled memberships across 20 operators, matched by email, day 8–90 after plan end; reasons recorded by staff or members at cancellation, 40+ raw codes grouped into 8 buckets, “other / no reason given” shown for completeness, not interpreted · All findings are observational.</p>
+    -->
+
       </div>
       <div class="h-frost" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
       <div class="h-veil"></div>
@@ -2575,8 +2587,9 @@ html:not(.js) .lc-rail i { transform: scaleX(1); }
 <!-- share card (anchored above the dock) -->
 <div class="share-card" id="shareCard" role="dialog" aria-label="Share this report">
   <button class="s-close" id="shareClose" aria-label="Dismiss">✕</button>
-  <h3>Know someone who runs on this data?</h3>
-  <p>Send this quarter’s benchmarks to a GM, partner, or boss who’d want to see where the industry is moving. And where the money is going.</p>
+  <!-- client round 2 (#63, Drew + Andrew): Andrew's replacement copy, verbatim -->
+  <h3>Share the benchmarks</h3>
+  <p>This quarter’s industry data and AMP’s latest insights.</p>
   <div class="share-actions">
     <button class="primary" id="shareCopy">Copy link</button>
     <a class="ghost" id="shareEmail" href="mailto:?subject=AMP%20Wash%20Intel%3A%20Q2%202026%20industry%20report">Email it</a>
@@ -2673,7 +2686,8 @@ const BENCH = {
    toggles below write BODY text only, into #regionInsightBody / #stateInsightBody. */
 const BENCH_NOTES = {
   total: {
-    insight: 'Total-market volume remained positive through June, with <strong>East (+1.8%)</strong> and <strong>West (+1.6%)</strong> offsetting a modest Central decline (−0.8%). The market is still expanding overall, with growth concentrated in regions capturing demand most effectively.',
+    /* client round 2 (#64, Drew + Andrew): Andrew's rewrite, verbatim (bold kept on the region figures — presentation, not words) */
+    insight: 'Total-market volume stayed positive through June, with <strong>East (+1.8%)</strong> and <strong>West (+1.6%)</strong> outpacing a slight Central dip (−0.8%).',
     protip: 'This view counts every reporting wash, including brand-new ones that opened this year. The number can rise because new washes were built, not necessarily because drivers are washing more often.'
   },
   same: {

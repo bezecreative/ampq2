@@ -1,6 +1,19 @@
 # AMP Wash Intel · Q2 2026 — Deploy Notes
 
-For the developer taking this live on Vercel. Prepared 2026-07-15 by MOX. **Package v8** (2026-07-22, launch-candidate): if you already deployed v1–v7, redeploy with this index.html; nothing else in the bundle changed (images/team-tablet.jpg and images/kiosk-attendant.jpg are no longer referenced by the page but stay in the bundle for repo parity).
+For the developer taking this live on Vercel. Prepared 2026-07-15 by MOX. **Package v9** (2026-07-23, launch-candidate): if you already deployed v1–v8, redeploy with this index.html; nothing else in the bundle changed (images/team-tablet.jpg and images/kiosk-attendant.jpg are no longer referenced by the page but stay in the bundle for repo parity).
+
+> **YOUR FIRST TASK after this deploy: wire the two forms (access gate + report feedback) to AMP's internal system. The full spec is in `FORMS-INTEGRATION.md` in this bundle.** And if any AI system touches this codebase, `AI-GUARDRAILS.md` is binding — read it before making any change. These two docs are new in this bundle (11 files total now; they're docs, not deploy assets — exclude them from the public web root if your setup serves .md files).
+
+## What changed in v9 (client review round 2, 2026-07-23)
+
+All six changes are client-directed (MarkUp comments #63–68, Drew Earnest / Andrew Clark):
+
+1. Share popup copy → "Share the benchmarks" / "This quarter's industry data and AMP's latest insights."
+2. Benchmarks section heading → "Regional YoY Performance"; its sub line → "Jan–Jun 2026 compared to Jan–Jun 2025. Benchmark your sites against regional trends."
+3. The benchmarks total-market insight is Andrew Clark's shorter rewrite (East/West outpacing a slight Central dip). The same-site insight is unchanged.
+4. The lifecycle Dunning stage body now opens "Automated payment recovery."
+5. **The payment-methodology fine print at the page bottom is REMOVED** (client comment #68). It is preserved as an HTML comment in place, marked "TO RESTORE EXACTLY AS IT WAS" — if the client reverses this decision, uncomment that paragraph and redeploy; do not retype it. The NCS wash-count methodology line under the states band stays.
+6. No layout, data, or interaction changes in this package; v8's audit results still apply.
 
 ## What changed in v8 (payment-cliff redesign + pre-launch audit, 2026-07-22)
 
