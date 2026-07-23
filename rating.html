@@ -151,6 +151,20 @@ h1 .score {
 .btn.ghost { background: var(--surface-raised); color: var(--ink); border-color: var(--hairline); }
 .btn.ghost:hover { border-color: var(--ink-faint); }
 .btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* optional comment */
+.comment { margin-top: 22px; }
+.c-label { display: block; font-size: .82rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+.c-text {
+  width: 100%; font-family: inherit; font-size: 16px; /* 16px = iOS zoom guard */
+  color: var(--ink); line-height: 1.5;
+  background: var(--ice-2); border: 1px solid var(--hairline); border-radius: var(--r-inner);
+  padding: 12px 14px; resize: vertical; min-height: 84px;
+}
+.c-text::placeholder { color: var(--ink-faint); }
+.c-text:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; border-color: transparent; }
+.comment .btn { margin-top: 12px; }
+.c-thanks { font-size: .84rem; color: var(--brand-body); font-weight: 700; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -187,6 +201,14 @@ h1 .score {
         <div class="scale-ends"><span>Not useful</span><span>Extremely useful</span></div>
       </div>
 
+      <!-- optional comment: only shown for a valid rating -->
+      <div class="comment" id="commentWrap" hidden>
+        <label class="c-label" for="commentText">Anything you’d add? (optional)</label>
+        <textarea id="commentText" class="c-text" placeholder="One thing we should cover next quarter…"></textarea>
+        <button class="btn primary" id="commentSend" type="button">Send comment</button>
+        <p class="c-thanks" id="commentThanks" hidden>Got it — thanks for the note.</p>
+      </div>
+
       <div class="share">
         <h2>Share the benchmarks</h2>
         <p>This quarter’s industry data and AMP’s latest insights.</p>
@@ -213,6 +235,26 @@ h1 .score {
   var scoreEl = document.getElementById('score');
   var live = document.getElementById('live');
 
+  /* one same-origin write per call; fire-and-forget. Client-side by design —
+     email scanners don't run JS, so they can't fire this. onOk runs only on a
+     completed request so localStorage guards don't latch on a failed write. */
+  function logRow(comment, onOk) {
+    try {
+      fetch('/api/rating', {
+        method: 'POST',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          r: Number(rating),
+          sid: params.get('sid') || '',
+          c: params.get('c') || '',
+          ua: navigator.userAgent,
+          comment: comment || ''
+        })
+      }).then(function () { if (onOk) onOk(); }).catch(function () {});
+    } catch (e) {}
+  }
+
   if (valid) {
     /* confirm the rating back to the reader */
     scoreEl.textContent = rating;
@@ -222,29 +264,41 @@ h1 .score {
     if (pip) pip.classList.add('on');
     live.textContent = 'Rating recorded: ' + rating + ' out of 5.';
 
-    /* Log the click — client-side by design (email scanners don't run JS, so
-       they can't fire this). Same-origin POST to our endpoint; fire-and-forget.
-       localStorage guard stops refresh double-writes (a genuine change of mind
-       still writes a new row — the sheet keeps the last per subscriber). */
-    var key = 'amp_rating_' + (params.get('c') || 'x') + '_logged';
+    var slug = params.get('c') || 'x';
+
+    /* the rating logs immediately (a reader who clicks and leaves is captured).
+       localStorage guard stops refresh double-writes; a genuine re-rate still
+       writes a new row — the sheet keeps the last per subscriber. */
+    var loggedKey = 'amp_rating_' + slug + '_logged';
     var alreadyLogged = false;
-    try { alreadyLogged = !!localStorage.getItem(key); } catch (e) {}
+    try { alreadyLogged = !!localStorage.getItem(loggedKey); } catch (e) {}
     if (!alreadyLogged) {
-      try {
-        fetch('/api/rating', {
-          method: 'POST',
-          keepalive: true,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            r: Number(rating),
-            sid: params.get('sid') || '',
-            c: params.get('c') || '',
-            ua: navigator.userAgent
-          })
-        }).then(function () { try { localStorage.setItem(key, '1'); } catch (e) {} })
-          .catch(function () {});
-      } catch (e) {}
+      logRow('', function () { try { localStorage.setItem(loggedKey, '1'); } catch (e) {} });
     }
+
+    /* optional comment: a second write carrying the note (same rating + sid).
+       Its own guard so a comment can still be left after the rating logged, but
+       not re-sent on refresh. */
+    var commentWrap = document.getElementById('commentWrap');
+    var textEl = document.getElementById('commentText');
+    var sendBtn = document.getElementById('commentSend');
+    var thanksEl = document.getElementById('commentThanks');
+    var commentKey = 'amp_rating_' + slug + '_commented';
+    var settleComment = function () {
+      textEl.hidden = true; sendBtn.hidden = true; thanksEl.hidden = false;
+    };
+    commentWrap.hidden = false;
+    var alreadyCommented = false;
+    try { alreadyCommented = !!localStorage.getItem(commentKey); } catch (e) {}
+    if (alreadyCommented) settleComment();
+    sendBtn.addEventListener('click', function () {
+      var text = (textEl.value || '').trim();
+      if (!text) { textEl.focus(); return; }
+      logRow(text);
+      try { localStorage.setItem(commentKey, '1'); } catch (e) {}
+      settleComment();
+      live.textContent = 'Comment sent. Thank you.';
+    });
   } else {
     /* graceful state: no r, or an out-of-range value — generic thanks, no
        broken interpolation, no console noise */

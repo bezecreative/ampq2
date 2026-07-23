@@ -3,7 +3,9 @@
    the "Ratings" tab of the SAME Google Sheet used by the lead + feedback flows
    (shared service-account auth in _google.js).
 
-   Row: Timestamp | Rating | Subscriber ID | Campaign | User Agent
+   Row: Timestamp | Rating | Subscriber ID | Campaign | User Agent | Comment
+   (two writes per commenting reader: the rating logs on click, the optional
+   comment is a second row with the same rating/sid — keep the last per sid.)
 
    Why client-side (not logged on GET): email security scanners — Outlook Safe
    Links, Mimecast, Proofpoint — pre-click every link in a message. They almost
@@ -29,12 +31,13 @@ module.exports = async (req, res) => {
   const campaign = String((body?.campaign ?? body?.c) || '').slice(0, 40);
   /* prefer the browser-reported UA (the anti-scanner signal); fall back to the header */
   const ua = String(body?.ua || req.headers['user-agent'] || '').slice(0, 512);
+  const comment = String(body?.comment || '').slice(0, 2000);
   const when = new Date().toISOString();
 
   if (!Number.isInteger(rating) || rating < 1 || rating > 5) return res.status(400).json({ ok: false });
 
   try {
-    await appendRow(process.env.GOOGLE_RATINGS_TAB || 'Email Rating', [when, rating, sid, campaign, ua]);
+    await appendRow(process.env.GOOGLE_RATINGS_TAB || 'Email Rating', [when, rating, sid, campaign, ua, comment]);
     return res.status(200).json({ ok: true });
   } catch (err) {
     console.error('[rating] sheets append failed:', err?.message || err);
