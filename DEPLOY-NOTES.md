@@ -4,6 +4,13 @@ For the developer taking this live on Vercel. Prepared 2026-07-15 by MOX. **Pack
 
 > **YOUR FIRST TASK after this deploy: wire the two forms (access gate + report feedback) to AMP's internal system. The full spec is in `FORMS-INTEGRATION.md` in this bundle.** And if any AI system touches this codebase, `AI-GUARDRAILS.md` is binding — read it before making any change. These two docs are new in this bundle (11 files total now; they're docs, not deploy assets — exclude them from the public web root if your setup serves .md files).
 
+## What changed in v13 (Microsoft Clarity analytics, 2026-07-27)
+
+1. **Microsoft Clarity added to `index.html` `<head>`** (project id `xt2uev0zsh`), at Beze Creative's direction. This resolves the DEPLOY-NOTES post-deploy "add analytics?" open item.
+2. **This is a KNOWING exception to AI-GUARDRAILS §6 ("zero third-party requests is a shipping requirement").** Clarity loads `https://www.clarity.ms/tag/xt2uev0zsh` — pageviews now make a third-party request; the page is no longer 3-same-origin-only. The script is fenced with an HTML comment saying so; **do not strip it as an "audit fix."** Only on `index.html`, not `rating.html` (say if you want it there too).
+3. **Privacy/consent, still open for Nathan + AMP:** Clarity does session recording + heatmaps, and the gate form collects name/email/company. Confirm the linked privacy policy (ampmemberships.com/privacy-policy) covers session recording, and decide on a consent banner for EU visitors — there is none today. Clarity has a mask-sensitive-content setting worth reviewing so gate PII isn't captured in recordings.
+4. No CSP header is set in vercel.json, so nothing blocks the tag. No other change.
+
 ## What changed in v12 (hero photo swap, 2026-07-23)
 
 1. **New hero photo** (client-supplied, `AMP_Report_Header_V2.jpg`): the AMP app in-hand over coffee. Sourced from a Cloudinary URL and **downloaded/self-hosted** — NOT hotlinked, because zero third-party requests is a shipping requirement (AI-GUARDRAILS §6); the page stays at 3 same-origin requests per pageview.
